@@ -3,13 +3,19 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "warningsAsErrors": true,
-    "outputName": "dotnet-transform-xdt"
+    "outputName": "dotnet-transform-xdt",
+    "embed": "**/*.resx"
   },
 
   "dependencies": {
-    "Microsoft.Extensions.CommandLineUtils": "1.0.0-*"
+    "Microsoft.Extensions.CommandLineUtils": "1.0.0-*",
+    "System.Runtime.Loader": "4.0.0-*",
+    "System.Xml.XmlDocument": "4.0.1-*",
+    "System.Xml.XPath.XmlDocument": "4.0.1-*",
+    "System.Xml.ReaderWriter": "4.0.11-*"
   },
 
+  "title": "XDT (XML Document Transform) tool for .NET Core CLI",
   "description": "XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.",
 
   "packOptions": {

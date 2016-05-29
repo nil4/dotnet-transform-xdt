@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc-*",
   "buildOptions": {
     "emitEntryPoint": true,
     "warningsAsErrors": true,
@@ -21,7 +21,7 @@
   "packOptions": {
     "repository": {
       "type": "git",
-      "url": "git://github.com/nil4/xdt-tools"
+      "url": "git://github.com/nil4/dotnet-transform-xdt"
     },
     "tags": [
       "dotnetcore",

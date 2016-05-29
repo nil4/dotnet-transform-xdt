@@ -14,15 +14,15 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             var app = new CommandLineApplication
             {
-                Name = "dotnet transform xdt",
+                Name = "dotnet transform-xdt",
                 FullName = ".NET Core XML Document Transformation",
                 Description = "XML Document Transformation for .NET Core applications"
             };
-            app.HelpOption("-h|--help");
+            app.HelpOption("-?|-h|--help");
 
-            var inputFilePath = app.Option("--input|-i", "The path to the input XML file to transform", CommandOptionType.SingleValue);
+            var inputFilePath = app.Option("--xml|-x", "The path to the XML file to transform", CommandOptionType.SingleValue);
             var transformFilePath = app.Option("--transform|-t", "The path to the XDT transform file to apply", CommandOptionType.SingleValue);
-            var outputFilePath = app.Option("--output|-o", "The path where the transformed file will be written", CommandOptionType.SingleValue);
+            var outputFilePath = app.Option("--output|-o", "The path where the output (transformed) file will be written", CommandOptionType.SingleValue);
             var verboseOption = app.Option("--verbose|-v", "Print verbose messages", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
@@ -70,6 +70,16 @@ namespace Microsoft.DotNet.Xdt.Tools
                 }
                 return 0;
             });
+
+            if (args == null ||
+                args.Length == 0 ||
+                args[0].Equals("-?", StringComparison.OrdinalIgnoreCase) ||
+                args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) ||
+                args[0].Equals("--help", StringComparison.OrdinalIgnoreCase))
+            {
+                app.ShowHelp();
+                return 1;
+            }
 
             try
             {

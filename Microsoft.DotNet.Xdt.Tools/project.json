@@ -1,0 +1,39 @@
+﻿{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "warningsAsErrors": true,
+    "outputName": "dotnet-transform-xdt"
+  },
+
+  "dependencies": {
+    "Microsoft.Extensions.CommandLineUtils": "1.0.0-*"
+  },
+
+  "description": "XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.",
+
+  "packOptions": {
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/nil4/xdt-tools"
+    },
+    "tags": [
+      "dotnetcore",
+      "xdt",
+      "transform",
+      "xml"
+    ]
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "portable-dnxcore50+net45+win8+wp8+wpa81",
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-* "
+        }
+      }
+    }
+  }
+}

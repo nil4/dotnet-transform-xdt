@@ -77,7 +77,7 @@ Options:
 
 ### Known issues
 
-[ ] Logging and diagnostics is messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
-[ ] Unit tests have not been ported
+- Logging and diagnostics is messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
+- Unit tests have not been ported
 
 Is the list above missing anything? Please [log an issue](https://github.com/nil4/dotnet-transform-xdt/issues).

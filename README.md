@@ -12,9 +12,6 @@ Add `Microsoft.DotNet.Xdt.Tools` to both the `dependencies` and `tools` sections
 
 ```json
 {
-  "dependencies": {
-	"Microsoft.DotNet.Xdt.Tools": "1.0.0-*"
-  },
   "tools": {
     "Microsoft.DotNet.Xdt.Tools": {"version": "1.0.0-*"}
   }

@@ -78,6 +78,7 @@ Options:
 
 ### Known issues
 
+- `dotnet transform-xdt` must come before `dotnet publish-iis` 
 - Logging and diagnostics is messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
 - Unit tests have not been ported
 

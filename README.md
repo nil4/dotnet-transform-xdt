@@ -35,11 +35,15 @@ Call the tool from the `scripts/postpublish` section of your `project.json` to i
 {
   "scripts": {
     "postpublish": [
-		"dotnet transform-xdt --xml \"%publish:ProjectPath%\\web.config\" --transform \"%publish:ProjectPath%\\web.%publish:Configuration%.config\" --output \"%publish:OutputPath%\\Web.config\""
+	    "dotnet transform-xdt --xml \"%publish:ProjectPath%\\web.config\" --transform \"%publish:ProjectPath%\\web.%publish:Configuration%.config\" --output \"%publish:OutputPath%\\Web.config\"",
+        "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
 	]
   }
 }
 ```
+**Note**: it is important for `dotnet transform-xdt` to come before `dotnet publish-iis` for two reasons:
+- `transform-xdt` collapses white space when transforming (e.g. `xdt:Insert` or `xdt:Replace`)
+- if `publish-iis` comes before, at least when publishing from Visual Studio, the `aspNetCoreModule` attributes `processPath` and `arguments` are not replaced correctly; instead they keep their default values of `%LAUNCHER_PATH%` and `%LAUNCHER_ARGS%`, respectively.
 
 The following options are passed to `dotnet-transform-xdt`:
 - `xml`: the input XML file to be transformed; in this example, the `Web.config` file in your **project** folder.

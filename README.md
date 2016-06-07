@@ -8,12 +8,12 @@ It is a port of <http://xdt.codeplex.com/> compatible with [.NET Core](http://do
 
 ### How To Install
 
-Add `Microsoft.DotNet.Xdt.Tools` to both the `dependencies` and `tools` sections of your `project.json` file:
+Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` file:
 
 ```json
 {
   "tools": {
-    "Microsoft.DotNet.Xdt.Tools": {"version": "1.0.0-*"}
+    "Microsoft.DotNet.Xdt.Tools": "1.0.0-*"
   }
 }
 ```
@@ -49,11 +49,11 @@ The following options are passed to `dotnet-transform-xdt`:
   in your **publish** folder (e.g. `bin\Debug\win7-x64\publish`).
 
 With the above setup, calling `dotnet publish` from your project folder will apply the XDT transform 
-as the last step of the publishing process. The tool will print its output to the console, prefixed with
+during the publishing process. The tool will print its output to the console, prefixed with
 **`[XDT]`** markers.
 
 You can pass an explicit configuration (e.g. `-c Debug` or `-c Release`) to `dotnet publish` 
-to specify the configuration (and thus XDT file) to publish. A similar option is available in the Visual
+to specify the configuration (and thus applicable XDT file) to publish. A similar option is available in the Visual
 Studio publish dialog.
 
 Please note that varying the applied transform by configuration as shown above is just an example. 
@@ -75,8 +75,8 @@ Options:
 
 ### Known issues
 
-- `dotnet transform-xdt` must come before `dotnet publish-iis` 
+- Whitespace in the output XML file is not always correctly preserved. As a workaround, run `dotnet transform-xdt`  before `dotnet publish-iis`, as the latter will format the file.
 - Logging and diagnostics is messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
-- Unit tests have not been ported
+- Unit tests have not been ported.
 
 Is the list above missing anything? Please [log an issue](https://github.com/nil4/dotnet-transform-xdt/issues).

@@ -13,7 +13,7 @@ Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` 
 ```json
 {
   "tools": {
-    "Microsoft.DotNet.Xdt.Tools": "1.0.0-*"
+    "Microsoft.DotNet.Xdt.Tools": "1.0.0"
   }
 }
 ```

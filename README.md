@@ -18,6 +18,10 @@ Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` 
 }
 ```
 
+#### Using [.NET Core 1.1](https://blogs.msdn.microsoft.com/dotnet/2016/10/25/announcing-net-core-1-1-preview-1/) or [ASP.NET Core 1.1](https://blogs.msdn.microsoft.com/webdev/2016/10/25/announcing-asp-net-core-1-1-preview-1/) preview1?
+
+In the sample above, simply replace `1.0.0` with `1.1.0-*`.
+
 ### How To Use
 
 The typical use case is to transform `Web.config` (or similar XML-based files) at publish time.

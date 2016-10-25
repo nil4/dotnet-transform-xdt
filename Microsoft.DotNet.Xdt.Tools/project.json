@@ -1,44 +1,50 @@
 ﻿{
-  "version": "1.0.0",
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "warningsAsErrors": true,
-    "outputName": "dotnet-transform-xdt",
-    "embed": "**/*.resx"
-  },
+    "version": "1.1.0-preview1",
+    "authors": [ "nil4 <https://github.com/nil4/>" ],
 
-  "dependencies": {
-    "Microsoft.Extensions.CommandLineUtils": "1.0.0",
-    "System.Runtime.Loader": "4.0.0",
-    "System.Xml.XmlDocument": "4.0.1",
-    "System.Xml.XPath.XmlDocument": "4.0.1",
-    "System.Xml.ReaderWriter": "4.0.11"
-  },
-
-  "title": "XDT (XML Document Transform) tool for .NET Core CLI",
-  "description": "XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.",
-
-  "packOptions": {
-    "repository": {
-      "type": "git",
-      "url": "git://github.com/nil4/dotnet-transform-xdt"
+    "buildOptions": {
+        "debugType": "portable",
+        "emitEntryPoint": true,
+        "warningsAsErrors": true,
+        "outputName": "dotnet-transform-xdt",
+        "embed": "**/*.resx"
     },
-    "tags": [
-      "dotnetcore",
-      "xdt",
-      "transform",
-      "xml"
-    ]
-  },
 
-  "frameworks": {
-    "netcoreapp1.0": {
-      "dependencies": {
-        "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0"
+    "dependencies": {
+        "Microsoft.Extensions.CommandLineUtils": "1.1.0-preview1-final",
+        "System.Runtime.Loader": "4.3.0-preview1-*",
+        "System.Xml.XmlDocument": "4.3.0-preview1-*",
+        "System.Xml.XPath.XmlDocument": "4.3.0-preview1-*",
+        "System.Xml.ReaderWriter": "4.3.0-preview1-*"
+    },
+
+    "title": "XDT (XML Document Transform) tool for .NET Core CLI",
+    "description": "XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.",
+
+    "packOptions": {
+        "owners": [ "nil4 <https://github.com/nil4/>" ],
+        "repository": {
+            "type": "git",
+            "url": "git://github.com/nil4/dotnet-transform-xdt"
+        },
+        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+        "releaseNotes": "Updated to .NET Core 1.1 preview1 <https://blogs.msdn.microsoft.com/dotnet/2016/10/25/announcing-net-core-1-1-preview-1/>",
+        "tags": [
+            "dotnetcore",
+            "xdt",
+            "transform",
+            "xml"
+        ]
+    },
+
+    "frameworks": {
+        "netcoreapp1.0": {
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.1.0-preview1-*"
+                }
+            }
         }
-      }
     }
-  }
 }

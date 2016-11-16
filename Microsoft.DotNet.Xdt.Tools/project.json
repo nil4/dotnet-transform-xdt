@@ -20,6 +20,7 @@
 
     "title": "XDT (XML Document Transform) tool for .NET Core CLI",
     "description": "XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.",
+    "projectUrl": "https://github.com/nil4/dotnet-transform-xdt",
 
     "packOptions": {
         "owners": [ "nil4 <https://github.com/nil4/>" ],
@@ -28,7 +29,7 @@
             "url": "https://github.com/nil4/dotnet-transform-xdt"
         },
         "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-        "releaseNotes": "Updated to .NET Core 1.1 preview1 <https://blogs.msdn.microsoft.com/dotnet/2016/10/25/announcing-net-core-1-1-preview-1/>",
+        "releaseNotes": "Updated to .NET Core 1.1",
         "tags": [
             "dotnetcore",
             "xdt",

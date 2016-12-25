@@ -50,7 +50,7 @@ Edit the `XdtSample.csproj` file and find the `<ItemGroup>` that contains the Ne
 ```
 
 Inside this `<ItemGroup>`, add the following reference to this XDT tool. Note that you cannot use 
-the NuGet Package Manager UI in Visual Studio 2017 to CLI tool references; they must currently be added 
+the NuGet Package Manager UI in Visual Studio 2017 to add CLI tool references; they must currently be added 
 by editing the project file.
 
 ```xml
@@ -127,7 +127,7 @@ Now run `dotnet publish` in the `XdtSample` folder, and examine the `Web.config`
     <handlers>
       <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified" />
     </handlers>
-    <aspNetCore processPath="dotnet" arguments=".\xdt.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" forwardWindowsAuthToken="false" />
+    <aspNetCore processPath="dotnet" arguments=".\XdtSample.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" forwardWindowsAuthToken="false" />
   </system.webServer>
 </configuration>
 ```
@@ -145,7 +145,7 @@ It should look similar to this:
     <handlers>
       <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified" />
     </handlers>
-    <aspNetCore processPath="dotnet" arguments=".\xdt.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" forwardWindowsAuthToken="false">
+    <aspNetCore processPath="dotnet" arguments=".\XdtSample.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" forwardWindowsAuthToken="false">
       <environmentVariables>
         <environmentVariable name="DOTNET_CLI_TELEMETRY_OPTOUT" value="1" />
       </environmentVariables>

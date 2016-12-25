@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
+    <Version>1.2.0-msbuild-preview4-004233</Version>
     <AssemblyName>dotnet-transform-xdt</AssemblyName>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.0</TargetFrameworks>
@@ -10,7 +11,6 @@
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>1.2.0-msbuild-preview4-004233</PackageVersion>
     <PackageId>Microsoft.DotNet.Xdt.Tools</PackageId>
     <PackageType>DotnetCliTool</PackageType>
     <Authors>nil4 &lt;https://github.com/nil4&gt;</Authors>
@@ -22,7 +22,6 @@
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/nil4/dotnet-transform-xdt.git</RepositoryUrl>
-    <MinClientVersion>3.5</MinClientVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" />

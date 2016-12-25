@@ -14,16 +14,16 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             var app = new CommandLineApplication
             {
-                Name = "dotnet transform-xdt",
+                Name = "dotnet-transform-xdt",
                 FullName = ".NET Core XML Document Transformation",
                 Description = "XML Document Transformation for .NET Core applications"
             };
             app.HelpOption("-?|-h|--help");
 
-            var inputFilePath = app.Option("--xml|-x", "The path to the XML file to transform", CommandOptionType.SingleValue);
-            var transformFilePath = app.Option("--transform|-t", "The path to the XDT transform file to apply", CommandOptionType.SingleValue);
-            var outputFilePath = app.Option("--output|-o", "The path where the output (transformed) file will be written", CommandOptionType.SingleValue);
-            var verboseOption = app.Option("--verbose|-v", "Print verbose messages", CommandOptionType.NoValue);
+            CommandOption inputFilePath = app.Option("--xml|-x", "The path to the XML file to transform", CommandOptionType.SingleValue);
+            CommandOption transformFilePath = app.Option("--transform|-t", "The path to the XDT transform file to apply", CommandOptionType.SingleValue);
+            CommandOption outputFilePath = app.Option("--output|-o", "The path where the output (transformed) file will be written", CommandOptionType.SingleValue);
+            CommandOption verboseOption = app.Option("--verbose|-v", "Print verbose messages", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
             {
@@ -50,19 +50,19 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                 Console.WriteLine($"{Prefix}Transforming '{inputPath}' using '{transformPath}' into '{outputPath}'");
 
-                using (var sourceStream = File.OpenRead(inputPath))
-                using (var transformStream = File.OpenRead(transformPath))
+                using (FileStream sourceStream = File.OpenRead(inputPath))
+                using (FileStream transformStream = File.OpenRead(transformPath))
                 using (var transformation = new XmlTransformation(transformStream, new ConsoleTransformationLogger(verboseOption.HasValue())))
                 {
                     var sourceXml = new XmlTransformableDocument { PreserveWhitespace = true };
                     sourceXml.Load(sourceStream);
                     transformation.Apply(sourceXml);
 
-                    using (var outputStream = File.Create(outputPath))
-                    using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings
+                    using (FileStream outputStream = File.Create(outputPath))
+                    using (XmlWriter outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings
                     {
                         Indent = true,
-                        Encoding = new UTF8Encoding(false, true),
+                        Encoding = Encoding.UTF8,
                     }))
                     {
                         sourceXml.WriteTo(outputWriter);

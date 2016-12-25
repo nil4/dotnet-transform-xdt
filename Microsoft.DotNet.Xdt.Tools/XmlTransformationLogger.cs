@@ -10,38 +10,47 @@ namespace Microsoft.DotNet.Xdt.Tools
         private readonly IXmlTransformationLogger _externalLogger;
         private XmlNode _currentReferenceNode;
 
-        internal XmlTransformationLogger(IXmlTransformationLogger logger) {
+        internal XmlTransformationLogger(IXmlTransformationLogger logger)
+        {
             _externalLogger = logger;
         }
 
-        internal void LogErrorFromException(Exception ex) {
+        internal void LogErrorFromException(Exception ex)
+        {
             HasLoggedErrors = true;
 
-            if (_externalLogger != null) {
+            if (_externalLogger != null)
+            {
                 var nodeException = ex as XmlNodeException;
-                if (nodeException != null && nodeException.HasErrorInfo) {
+                if (nodeException != null && nodeException.HasErrorInfo)
+                {
                     _externalLogger.LogErrorFromException(
                         nodeException,
                         ConvertUriToFileName(nodeException.FileName),
                         nodeException.LineNumber,
                         nodeException.LinePosition);
                 }
-                else {
+                else
+                {
                     _externalLogger.LogErrorFromException(ex);
                 }
             }
-            else {
+            else
+            {
                 throw ex;
             }
         }
 
         internal bool HasLoggedErrors { get; set; }
 
-        internal XmlNode CurrentReferenceNode {
-            get {
+        internal XmlNode CurrentReferenceNode
+        {
+            get
+            {
                 return _currentReferenceNode;
             }
-            set {
+            set
+            {
                 // I don't feel like implementing a stack for this for no
                 // reason. Only one thing should try to set this property
                 // at a time, and that thing should clear it when done.
@@ -53,13 +62,12 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public bool SupressWarnings { get; set; }
 
-        public void LogMessage(string message, params object[] messageArgs) 
-            => _externalLogger?.LogMessage(message, messageArgs);
+        public void LogMessage(string message, params object[] messageArgs) => _externalLogger?.LogMessage(message, messageArgs);
 
-        public void LogMessage(MessageType type, string message, params object[] messageArgs) 
-            => _externalLogger?.LogMessage(type, message, messageArgs);
+        public void LogMessage(MessageType type, string message, params object[] messageArgs) => _externalLogger?.LogMessage(type, message, messageArgs);
 
-        public void LogWarning(string message, params object[] messageArgs) {
+        public void LogWarning(string message, params object[] messageArgs)
+        {
             if (SupressWarnings)
             {
                 // SupressWarnings downgrade the Warning to LogMessage
@@ -78,7 +86,8 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        public void LogWarning(XmlNode referenceNode, string message, params object[] messageArgs) {
+        public void LogWarning(XmlNode referenceNode, string message, params object[] messageArgs)
+        {
             if (SupressWarnings)
             {
                 // SupressWarnings downgrade the Warning to LogMessage
@@ -86,7 +95,8 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
             else
             {
-                if (_externalLogger == null) return;
+                if (_externalLogger != null)
+                {
                 string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
                 var lineInfo = referenceNode as IXmlLineInfo;
 
@@ -108,29 +118,37 @@ namespace Microsoft.DotNet.Xdt.Tools
                 }
             }
         }
+        }
 
-        public void LogError(string message, params object[] messageArgs) {
+        public void LogError(string message, params object[] messageArgs)
+        {
             HasLoggedErrors = true;
 
-            if (CurrentReferenceNode != null) {
+            if (CurrentReferenceNode != null)
+            {
                 LogError(CurrentReferenceNode, message, messageArgs);
             }
-            else if (_externalLogger != null) {
+            else if (_externalLogger != null)
+            {
                 _externalLogger.LogError(message, messageArgs);
             }
-            else {
+            else
+            {
                 throw new XmlTransformationException(string.Format(CultureInfo.CurrentCulture, message, messageArgs));
             }
         }
 
-        public void LogError(XmlNode referenceNode, string message, params object[] messageArgs) {
+        public void LogError(XmlNode referenceNode, string message, params object[] messageArgs)
+        {
             HasLoggedErrors = true;
 
-            if (_externalLogger != null) {
+            if (_externalLogger != null)
+            {
                 string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
                 var lineInfo = referenceNode as IXmlLineInfo;
 
-                if (lineInfo != null) {
+                if (lineInfo != null)
+                {
                     _externalLogger.LogError(
                         fileName,
                         lineInfo.LineNumber,
@@ -138,46 +156,48 @@ namespace Microsoft.DotNet.Xdt.Tools
                         message,
                         messageArgs);
                 }
-                else {
+                else
+                {
                     _externalLogger.LogError(
                         fileName,
                         message,
                         messageArgs);
                 }
             }
-            else {
+            else
+            {
                 throw new XmlNodeException(string.Format(CultureInfo.CurrentCulture, message, messageArgs), referenceNode);
             }
         }
 
-        public void StartSection(string message, params object[] messageArgs) 
-            => _externalLogger?.StartSection(message, messageArgs);
+        public void StartSection(string message, params object[] messageArgs) => _externalLogger?.StartSection(message, messageArgs);
 
-        public void StartSection(MessageType type, string message, params object[] messageArgs) 
-            => _externalLogger?.StartSection(type, message, messageArgs);
+        public void StartSection(MessageType type, string message, params object[] messageArgs) => _externalLogger?.StartSection(type, message, messageArgs);
 
-        public void EndSection(string message, params object[] messageArgs) 
-            => _externalLogger?.EndSection(message, messageArgs);
+        public void EndSection(string message, params object[] messageArgs) => _externalLogger?.EndSection(message, messageArgs);
 
-        public void EndSection(MessageType type, string message, params object[] messageArgs) 
-            => _externalLogger?.EndSection(type, message, messageArgs);
+        public void EndSection(MessageType type, string message, params object[] messageArgs) => _externalLogger?.EndSection(type, message, messageArgs);
 
-        private static string ConvertUriToFileName(XmlDocument xmlDocument) {
+        private string ConvertUriToFileName(XmlDocument xmlDocument)
+        {
             var errorInfoDocument = xmlDocument as XmlFileInfoDocument;
             string uri = errorInfoDocument != null ? errorInfoDocument.FileName : xmlDocument.BaseURI;
 
             return ConvertUriToFileName(uri);
         }
 
-        private static string ConvertUriToFileName(string fileName) {
-            if (fileName == null) return null;
-            try {
+        private static string ConvertUriToFileName(string fileName)
+        {
+            try
+            {
                 var uri = new Uri(fileName);
-                if (uri.IsFile && string.IsNullOrEmpty(uri.Host)) {
+                if (uri.IsFile && string.IsNullOrEmpty(uri.Host))
+                {
                     fileName = uri.LocalPath;
                 }
             }
-            catch (UriFormatException) {
+            catch (UriFormatException)
+            {
                 // Bad URI format, so just return the original filename
             }
 

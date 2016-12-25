@@ -1,28 +1,184 @@
-dotnet-transform-xdt
-===
+# dotnet-transform-xdt
+
 `dotnet-transform-xdt` is a [dotnet CLI](https://github.com/dotnet/cli) tool for applying 
 [XML Document Transformation](https://msdn.microsoft.com/en-us/library/dd465326.aspx) 
 (typically, to ASP.NET configuration files at publish time, but not limited to this scenario). 
 
 It is a port of <http://xdt.codeplex.com/> compatible with [.NET Core](http://dotnet.github.io/).
 
-### How To Install
+
+### <a name="msbuild"></a> How to use with MSBuild/csproj tooling
+
+**Note**: if you are using project.json tooling (CLI preview 2 or earlier, or Visual Studio 2015),
+please refer to the [project.json section below](#project-json).
+
+**Warning**: the MSBuild/csproj tooling and Visual Studio 2017 is still in flux, and the instructions below
+are based on my own experience with VS **15.0.26014.0 D15REL** and CLI **1.0.0-preview4-004233**. I have not tested 
+other versions and it is possible that this approach will not work with future updates. Until the tooling is
+final, I will not be able to provide support. I am, however, interested in your experience and feedback.
+
+Run `dotnet --version` in a command prompt and make sure you're using version **`1.0.0-preview4-004233`** or later.
+
+Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files 
+`XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config` 
+inside that folder and set its content to:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <system.webServer>
+    <aspNetCore>
+      <environmentVariables xdt:Transform="Insert">
+        <environmentVariable name="DOTNET_CLI_TELEMETRY_OPTOUT" value="1" />
+      </environmentVariables>
+    </aspNetCore>
+  </system.webServer>
+</configuration>
+```
+
+We will use this sample XDT file to add an environment variable that disables dotnet CLI telemetry when 
+your project is published using the `Release` configuration. See the [MSDN XDT reference](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
+for the complete transformation syntax. 
+
+Edit the `XdtSample.csproj` file and find the `<ItemGroup>` that contains the NetCore.App reference:
+
+```xml
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
+    ... other package references ...
+  <ItemGroup>
+```
+
+Inside this `<ItemGroup>`, add the following reference to this XDT tool. Note that you cannot use 
+the NuGet Package Manager UI in Visual Studio 2017 to CLI tool references; they must currently be added 
+by editing the project file.
+
+```xml
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0-msbuild-preview4-004233" />
+    ... other package references ...
+  <ItemGroup>
+```
+
+Run `dotnet restore` and `dotnet build` in the `XdtSample` folder. If you now run `dotnet transform-xdt` 
+you will see the available  options, similar to:
+
+```
+.NET Core XML Document Transformation
+Usage: dotnet transform-xdt [options]
+Options:
+  -?|-h|--help    Show help information
+  --xml|-x        The path to the XML file to transform
+  --transform|-t  The path to the XDT transform file to apply
+  --output|-o     The path where the output (transformed) file will be written
+  --verbose|-v    Print verbose messages
+```
+
+So far we added the XDT tool to the project, and now we will invoke it when the project is being published. 
+We want to call it before the built-in publish target that makes sure that the `Web.config` file has a reference
+to the `aspNetCore` handler, because that target always runs when publishing web projects, and it also formats 
+the config file to be nicely indented.
+
+Edit the `XdtSample.csproj` file and add this snippet at the end, right before the closing `</Project>` tag:
+
+```xml
+<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
+  ... everything else ...
+  
+  <Target Name="ApplyXdtConfigTransform" BeforeTargets="_WebConfigTransform">
+    <PropertyGroup>
+      <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>
+      <_XdtTransform>$(MSBuildThisFileDirectory)Web.$(Configuration).config</_XdtTransform>
+      <_TargetWebConfig>$(MSBuildThisFileDirectory)$([MSBuild]::MakeRelative($(MSBuildThisFileDirectory), $(PublishIntermediateOutputPath)))Web.config</_TargetWebConfig>
+    </PropertyGroup>
+    <Exec 
+        Command="dotnet transform-xdt --xml &quot;$(_SourceWebConfig)&quot; --transform &quot;$(_XdtTransform)&quot; --output &quot;$(_TargetWebConfig)&quot;" 
+        Condition="Exists('$(_XdtTransform)')" />
+  </Target>
+</Project>
+```
+
+Here's a quick rundown of the values above:
+
+  - `BeforeTargets="_WebConfigTransform"` schedules this target to run before the build-in target that adds
+    the `aspNetCore` handler, as described earlier.
+  - `_SourceWebConfig` defines the full path to the Web.config file in your **project** folder. This
+    will be used as the source (input) for the transformation.
+  - `_XdtTransform` defines the full path to the XDT transform file in your **project** folder to be applied.
+    In this example, we use `Web.$(Configuration).config`, where $(Configuration) is a placeholder for the publish 
+    configuration, e.g. `Debug` or `Release`.
+  - `_TargetWebConfig` defines the full path where the transformed `Web.config` file will be written to, in the **publish** folder. 
+    Due to differences between publishing using the command-line (`dotnet publish`) and publishing within Visual Studio,
+    we use `$([MSBuild]::MakeRelative)` to adjust the path to always be relative to your project file. The end result is
+    that the transformed `Web.config` will be written to the publish output folder.
+  - `Exec Command` invokes the XDT transform tool, passing the paths to the input file (`Web.config`), transform
+    file (e.g. `Web.Release.config`) and target file (`<publish-folder>\Web.config`).
+  - `Exec Condition` prevents the XDT transform tool from running if a transform file for a particular publish
+    configuration does not exist (e.g. `Web.Debug.config`).
+
+Now run `dotnet publish` in the `XdtSample` folder, and examine the `Web.config` in the publish output folder 
+(`bin\Debug\netcoreapp1.0\publish\Web.config`). It should look similar to this:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <handlers>
+      <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified" />
+    </handlers>
+    <aspNetCore processPath="dotnet" arguments=".\xdt.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" forwardWindowsAuthToken="false" />
+  </system.webServer>
+</configuration>
+```
+
+Since we have not defined a `Web.Debug.config` file, no transformation occured. 
+
+Now let's publish again, but this time using the `Release` configuration. Run `dotnet publish -c Release` 
+in the `XdtSample` folder, and examine the `bin\Release\netcoreapp1.0\publish\Web.config` file. 
+It should look similar to this:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <handlers>
+      <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified" />
+    </handlers>
+    <aspNetCore processPath="dotnet" arguments=".\xdt.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" forwardWindowsAuthToken="false">
+      <environmentVariables>
+        <environmentVariable name="DOTNET_CLI_TELEMETRY_OPTOUT" value="1" />
+      </environmentVariables>
+    </aspNetCore>
+  </system.webServer>
+</configuration>
+```
+
+Note that under `<aspNetCore>`, the `<environmentVariables>` section was inserted, as configured in the
+`Web.Release.config` file.
+
+
+### <a name="project-json"></a> How to Install (project.json tooling)
+
+**Note**: if you are using MSBuild/csproj tooling (CLI preview 4 or later, or Visual Studio 2017),
+please refer to the [MSBuild/csproj section above](#msbuild).
 
 Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` file:
 
 ```json
 {
+  ... other settings ...
   "tools": {
     "Microsoft.DotNet.Xdt.Tools": "1.0.0"
   }
 }
 ```
 
-#### Using [.NET Core 1.1](https://blogs.msdn.microsoft.com/dotnet/2016/10/25/announcing-net-core-1-1-preview-1/) or [ASP.NET Core 1.1](https://blogs.msdn.microsoft.com/webdev/2016/10/25/announcing-asp-net-core-1-1-preview-1/)?
+##### Using [.NET Core 1.1](https://blogs.msdn.microsoft.com/dotnet/2016/11/16/announcing-net-core-1-1/) or [ASP.NET Core 1.1](https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/)?
 
-In the sample above, simply replace `1.0.0` with `1.1.0-*`.
+In the sample above, replace `1.0.0` with `1.1.0`.
 
-### How To Use
+### How to Use (project.json tooling)
 
 The typical use case is to transform `Web.config` (or similar XML-based files) at publish time.
 
@@ -31,7 +187,7 @@ As an example, let's apply a transformation based on the publish configuration (
 same folder as `Web.config` file. 
 
 See the [MSDN XDT reference](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
-for the transformation syntax. 
+for the complete transformation syntax. 
 
 Call the tool from the `scripts/postpublish` section of your `project.json` to invoke it after publish:
 
@@ -77,10 +233,11 @@ Options:
   --verbose|-v    Print verbose messages
 ```
 
+
 ### Known issues
 
 - Whitespace in the output XML file is not always correctly preserved. As a workaround, run `dotnet transform-xdt`  before `dotnet publish-iis`, as the latter will format the file.
-- Logging and diagnostics is messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
+- Logging and diagnostics are messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
 - Unit tests have not been ported.
 
 Is the list above missing anything? Please [log an issue](https://github.com/nil4/dotnet-transform-xdt/issues).

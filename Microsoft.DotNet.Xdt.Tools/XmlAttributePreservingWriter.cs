@@ -12,25 +12,34 @@ namespace Microsoft.DotNet.Xdt.Tools
         private readonly XmlWriter _xmlWriter;
         private readonly AttributeTextWriter _textWriter;
 
+        public XmlAttributePreservingWriter(string fileName, Encoding encoding)
+            : this(encoding == null ? File.CreateText(fileName) : new StreamWriter(File.Create(fileName), encoding, 65536, false))
+        {
+        }
+
         public XmlAttributePreservingWriter(Stream w, Encoding encoding)
             : this(encoding == null ? new StreamWriter(w) : new StreamWriter(w, encoding))
         {
         }
 
-        public XmlAttributePreservingWriter(TextWriter textWriter) {
+        public XmlAttributePreservingWriter(TextWriter textWriter)
+        {
             _textWriter = new AttributeTextWriter(textWriter);
             _xmlWriter = Create(_textWriter);
         }
 
-        public void WriteAttributeWhitespace(string whitespace) {
-            Debug.Assert(IsOnlyWhitespace(whitespace), "Expected only whitespace");
+        public void WriteAttributeWhitespace(string whitespace)
+        {
+            Debug.Assert(IsOnlyWhitespace(whitespace));
 
             // Make sure we're in the right place to write
             // whitespace between attributes
-            if (WriteState == WriteState.Attribute) {
+            if (WriteState == WriteState.Attribute)
+            {
                 WriteEndAttribute();
             }
-            else if (WriteState != WriteState.Element) {
+            else if (WriteState != WriteState.Element)
+            {
                 throw new InvalidOperationException();
             }
 
@@ -39,26 +48,32 @@ namespace Microsoft.DotNet.Xdt.Tools
             _textWriter.AttributeLeadingWhitespace = whitespace;
         }
 
-        public void WriteAttributeTrailingWhitespace(string whitespace) {
-            Debug.Assert(IsOnlyWhitespace(whitespace), "Expected only whitespace");
+        public void WriteAttributeTrailingWhitespace(string whitespace)
+        {
+            Debug.Assert(IsOnlyWhitespace(whitespace));
 
-            if (WriteState == WriteState.Attribute) {
+            if (WriteState == WriteState.Attribute)
+            {
                 WriteEndAttribute();
             }
-            else if (WriteState != WriteState.Element) {
+            else if (WriteState != WriteState.Element)
+            {
                 throw new InvalidOperationException();
             }
 
             _textWriter.Write(whitespace);
         }
 
-        public string SetAttributeNewLineString(string newLineString) {
+        public string SetAttributeNewLineString(string newLineString)
+        {
             string old = _textWriter.AttributeNewLineString;
 
-            if (newLineString == null && _xmlWriter.Settings != null) {
+            if (newLineString == null && _xmlWriter.Settings != null)
+            {
                 newLineString = _xmlWriter.Settings.NewLineChars;
             }
-            if (newLineString == null) {
+            if (newLineString == null)
+            {
                 newLineString = "\r\n";
             }
             _textWriter.AttributeNewLineString = newLineString;
@@ -66,9 +81,12 @@ namespace Microsoft.DotNet.Xdt.Tools
             return old;
         }
 
-        private static bool IsOnlyWhitespace(string whitespace) {
-            foreach (char whitespaceCharacter in whitespace) {
-                if (!char.IsWhiteSpace(whitespaceCharacter)) {
+        private static bool IsOnlyWhitespace(string whitespace)
+        {
+            foreach (char whitespaceCharacter in whitespace)
+            {
+                if (!char.IsWhiteSpace(whitespaceCharacter))
+                {
                     return false;
                 }
             }
@@ -92,42 +110,50 @@ namespace Microsoft.DotNet.Xdt.Tools
             private readonly TextWriter _baseWriter;
             private string _leadingWhitespace;
 
-            private int _linePosition = 1;
             private int _lineNumber = 1;
+            private int _linePosition = 1;
 
             public AttributeTextWriter(TextWriter baseWriter)
-                : base(CultureInfo.InvariantCulture) {
+                : base(CultureInfo.InvariantCulture)
+            {
                 _baseWriter = baseWriter;
             }
 
-            public string AttributeLeadingWhitespace {
-                set {
+            public string AttributeLeadingWhitespace
+            {
+                set
+                {
                     _leadingWhitespace = value;
                 }
             }
 
             public string AttributeNewLineString { get; set; } = "\r\n";
 
-            public void StartAttribute() {
-                Debug.Assert(_state == State.Writing, "Expected state=Writing but found: " + _state);
+            public void StartAttribute()
+            {
+                Debug.Assert(_state == State.Writing);
 
                 ChangeState(State.WaitingForAttributeLeadingSpace);
             }
 
-            public void EndAttribute() {
-                //Debug.Assert(_state == State.ReadingAttribute, "Expected state=ReadingAttr but found: " + _state);
+            public void EndAttribute()
+            {
+                Debug.Assert(_state == State.ReadingAttribute);
 
                 WriteQueuedAttribute();
             }
 
             private int MaxLineLength { get; } = 160;
 
-            public override void Write(char value) {
+            public override void Write(char value)
+            {
                 UpdateState(value);
 
-                switch (_state) {
+                switch (_state)
+                {
                     case State.WaitingForAttributeLeadingSpace:
-                        if (value == ' ') {
+                    if (value == ' ')
+                    {
                             ChangeState(State.ReadingAttribute);
                             break;
                         }
@@ -143,21 +169,26 @@ namespace Microsoft.DotNet.Xdt.Tools
                 }
             }
 
-            private void UpdateState(char value) {
+            private void UpdateState(char value)
+            {
                 // This logic prevents writing the leading space that
                 // XmlTextWriter wants to put before "/>". 
-                switch (value) {
+                switch (value)
+                {
                     case ' ':
-                        if (_state == State.Writing) {
+                    if (_state == State.Writing)
+                    {
                             ChangeState(State.Buffering);
                         }
                         break;
                     case '/':
                         break;
                     case '>':
-                        if (_state == State.Buffering) {
+                    if (_state == State.Buffering)
+                    {
                             string currentBuffer = _writeBuffer.ToString();
-                            if (currentBuffer.EndsWith(" /", StringComparison.Ordinal)) {
+                        if (currentBuffer.EndsWith(" /", StringComparison.Ordinal))
+                        {
                                 // We've identified the string " />" at the
                                 // end of the buffer, so remove the space
                                 _writeBuffer.Remove(currentBuffer.LastIndexOf(' '), 1);
@@ -166,77 +197,97 @@ namespace Microsoft.DotNet.Xdt.Tools
                         }
                         break;
                     default:
-                        if (_state == State.Buffering) {
+                    if (_state == State.Buffering)
+                    {
                             ChangeState(State.Writing);
                         }
                         break;
                 }
             }
 
-            private void ChangeState(State newState) {
-                if (_state == newState) return;
+            private void ChangeState(State newState)
+            {
+                if (_state != newState)
+                {
                 State oldState = _state;
                 _state = newState;
 
                 // Handle buffer management for different states
-                if (StateRequiresBuffer(newState)) {
+                    if (StateRequiresBuffer(newState))
+                    {
                     CreateBuffer();
                 }
-                else if (StateRequiresBuffer(oldState)) {
+                    else if (StateRequiresBuffer(oldState))
+                    {
                     FlushBuffer();
                 }
             }
+            }
 
             private static bool StateRequiresBuffer(State state) 
-                => state == State.Buffering || state == State.ReadingAttribute;
+            {
+                return state == State.Buffering || state == State.ReadingAttribute;
+            }
 
-            private void CreateBuffer() {
+            private void CreateBuffer()
+            {
                 Debug.Assert(_writeBuffer == null);
-                if (_writeBuffer == null) {
+                if (_writeBuffer == null)
+                {
                     _writeBuffer = new StringBuilder();
                 }
             }
 
-            private void FlushBuffer() {
+            private void FlushBuffer()
+            {
                 Debug.Assert(_writeBuffer != null);
                 if (_writeBuffer == null) return;
                 State oldState = _state;
-                try {
+                try
+                {
                     _state = State.FlushingBuffer;
 
                     Write(_writeBuffer.ToString());
                     _writeBuffer = null;
                 }
-                finally {
+                finally
+                {
                     _state = oldState;
                 }
             }
 
-            private void ReallyWriteCharacter(char value) {
+            private void ReallyWriteCharacter(char value)
+            {
                 _baseWriter.Write(value);
 
-                if (value == '\n') {
+                if (value == '\n')
+                {
                     _lineNumber++;
                     _linePosition = 1;
                 }
-                else {
+                else
+                {
                     _linePosition++;
                 }
             }
 
-            private void WriteQueuedAttribute() {
+            private void WriteQueuedAttribute()
+            {
                 // Write leading whitespace
-                Debug.Assert(_writeBuffer != null, "_writeBuffer was null");
-                if (_leadingWhitespace != null) {
+                if (_leadingWhitespace != null)
+                {
                     _writeBuffer.Insert(0, _leadingWhitespace);
                     _leadingWhitespace = null;
                 }
-                else {
+                else
+                {
                     int lineLength = _linePosition + _writeBuffer.Length + 1;
-                    if (lineLength > MaxLineLength) {
+                    if (lineLength > MaxLineLength)
+                    {
                         _writeBuffer.Insert(0, AttributeNewLineString);
                     }
-                    else {
+                    else
+                    {
                         _writeBuffer.Insert(0, ' ');
                     }
                 }
@@ -248,82 +299,74 @@ namespace Microsoft.DotNet.Xdt.Tools
             public override Encoding Encoding => _baseWriter.Encoding;
 
             public override void Flush() => _baseWriter.Flush();
+
+            protected override void Dispose(bool disposing)
+            {
+                _baseWriter.Dispose();
+                base.Dispose(disposing);
+            }
         }
 
-        public override void Flush() 
-            => _xmlWriter.Flush();
+        protected override void Dispose(bool disposing)
+        {
+            _xmlWriter.Dispose();
+            base.Dispose(disposing);
+        }
 
-        public override string LookupPrefix(string ns) 
-            => _xmlWriter.LookupPrefix(ns);
+        public override void Flush() => _xmlWriter.Flush();
 
-        public override void WriteBase64(byte[] buffer, int index, int count) 
-            => _xmlWriter.WriteBase64(buffer, index, count);
+        public override string LookupPrefix(string ns) => _xmlWriter.LookupPrefix(ns);
 
-        public override void WriteCData(string text) 
-            => _xmlWriter.WriteCData(text);
+        public override void WriteBase64(byte[] buffer, int index, int count) => _xmlWriter.WriteBase64(buffer, index, count);
 
-        public override void WriteCharEntity(char ch) 
-            => _xmlWriter.WriteCharEntity(ch);
+        public override void WriteCData(string text) => _xmlWriter.WriteCData(text);
 
-        public override void WriteChars(char[] buffer, int index, int count) 
-            => _xmlWriter.WriteChars(buffer, index, count);
+        public override void WriteCharEntity(char ch) => _xmlWriter.WriteCharEntity(ch);
 
-        public override void WriteComment(string text) 
-            => _xmlWriter.WriteComment(text);
+        public override void WriteChars(char[] buffer, int index, int count) => _xmlWriter.WriteChars(buffer, index, count);
 
-        public override void WriteDocType(string name, string pubid, string sysid, string subset) 
-            => _xmlWriter.WriteDocType(name, pubid, sysid, subset);
+        public override void WriteComment(string text) => _xmlWriter.WriteComment(text);
 
-        public override void WriteEndAttribute() {
+        public override void WriteDocType(string name, string pubid, string sysid, string subset) => _xmlWriter.WriteDocType(name, pubid, sysid, subset);
+
+        public override void WriteEndAttribute()
+        {
             _xmlWriter.WriteEndAttribute();
             _textWriter.EndAttribute();
         }
 
-        public override void WriteEndDocument() 
-            => _xmlWriter.WriteEndDocument();
+        public override void WriteEndDocument() => _xmlWriter.WriteEndDocument();
 
-        public override void WriteEndElement() 
-            => _xmlWriter.WriteEndElement();
+        public override void WriteEndElement() => _xmlWriter.WriteEndElement();
 
-        public override void WriteEntityRef(string name) 
-            => _xmlWriter.WriteEntityRef(name);
+        public override void WriteEntityRef(string name) => _xmlWriter.WriteEntityRef(name);
 
-        public override void WriteFullEndElement() 
-            => _xmlWriter.WriteFullEndElement();
+        public override void WriteFullEndElement() => _xmlWriter.WriteFullEndElement();
 
-        public override void WriteProcessingInstruction(string name, string text) 
-            => _xmlWriter.WriteProcessingInstruction(name, text);
+        public override void WriteProcessingInstruction(string name, string text) => _xmlWriter.WriteProcessingInstruction(name, text);
 
-        public override void WriteRaw(string data) 
-            => _xmlWriter.WriteRaw(data);
+        public override void WriteRaw(string data) => _xmlWriter.WriteRaw(data);
 
-        public override void WriteRaw(char[] buffer, int index, int count) 
-            => _xmlWriter.WriteRaw(buffer, index, count);
+        public override void WriteRaw(char[] buffer, int index, int count) => _xmlWriter.WriteRaw(buffer, index, count);
 
-        public override void WriteStartAttribute(string prefix, string localName, string ns) {
+        public override void WriteStartAttribute(string prefix, string localName, string ns)
+        {
             _textWriter.StartAttribute();
             _xmlWriter.WriteStartAttribute(prefix, localName, ns);
         }
 
-        public override void WriteStartDocument(bool standalone) 
-            => _xmlWriter.WriteStartDocument(standalone);
+        public override void WriteStartDocument(bool standalone) => _xmlWriter.WriteStartDocument(standalone);
 
-        public override void WriteStartDocument() 
-            => _xmlWriter.WriteStartDocument();
+        public override void WriteStartDocument() => _xmlWriter.WriteStartDocument();
 
-        public override void WriteStartElement(string prefix, string localName, string ns) 
-            => _xmlWriter.WriteStartElement(prefix, localName, ns);
+        public override void WriteStartElement(string prefix, string localName, string ns) => _xmlWriter.WriteStartElement(prefix, localName, ns);
 
-        public override WriteState WriteState 
-            => _xmlWriter.WriteState;
+        public override WriteState WriteState => _xmlWriter.WriteState;
 
-        public override void WriteString(string text) 
-            => _xmlWriter.WriteString(text);
+        public override void WriteString(string text) => _xmlWriter.WriteString(text);
 
-        public override void WriteSurrogateCharEntity(char lowChar, char highChar) 
-            => _xmlWriter.WriteSurrogateCharEntity(lowChar, highChar);
+        public override void WriteSurrogateCharEntity(char lowChar, char highChar) => _xmlWriter.WriteSurrogateCharEntity(lowChar, highChar);
 
-        public override void WriteWhitespace(string ws) 
-            => _xmlWriter.WriteWhitespace(ws);
+        public override void WriteWhitespace(string ws) => _xmlWriter.WriteWhitespace(ws);
     }
 }

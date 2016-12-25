@@ -10,28 +10,34 @@ namespace Microsoft.DotNet.Xdt.Tools
         private StreamReader _streamReader;
         private PositionTrackingTextReader _reader;
 
-        public XmlAttributePreservationProvider(string fileName) {
+        public XmlAttributePreservationProvider(string fileName)
+        {
             _streamReader = new StreamReader(File.OpenRead(fileName));
             _reader = new PositionTrackingTextReader(_streamReader);
         }
 
-        public XmlAttributePreservationDict GetDictAtPosition(int lineNumber, int linePosition) {
-            if (_reader.ReadToPosition(lineNumber, linePosition)) {
-                Debug.Assert((char)_reader.Peek() == '<', "Expected '<' but found: " + _reader.Peek());
+        public XmlAttributePreservationDict GetDictAtPosition(int lineNumber, int linePosition)
+        {
+            if (_reader.ReadToPosition(lineNumber, linePosition))
+            {
+                Debug.Assert((char)_reader.Peek() == '<');
 
                 var sb = new StringBuilder();
                 int character;
                 var inAttribute = false;
-                do {
+                do
+                {
                     character = _reader.Read();
-                    if (character == '\"'){
+                    if (character == '\"')
+                    {
                         inAttribute = !inAttribute;
                     }
                     sb.Append((char)character);
                 }
                 while (character > 0 && ((char)character != '>' || inAttribute));
 
-                if (character > 0) {
+                if (character > 0)
+                {
                     var dict = new XmlAttributePreservationDict();
                     dict.ReadPreservationInfo(sb.ToString());
                     return dict;

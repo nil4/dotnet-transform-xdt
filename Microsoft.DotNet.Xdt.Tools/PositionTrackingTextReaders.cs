@@ -13,11 +13,13 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         private const int NewlineCharacter = '\n';
 
-        public PositionTrackingTextReader(TextReader textReader) {
+        public PositionTrackingTextReader(TextReader textReader)
+        {
             _internalReader = textReader;
         }
 
-        public override int Read() {
+        public override int Read()
+        {
             int read = _internalReader.Read();
 
             UpdatePosition(read);
@@ -25,36 +27,42 @@ namespace Microsoft.DotNet.Xdt.Tools
             return read;
         }
 
-        public override int Peek() {
-            return _internalReader.Peek();
-        }
+        public override int Peek() => _internalReader.Peek();
 
-        public bool ReadToPosition(int lineNumber, int linePosition) {
-            while (_lineNumber < lineNumber && Peek() != -1) {
+        public bool ReadToPosition(int lineNumber, int linePosition)
+        {
+            while (_lineNumber < lineNumber && Peek() != -1)
+            {
                 ReadLine();
             }
 
-            while (_linePosition < linePosition && Peek() != -1) {
+            while (_linePosition < linePosition && Peek() != -1)
+            {
                 Read();
             }
 
             return _lineNumber == lineNumber && _linePosition == linePosition;
         }
 
-        public bool ReadToPosition(int characterPosition) {
-            while (_characterPosition < characterPosition && Peek() != -1) {
+        public bool ReadToPosition(int characterPosition)
+        {
+            while (_characterPosition < characterPosition && Peek() != -1)
+            {
                 Read();
             }
 
             return _characterPosition == characterPosition;
         }
 
-        private void UpdatePosition(int character) {
-            if (character == NewlineCharacter) {
+        private void UpdatePosition(int character)
+        {
+            if (character == NewlineCharacter)
+            {
                 _lineNumber++;
                 _linePosition = 1;
             }
-            else {
+            else
+            {
                 _linePosition++;
             }
             _characterPosition++;
@@ -63,37 +71,38 @@ namespace Microsoft.DotNet.Xdt.Tools
 
     internal class WhitespaceTrackingTextReader : PositionTrackingTextReader
     {
-        private StringBuilder precedingWhitespace = new StringBuilder();
+        private StringBuilder _precedingWhitespace = new StringBuilder();
 
         public WhitespaceTrackingTextReader(TextReader reader)
-            : base(reader) {
+            : base(reader)
+        {
         }
 
-        public override int Read() {
+        public override int Read()
+        {
             int read = base.Read();
 
-            UpdateWhitespaceTracking(read);
+            UpdateWhitespaceTracking((char)read);
 
             return read;
         }
 
-        public string PrecedingWhitespace => precedingWhitespace.ToString();
+        public string PrecedingWhitespace => _precedingWhitespace.ToString();
 
-        private void UpdateWhitespaceTracking(int character) {
-            if (char.IsWhiteSpace((char)character)) {
+        private void UpdateWhitespaceTracking(char character)
+        {
+            if (char.IsWhiteSpace(character))
+            {
                 AppendWhitespaceCharacter(character);
             }
-            else {
+            else
+            {
                 ResetWhitespaceString();
             }
         }
 
-        private void AppendWhitespaceCharacter(int character) {
-            precedingWhitespace.Append((char)character);
-        }
+        private void AppendWhitespaceCharacter(char character) => _precedingWhitespace.Append(character);
 
-        private void ResetWhitespaceString() {
-            precedingWhitespace = new StringBuilder();
-        }
+        private void ResetWhitespaceString() => _precedingWhitespace = new StringBuilder();
     }
 }

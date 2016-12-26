@@ -20,7 +20,7 @@ final, I will not be able to provide support. I am, however, interested in your 
 Run `dotnet --version` in a command prompt and make sure you're using version **`1.0.0-preview4-004233`** or later.
 
 Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files 
-`XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config` 
+`XdtSample.csproj` and `Web.config` file are present. Create a new file named `Web.Release.config` 
 inside that folder and set its content to:
 
 ```xml
@@ -195,7 +195,7 @@ Call the tool from the `scripts/postpublish` section of your `project.json` to i
 {
   "scripts": {
     "postpublish": [
-        "dotnet transform-xdt --xml \"%publish:ProjectPath%\\web.config\" --transform \"%publish:ProjectPath%\\web.%publish:Configuration%.config\" --output \"%publish:OutputPath%\\Web.config\"",
+        "dotnet transform-xdt --xml \"%publish:ProjectPath%\\Web.config\" --transform \"%publish:ProjectPath%\\Web.%publish:Configuration%.config\" --output \"%publish:OutputPath%\\Web.config\"",
         "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
 	]
   }

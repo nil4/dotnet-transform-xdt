@@ -56,7 +56,7 @@ by editing the project file.
 ```xml
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
-    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0-msbuild-preview4-004233" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0-msbuild-preview4-004234" />
     ... other package references ...
   <ItemGroup>
 ```

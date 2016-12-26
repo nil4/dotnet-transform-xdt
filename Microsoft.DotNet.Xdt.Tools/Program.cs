@@ -50,24 +50,26 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                 Console.WriteLine($"{Prefix}Transforming '{inputPath}' using '{transformPath}' into '{outputPath}'");
 
+                var sourceXml = new XmlTransformableDocument { PreserveWhitespace = true };
+
                 using (FileStream sourceStream = File.OpenRead(inputPath))
                 using (FileStream transformStream = File.OpenRead(transformPath))
                 using (var transformation = new XmlTransformation(transformStream, new ConsoleTransformationLogger(verboseOption.HasValue())))
                 {
-                    var sourceXml = new XmlTransformableDocument { PreserveWhitespace = true };
                     sourceXml.Load(sourceStream);
                     transformation.Apply(sourceXml);
-
-                    using (FileStream outputStream = File.Create(outputPath))
-                    using (XmlWriter outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings
-                    {
-                        Indent = true,
-                        Encoding = Encoding.UTF8,
-                    }))
-                    {
-                        sourceXml.WriteTo(outputWriter);
-                    }
                 }
+
+                using (FileStream outputStream = File.Create(outputPath))
+                using (XmlWriter outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings
+                {
+                    Indent = true,
+                    Encoding = Encoding.UTF8,
+                }))
+                {
+                    sourceXml.WriteTo(outputWriter);
+                }
+
                 return 0;
             });
 

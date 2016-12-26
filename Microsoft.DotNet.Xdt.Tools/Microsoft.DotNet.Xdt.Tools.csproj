@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <Version>1.2.0-msbuild-preview4-004233</Version>
+    <Version>1.2.0-msbuild-preview4-004234</Version>
     <AssemblyName>dotnet-transform-xdt</AssemblyName>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.0</TargetFrameworks>
@@ -42,7 +42,6 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <Target Name="IncludeRuntimeConfigJson" BeforeTargets="_GetPackageFiles">
-    <!-- Work around https://github.com/dotnet/sdk/issues/472 to include .runtimeconfig.json in the NuGet package -->
     <PropertyGroup>
       <_RuntimeConfigFile>$(OutputPath)$(TargetFrameworks)\$(AssemblyName).runtimeconfig.json</_RuntimeConfigFile>
     </PropertyGroup>

@@ -90,7 +90,7 @@ Edit the `XdtSample.csproj` file and add this snippet at the end, right before t
     <PropertyGroup>
       <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>
       <_XdtTransform>$(MSBuildThisFileDirectory)Web.$(Configuration).config</_XdtTransform>
-      <_TargetWebConfig>$(MSBuildThisFileDirectory)$([MSBuild]::MakeRelative($(MSBuildThisFileDirectory), $(PublishIntermediateOutputPath)))Web.config</_TargetWebConfig>
+      <_TargetWebConfig>$(PublishDir)Web.config</_TargetWebConfig>
     </PropertyGroup>
     <Exec 
         Command="dotnet transform-xdt --xml &quot;$(_SourceWebConfig)&quot; --transform &quot;$(_XdtTransform)&quot; --output &quot;$(_TargetWebConfig)&quot;" 
@@ -108,10 +108,7 @@ Here's a quick rundown of the values above:
   - `_XdtTransform` defines the full path to the XDT transform file in your **project** folder to be applied.
     In this example, we use `Web.$(Configuration).config`, where $(Configuration) is a placeholder for the publish 
     configuration, e.g. `Debug` or `Release`.
-  - `_TargetWebConfig` defines the full path where the transformed `Web.config` file will be written to, in the **publish** folder. 
-    Due to differences between publishing using the command-line (`dotnet publish`) and publishing within Visual Studio,
-    we use `$([MSBuild]::MakeRelative)` to adjust the path to always be relative to your project file. The end result is
-    that the transformed `Web.config` will be written to the publish output folder.
+  - `_TargetWebConfig` defines the path where the transformed `Web.config` file will be written to, in the **publish** folder. 
   - `Exec Command` invokes the XDT transform tool, passing the paths to the input file (`Web.config`), transform
     file (e.g. `Web.Release.config`) and target file (`<publish-folder>\Web.config`).
   - `Exec Condition` prevents the XDT transform tool from running if a transform file for a particular publish

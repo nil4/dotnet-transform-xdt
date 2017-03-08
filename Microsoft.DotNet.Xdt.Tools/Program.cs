@@ -54,9 +54,9 @@ namespace Microsoft.DotNet.Xdt.Tools
                 using (FileStream transformStream = File.OpenRead(transformPath))
                 using (var transformation = new XmlTransformation(transformStream, new ConsoleTransformationLogger(verboseOption.HasValue())))
                 {
-                    var sourceXml = new XmlTransformableDocument { PreserveWhitespace = true };
                     sourceXml.Load(sourceStream);
                     transformation.Apply(sourceXml);
+                }
 
                     using (FileStream outputStream = File.Create(outputPath))
                     using (XmlWriter outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings
@@ -68,6 +68,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                         sourceXml.WriteTo(outputWriter);
                     }
                 }
+
                 return 0;
             });
 

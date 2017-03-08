@@ -9,14 +9,14 @@
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>1.2.0-msbuild-preview4-004233</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
     <PackageId>Microsoft.DotNet.Xdt.Tools</PackageId>
     <PackageType>DotnetCliTool</PackageType>
     <Authors>nil4 &lt;https://github.com/nil4&gt;</Authors>
     <Description>XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.</Description>
     <AssemblyTitle>XDT (XML Document Transform) tool for .NET Core CLI</AssemblyTitle>
     <PackageTags>dotnetcore;xdt;transform;xml</PackageTags>
-    <PackageReleaseNotes>Support MSBuild-based .csproj projects</PackageReleaseNotes>
+    <PackageReleaseNotes>Support dotnet SDK 1.0.0 and MSBuild-based .csproj</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/nil4/dotnet-transform-xdt</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -36,14 +36,4 @@
     <Reference Include="System.ComponentModel" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
-  <Target Name="IncludeRuntimeConfigJson" BeforeTargets="_GetPackageFiles">
-    <!-- Work around https://github.com/dotnet/sdk/issues/472 to include .runtimeconfig.json in the NuGet package -->
-    <PropertyGroup>
-      <_RuntimeConfigFile>$(OutputPath)$(TargetFrameworks)\$(AssemblyName).runtimeconfig.json</_RuntimeConfigFile>
-    </PropertyGroup>
-    <ItemGroup>
-      <Content Include="$(_RuntimeConfigFile)" Pack="true" PackagePath="lib\$(TargetFrameworks)" Visible="false" />
-    </ItemGroup>
-    <Message Text="Adding $(_RuntimeConfigFile) to NuGet package to work around https://github.com/dotnet/sdk/issues/472" Importance="high" />
-  </Target>
 </Project>

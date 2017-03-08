@@ -6,6 +6,13 @@
 
 It is a port of <http://xdt.codeplex.com/> compatible with [.NET Core](http://dotnet.github.io/).
 
+### Sample projects
+
+[A separate repository](https://github.com/nil4/xdt-samples/) includes a few sample projects using this tool for Web.config
+transformations at publish time. Clone the repository to test the scenarios out, or
+[review the commit history](https://github.com/nil4/xdt-samples/commits/master) for
+the individual steps.
+
 ### <a name="msbuild"></a> How to use with MSBuild/csproj tooling
 
 **Note**: if you are using project.json tooling (CLI preview 2 or earlier, or Visual Studio 2015),

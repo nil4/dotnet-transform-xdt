@@ -11,12 +11,7 @@ It is a port of <http://xdt.codeplex.com/> compatible with [.NET Core](http://do
 **Note**: if you are using project.json tooling (CLI preview 2 or earlier, or Visual Studio 2015),
 please refer to the [project.json section below](#project-json).
 
-**Warning**: the MSBuild/csproj tooling and Visual Studio 2017 is still in flux, and the instructions below
-are based on my own experience with VS **15.0.26206.0 D15REL** (RC4) and CLI **1.0.0-rc4-004771**. I have not tested
-other versions and it is possible that this approach will not work with future updates. Until the tooling is
-final, I will not be able to provide support. I am, however, interested in your experience and feedback.
-
-Run `dotnet --version` in a command prompt and make sure you're using version **`1.0.0-rc4-004771`** or later.
+Run `dotnet --version` in a command prompt and make sure you're using version **`1.0.0`** or later.
 
 Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files
 `XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config`
@@ -39,23 +34,13 @@ We will use this sample XDT file to add an environment variable that disables do
 your project is published using the `Release` configuration. See the [MSDN XDT reference](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 for the complete transformation syntax.
 
-Edit the `XdtSample.csproj` file and find the `<ItemGroup>` that contains the NetCore.App reference:
+Edit the `XdtSample.csproj` file and inside an `<ItemGroup>` element, add a reference to this XDT tool. 
+Note that you cannot use the NuGet Package Manager UI in Visual Studio 2017 to CLI tool references; 
+they must currently be added by editing the project file.
 
 ```xml
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
-    ... other package references ...
-  <ItemGroup>
-```
-
-Inside this `<ItemGroup>`, add the following reference to this XDT tool. Note that you cannot use
-the NuGet Package Manager UI in Visual Studio 2017 to CLI tool references; they must currently be added
-by editing the project file.
-
-```xml
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
-    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0-msbuild-preview4-004233" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0" />
     ... other package references ...
   <ItemGroup>
 ```

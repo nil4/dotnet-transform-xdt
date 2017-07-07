@@ -18,7 +18,7 @@ the individual steps.
 **Note**: if you are using project.json tooling (CLI preview 2 or earlier, or Visual Studio 2015),
 please refer to the [project.json section below](#project-json).
 
-Run `dotnet --version` in a command prompt and make sure you're using version **`1.0.0`** or later.
+Run `dotnet --version` in a command prompt and make sure you're using version **`2.0.0-preview2`** or later.
 
 Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files
 `XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config`
@@ -47,7 +47,7 @@ they must currently be added by editing the project file.
 
 ```xml
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0-preview1" />
     ... other package references ...
   <ItemGroup>
 ```
@@ -106,7 +106,7 @@ Here's a quick rundown of the values above:
     configuration does not exist (e.g. `Web.Debug.config`).
 
 Now run `dotnet publish` in the `XdtSample` folder, and examine the `Web.config` in the publish output folder
-(`bin\Debug\netcoreapp1.0\publish\Web.config`). It should look similar to this:
+(`bin\Debug\netcoreapp2.0\publish\Web.config`). It should look similar to this:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -123,7 +123,7 @@ Now run `dotnet publish` in the `XdtSample` folder, and examine the `Web.config`
 Since we have not defined a `Web.Debug.config` file, no transformation occured.
 
 Now let's publish again, but this time using the `Release` configuration. Run `dotnet publish -c Release`
-in the `XdtSample` folder, and examine the `bin\Release\netcoreapp1.0\publish\Web.config` file.
+in the `XdtSample` folder, and examine the `bin\Release\netcoreapp2.0\publish\Web.config` file.
 It should look similar to this:
 
 ```xml

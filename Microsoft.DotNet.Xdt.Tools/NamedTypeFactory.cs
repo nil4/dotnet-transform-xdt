@@ -102,7 +102,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         private class AssemblyNameRegistration : Registration
         {
             public AssemblyNameRegistration(string assemblyName, string nameSpace)
-                : base(System.Reflection.Assembly.Load(new AssemblyName(assemblyName)), nameSpace)
+                : base(Assembly.Load(new AssemblyName(assemblyName)), nameSpace)
             {
             }
         }

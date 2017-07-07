@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 using System.IO;
@@ -109,58 +108,58 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 if (attribute.Value.Equals(TransformNamespace, StringComparison.Ordinal))
                 {
-                HasTransformNamespace = true;
-                break;
-            }
+                    HasTransformNamespace = true;
+                    break;
+                }
             }
 
             if (HasTransformNamespace)
             {
-            // This will look for all nodes from our namespace in the document,
-            // and do any initialization work
-            var namespaceManager = new XmlNamespaceManager(new NameTable());
-            namespaceManager.AddNamespace("xdt", TransformNamespace);
-            XmlNodeList namespaceNodes = _xmlTransformation.SelectNodes("//xdt:*", namespaceManager);
+                // This will look for all nodes from our namespace in the document,
+                // and do any initialization work
+                var namespaceManager = new XmlNamespaceManager(new NameTable());
+                namespaceManager.AddNamespace("xdt", TransformNamespace);
+                XmlNodeList namespaceNodes = _xmlTransformation.SelectNodes("//xdt:*", namespaceManager);
 
                 foreach (XmlNode node in namespaceNodes)
                 {
-                var element = node as XmlElement;
+                    var element = node as XmlElement;
                     if (element == null)
                     {
-                    Debug.Fail("The XPath for elements returned something that wasn't an element?");
-                    continue;
-                }
+                        Debug.Fail("The XPath for elements returned something that wasn't an element?");
+                        continue;
+                    }
 
-                XmlElementContext context = null;
+                    XmlElementContext context = null;
                     try
                     {
                         switch (element.LocalName)
                         {
-                        case "Import":
-                            context = CreateElementContext(null, element);
-                            PreprocessImportElement(context);
-                            break;
-                        default:
-                            _logger.LogWarning(element, SR.XMLTRANSFORMATION_UnknownXdtTag, element.Name);
-                            break;
+                            case "Import":
+                                context = CreateElementContext(null, element);
+                                PreprocessImportElement(context);
+                                break;
+                            default:
+                                _logger.LogWarning(element, SR.XMLTRANSFORMATION_UnknownXdtTag, element.Name);
+                                break;
+                        }
                     }
-                }
                     catch (Exception ex)
                     {
                         if (context != null)
                         {
-                        ex = WrapException(ex, context);
-                    }
+                            ex = WrapException(ex, context);
+                        }
 
-                    _logger.LogErrorFromException(ex);
-                    throw new XmlTransformationException(SR.XMLTRANSFORMATION_FatalTransformSyntaxError, ex);
-                }
+                        _logger.LogErrorFromException(ex);
+                        throw new XmlTransformationException(SR.XMLTRANSFORMATION_FatalTransformSyntaxError, ex);
+                    }
                     finally
                     {
-                    context = null;
+                        context = null;
+                    }
                 }
             }
-        }
         }
 
         public void AddTransformationService(Type serviceType, object serviceInstance)
@@ -241,22 +240,22 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private XmlElementContext CreateElementContext(XmlElementContext parentContext, XmlElement element) 
+        private XmlElementContext CreateElementContext(XmlElementContext parentContext, XmlElement element)
         {
             return new XmlElementContext(parentContext, element, _xmlTarget, this);
         }
 
-        private void HandleException(Exception ex) 
+        private void HandleException(Exception ex)
         {
             _logger.LogErrorFromException(ex);
         }
 
-        private void HandleException(Exception ex, XmlNodeContext context) 
+        private void HandleException(Exception ex, XmlNodeContext context)
         {
             HandleException(WrapException(ex, context));
         }
 
-        private Exception WrapException(Exception ex, XmlNodeContext context)
+        private static Exception WrapException(Exception ex, XmlNodeContext context)
         {
             return XmlNodeException.Wrap(ex, context.Node);
         }
@@ -406,36 +405,5 @@ namespace Microsoft.DotNet.Xdt.Tools
             Debug.Fail("call dispose please");
             Dispose(false);
         }
-
-#if NETCOREAPP1_0
-        private sealed class ServiceContainer : IServiceProvider, IDisposable
-        {
-            private readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
-
-            public object GetService(Type serviceType)
-            {
-                object service;
-                _services.TryGetValue(serviceType, out service);
-                return service;
-            }
-
-            public void Dispose()
-            {
-                foreach (KeyValuePair<Type, object> pair in _services)
-                    (pair.Value as IDisposable)?.Dispose();
-                _services.Clear();
-            }
-
-            public void RemoveService(Type serviceType)
-            {
-                _services.Remove(serviceType);
-            }
-
-            public void AddService(Type serviceType, object service)
-            {
-                _services.Add(serviceType, service);
-            }
-        }
-#endif
     }
 }

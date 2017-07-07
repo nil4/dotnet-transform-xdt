@@ -27,9 +27,9 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         private static bool IsXmlEqual(XmlDocument xmlOriginal, XmlDocument xmlTransformed)
         {
-        // FUTURE: Write a comparison algorithm to see if xmlLeft and
-        // xmlRight are different in any significant way. Until then,
-        // assume there's a difference.
+            // FUTURE: Write a comparison algorithm to see if xmlLeft and
+            // xmlRight are different in any significant way. Until then,
+            // assume there's a difference.
             return false;
         }
 

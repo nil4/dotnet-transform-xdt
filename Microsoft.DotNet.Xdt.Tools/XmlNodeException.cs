@@ -1,14 +1,10 @@
 using System;
 using System.Xml;
-#if NET451
 using System.Runtime.Serialization;
-#endif
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-#if NET451
     [Serializable]
-#endif
     public sealed class XmlNodeException : XmlTransformationException
     {
         private readonly XmlFileInfoDocument _document;
@@ -47,7 +43,6 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public int LinePosition => _lineInfo?.LinePosition ?? 0;
 
-#if NET451
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
@@ -55,6 +50,5 @@ namespace Microsoft.DotNet.Xdt.Tools
             info.AddValue("document", _document);
             info.AddValue("lineInfo", _lineInfo);
         }
-#endif
     }
 }

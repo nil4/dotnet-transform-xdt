@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
-#if NETCOREAPP1_0
-using System.Runtime.Loader;
-#endif
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
@@ -113,11 +110,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         private class PathRegistration : Registration
         {
             public PathRegistration(string path, string nameSpace)
-#if NET451
-                : base(System.Reflection.Assembly.LoadFile(path), nameSpace)
-#else
-                : base(AssemblyLoadContext.Default.LoadFromAssemblyPath(path), nameSpace)
-#endif
+                : base(Assembly.LoadFile(path), nameSpace)
             {
             }
         }

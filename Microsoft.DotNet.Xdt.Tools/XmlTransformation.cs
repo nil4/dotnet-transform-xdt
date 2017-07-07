@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 using System.IO;
-#if NET451
 using System.ComponentModel.Design;
-#endif
 
 namespace Microsoft.DotNet.Xdt.Tools
 {

@@ -58,6 +58,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             if (_streamReader != null)
             {
+                _streamReader.Close();
                 _streamReader.Dispose();
                 _streamReader = null;
             }

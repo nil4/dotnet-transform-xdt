@@ -97,27 +97,27 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 if (_externalLogger != null)
                 {
-                string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
-                var lineInfo = referenceNode as IXmlLineInfo;
+                    string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
+                    var lineInfo = referenceNode as IXmlLineInfo;
 
-                if (lineInfo != null)
-                {
-                    _externalLogger.LogWarning(
-                        fileName,
-                        lineInfo.LineNumber,
-                        lineInfo.LinePosition,
-                        message,
-                        messageArgs);
-                }
-                else
-                {
-                    _externalLogger.LogWarning(
-                        fileName,
-                        message,
-                        messageArgs);
+                    if (lineInfo != null)
+                    {
+                        _externalLogger.LogWarning(
+                            fileName,
+                            lineInfo.LineNumber,
+                            lineInfo.LinePosition,
+                            message,
+                            messageArgs);
+                    }
+                    else
+                    {
+                        _externalLogger.LogWarning(
+                            fileName,
+                            message,
+                            messageArgs);
+                    }
                 }
             }
-        }
         }
 
         public void LogError(string message, params object[] messageArgs)

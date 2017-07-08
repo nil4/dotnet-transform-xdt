@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.IO;
@@ -9,8 +10,6 @@ namespace Microsoft.DotNet.Xdt.Tools
     {
         private Encoding _textEncoding;
         private XmlTextReader _reader;
-        private bool _firstLoad = true;
-        private string _fileName;
 
         private int _lineNumberOffset;
         private int _linePositionOffset;
@@ -19,7 +18,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             LoadFromFileName(filename);
 
-            _firstLoad = false;
+            FirstLoad = false;
         }
 
         public override void Load(XmlReader reader)
@@ -27,7 +26,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             _reader = reader as XmlTextReader;
             if (_reader != null)
             {
-                _fileName = _reader.BaseURI;
+                FileName = _reader.BaseURI;
             }
 
             base.Load(reader);
@@ -37,7 +36,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 _textEncoding = _reader.Encoding;
             }
 
-            _firstLoad = false;
+            FirstLoad = false;
         }
 
         private void LoadFromFileName(string filename)
@@ -63,7 +62,6 @@ namespace Microsoft.DotNet.Xdt.Tools
                     PreservationProvider = null;
                 }
                 reader?.Close();
-                reader?.Dispose();
             }
         }
 
@@ -81,7 +79,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 _textEncoding = GetEncodingFromStream(streamReader.BaseStream);
             }
 
-            _reader = new XmlTextReader(_fileName, textReader);
+            _reader = new XmlTextReader(FileName, textReader);
 
             base.Load(_reader);
 
@@ -158,29 +156,11 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         internal string FileName { get; private set; }
 
-        private int CurrentLineNumber
-        {
-            get
-            {
-                return _reader != null ? _reader.LineNumber + _lineNumberOffset : 0;
-            }
-        }
+        private int CurrentLineNumber => _reader?.LineNumber + _lineNumberOffset ?? 0;
 
-        private int CurrentLinePosition
-        {
-            get
-            {
-                return _reader != null ? _reader.LinePosition + _linePositionOffset : 0;
-            }
-        }
+        private int CurrentLinePosition => _reader?.LinePosition + _linePositionOffset ?? 0;
 
-        private bool FirstLoad
-        {
-            get
-            {
-                return _firstLoad;
-            }
-        }
+        private bool FirstLoad { get; set; } = true;
 
         private XmlAttributePreservationProvider PreservationProvider { get; set; }
 
@@ -229,7 +209,6 @@ namespace Microsoft.DotNet.Xdt.Tools
                 {
                     xmlWriter.Flush();
                     xmlWriter.Close();
-                    xmlWriter.Dispose();
                 }
             }
         }
@@ -351,15 +330,10 @@ namespace Microsoft.DotNet.Xdt.Tools
                 }
             }
 
-            private void WritePreservedAttributesTo(XmlAttributePreservingWriter preservingWriter)
-            {
-                _preservationDict.WritePreservedAttributes(preservingWriter, Attributes);
-            }
+            private void WritePreservedAttributesTo(XmlAttributePreservingWriter preservingWriter) 
+                => _preservationDict.WritePreservedAttributes(preservingWriter, Attributes);
 
-            public bool HasLineInfo()
-            {
-                return true;
-            }
+            public bool HasLineInfo() => true;
 
             public int LineNumber { get; }
 
@@ -381,10 +355,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 LinePosition = document.CurrentLinePosition;
             }
 
-            public bool HasLineInfo()
-            {
-                return true;
-            }
+            public bool HasLineInfo() => true;
 
             public int LineNumber { get; }
 
@@ -395,7 +366,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             if (_reader != null)
             {
-                _reader.Dispose();
+                _reader.Close();
                 _reader = null;
             }
 
@@ -414,7 +385,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         ~XmlFileInfoDocument()
         {
-            //Debug.Fail("call dispose please");
+            Debug.Fail("call dispose please");
             Dispose(false);
         }
     }

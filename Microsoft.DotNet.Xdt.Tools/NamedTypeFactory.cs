@@ -19,7 +19,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         private void CreateDefaultRegistrations()
         {
-            AddAssemblyRegistration(GetType().GetTypeInfo().Assembly, GetType().Namespace);
+            AddAssemblyRegistration(GetType().Assembly, GetType().Namespace);
         }
 
         internal void AddAssemblyRegistration(Assembly assembly, string nameSpace)
@@ -52,7 +52,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_UnknownTypeName, typeName, typeof(TObjectType).Name));
             }
-            if (!type.GetTypeInfo().IsSubclassOf(typeof(TObjectType)))
+            if (!type.IsSubclassOf(typeof(TObjectType)))
             {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_IncorrectBaseType, type.FullName, typeof(TObjectType).Name));
             }
@@ -61,7 +61,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_NoValidConstructor, type.FullName));
             }
-            return constructor.Invoke(new object[0]) as TObjectType;
+            return constructor.Invoke(Array.Empty<object>()) as TObjectType;
         }
 
         private Type GetType(string typeName)
@@ -102,17 +102,15 @@ namespace Microsoft.DotNet.Xdt.Tools
         private class AssemblyNameRegistration : Registration
         {
             public AssemblyNameRegistration(string assemblyName, string nameSpace)
-                : base(Assembly.Load(new AssemblyName(assemblyName)), nameSpace)
-            {
-            }
+                : base(Assembly.Load(assemblyName), nameSpace)
+            { }
         }
 
         private class PathRegistration : Registration
         {
             public PathRegistration(string path, string nameSpace)
                 : base(Assembly.LoadFile(path), nameSpace)
-            {
-            }
+            { }
         }
     }
 }

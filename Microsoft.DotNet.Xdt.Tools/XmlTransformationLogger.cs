@@ -45,17 +45,13 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         internal XmlNode CurrentReferenceNode
         {
-            get
-            {
-                return _currentReferenceNode;
-            }
+            get => _currentReferenceNode;
             set
             {
                 // I don't feel like implementing a stack for this for no
                 // reason. Only one thing should try to set this property
                 // at a time, and that thing should clear it when done.
                 Debug.Assert(_currentReferenceNode == null || value == null, "CurrentReferenceNode is being overwritten");
-
                 _currentReferenceNode = value;
             }
         }
@@ -178,7 +174,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public void EndSection(MessageType type, string message, params object[] messageArgs) => _externalLogger?.EndSection(type, message, messageArgs);
 
-        private string ConvertUriToFileName(XmlDocument xmlDocument)
+        private static string ConvertUriToFileName(XmlDocument xmlDocument)
         {
             var errorInfoDocument = xmlDocument as XmlFileInfoDocument;
             string uri = errorInfoDocument != null ? errorInfoDocument.FileName : xmlDocument.BaseURI;

@@ -1,26 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.DotNet.Xdt.Tools.Tests
 {
-    [TestClass]
     public class XmlTransformTest
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        public void XmlTransform_Support_WriteToStream()
+        [Fact]
+        public void Support_WriteToStream()
         {
-            string src = CreateATestFile("Web.config", Properties.Resources.Web);
-            string transformFile = CreateATestFile("Web.Release.config", Properties.Resources.Web_Release);
-            string destFile = GetTestFilePath("MyWeb.config");
+            string source = TestResource("Web.config");
+            string transformFile = TestResource("Web.Release.config");
+            string destFile = OutputFile("MyWeb.config", nameof(Support_WriteToStream));
 
             //execute
             using (var x = new XmlTransformableDocument { PreserveWhitespace = true })
             {
-                x.Load(src);
+                x.Load(source);
 
                 using (var transform = new XmlTransformation(transformFile))
                 {
@@ -31,66 +28,44 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
                         x.Save(fsDestFile);
 
                         //verify, we have a success transform
-                        Assert.IsTrue(succeed);
+                        Assert.True(succeed);
 
                         //verify, the stream is not closed
-                        Assert.IsTrue(fsDestFile.CanWrite, "The file stream can not be written. was it closed?");
+                        Assert.True(fsDestFile.CanWrite, "The file stream can not be written. was it closed?");
                     }
 
                     //sanity verify the content is right, (xml was transformed)
                     string content = File.ReadAllText(destFile);
-                    Assert.IsFalse(content.Contains("debug=\"true\""));
+                    Assert.DoesNotContain("debug=\"true\"", content);
 
                     //sanity verify the line format is not lost (otherwsie we will have only one long line)
-                    Assert.IsTrue(File.ReadLines(destFile).Take(11).Count() > 10);
+                    Assert.InRange(File.ReadLines(destFile).Count(), 10, int.MaxValue);
                 }
             }
         }
 
-        [TestMethod]
-        public void XmlTransform_AttibuteFormatting()
-        {
-            Transform_TestRunner_ExpectSuccess(Properties.Resources.AttributeFormating_source,
-                    Properties.Resources.AttributeFormating_transform,
-                    Properties.Resources.AttributeFormating_destination,
-                    Properties.Resources.AttributeFormatting_log);
-        }
+        [Fact]
+        public void AttributeFormatting() => Transform_ExpectSuccess(nameof(AttributeFormatting));
 
-        [TestMethod]
-        public void XmlTransform_TagFormatting()
-        {
-             Transform_TestRunner_ExpectSuccess(Properties.Resources.TagFormatting_source,
-                    Properties.Resources.TagFormatting_transform,
-                    Properties.Resources.TagFormatting_destination,
-                    Properties.Resources.TagFormatting_log);
-        }
+        [Fact]
+        public void TagFormatting() => Transform_ExpectSuccess(nameof(TagFormatting));
 
-        [TestMethod]
-        public void XmlTransform_HandleEdgeCase()
-        {
-            //2 edge cases we didn't handle well and then fixed it per customer feedback.
-            //    a. '>' in the attribute value
-            //    b. element with only one character such as <p>
-            Transform_TestRunner_ExpectSuccess(Properties.Resources.EdgeCase_source,
-                    Properties.Resources.EdgeCase_transform,
-                    Properties.Resources.EdgeCase_destination,
-                    Properties.Resources.EdgeCase_log);
-        }
+        //2 edge cases we didn't handle well and then fixed it per customer feedback.
+        //    a. '>' in the attribute value
+        //    b. element with only one character such as <p>
+        [Fact]
+        public void EdgeCase() => Transform_ExpectSuccess(nameof(EdgeCase));
 
-        [TestMethod]
-        public void XmlTransform_ErrorAndWarning()
-        {
-            Transform_TestRunner_ExpectFail(Properties.Resources.WarningsAndErrors_source,
-                    Properties.Resources.WarningsAndErrors_transform,
-                    Properties.Resources.WarningsAndErrors_log);
-        }
+        [Fact]
+        public void WarningsAndErrors() => Transform_ExpectFail(nameof(WarningsAndErrors));
 
-        private void Transform_TestRunner_ExpectSuccess(string source, string transform, string baseline, string expectedLog)
+        private static void Transform_ExpectSuccess(string baseFileName)
         {
-            string src = CreateATestFile("source.config", source);
-            string transformFile = CreateATestFile("transform.config", transform);
-            string baselineFile = CreateATestFile("baseline.config", baseline);
-            string destFile = GetTestFilePath("result.config");
+            string src = TestResource($"{baseFileName}_source.xml");
+            string transformFile = TestResource($"{baseFileName}_transform.xml");
+            string baselineFile = TestResource($"{baseFileName}_destination.bsl");
+            string destFile = OutputFile("result.xml", baseFileName);
+            string expectedLog = TestResource($"{baseFileName}.log");
             var logger = new TestTransformationLogger();
 
             bool succeed;
@@ -107,16 +82,17 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
             }
             
             //test
-            Assert.IsTrue(succeed);
-            CompareFiles(destFile, baselineFile);
-            CompareMultiLines(expectedLog, logger.LogText);
+            Assert.True(succeed, baseFileName);
+            Assert.Equal(File.ReadAllText(baselineFile), File.ReadAllText(destFile));
+            Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
         }
 
-        private void Transform_TestRunner_ExpectFail(string source, string transform, string expectedLog)
+        private static void Transform_ExpectFail(string baseFileName)
         {
-            string src = CreateATestFile("source.config", source);
-            string transformFile = CreateATestFile("transform.config", transform);
-            string destFile = GetTestFilePath("result.config");
+            string src = TestResource($"{baseFileName}_source.xml");
+            string transformFile = TestResource($"{baseFileName}_transform.xml");
+            string destFile = OutputFile("result.xml", baseFileName);
+            string expectedLog = TestResource($"{baseFileName}.log");
             var logger = new TestTransformationLogger();
 
             bool succeed;
@@ -129,52 +105,25 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
                     //execute
                     succeed = xmlTransform.Apply(x);
                     x.Save(destFile);
-                    xmlTransform.Dispose();
                 }
-                x.Dispose();
             }
             
             //test
-            Assert.IsFalse(succeed);
-            CompareMultiLines(expectedLog, logger.LogText);
+            Assert.False(succeed, baseFileName);
+            Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
         }
 
-        private static void CompareFiles(string baseLinePath, string resultPath)
+        private static string TestResource(string fileName)
         {
-            string bsl = File.ReadAllText(baseLinePath);
-            string result = File.ReadAllText(resultPath);
-
-            CompareMultiLines(bsl, result);
+            var path = Path.Combine(Environment.CurrentDirectory, "Resources", fileName);
+            if (File.Exists(path)) return path;
+            throw new IOException($"Cannot not find test resource: {Path.GetFullPath(path)}");
         }
 
-        private static void CompareMultiLines(string baseline, string result)
+        private static string OutputFile(string fileName, string testName)
         {
-            var baseLines = baseline.Split(new[] { Environment.NewLine },  StringSplitOptions.None);
-            var resultLines = result.Split(new[] { Environment.NewLine },  StringSplitOptions.None);
-
-            for (var i = 0; i < baseLines.Length; i++)
-            {
-                Assert.AreEqual(baseLines[i], resultLines[i], string.Format("line {0} at baseline file is not matched", i));
-            }
-        }
-
-        private string CreateATestFile(string filename, string contentsFilePath)
-        {
-            string file = GetTestFilePath(filename);
-            string sourceFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file), contentsFilePath));
-            Console.WriteLine($"Copy {sourceFilePath} -> {file}");
-            File.WriteAllText(file, File.ReadAllText(sourceFilePath));
-            return file;
-        }
-
-        private string GetTestFilePath(string filename)
-        {
-            //string folder = Path.Combine(TestContext.TestDeploymentDir, TestContext.TestName);
-            string folder = Path.Combine(Environment.CurrentDirectory, TestContext.TestName);
-            Directory.CreateDirectory(folder);
-            string file = Path.Combine(folder, filename);
-            Console.WriteLine($"TestFile {file}");
-            return file;
+            if (!Directory.Exists(testName)) Directory.CreateDirectory(testName);
+            return Path.Combine(testName, fileName);
         }
     }
 }

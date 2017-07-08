@@ -22,7 +22,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         private void CloneOriginalDocument()
         {
-            _xmlOriginal = (XmlDocument)CloneNode(true);
+            _xmlOriginal = (XmlDocument)Clone();
         }
 
         private static bool IsXmlEqual(XmlDocument xmlOriginal, XmlDocument xmlTransformed)
@@ -33,6 +33,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             return false;
         }
 
-        XmlNodeList IXmlOriginalDocumentService.SelectNodes(string xpath, XmlNamespaceManager nsmgr) => _xmlOriginal?.SelectNodes(xpath, nsmgr);
+        XmlNodeList IXmlOriginalDocumentService.SelectNodes(string xpath, XmlNamespaceManager nsmgr) 
+            => _xmlOriginal?.SelectNodes(xpath, nsmgr);
     }
 }

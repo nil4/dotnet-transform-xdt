@@ -20,8 +20,9 @@ namespace Microsoft.DotNet.Xdt.Tools
             get
             {
                 if (_computedOneAttributePerLine) return _oneAttributePerLine;
-                    _computedOneAttributePerLine = true;
-                    _oneAttributePerLine = ComputeOneAttributePerLine();
+
+                _computedOneAttributePerLine = true;
+                _oneAttributePerLine = ComputeOneAttributePerLine();
                 return _oneAttributePerLine;
             }
         }

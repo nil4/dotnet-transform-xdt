@@ -13,8 +13,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         private readonly AttributeTextWriter _textWriter;
 
         public XmlAttributePreservingWriter(string fileName, Encoding encoding)
-            : this(encoding == null ? File.CreateText(fileName) : new StreamWriter(File.Create(fileName), encoding, 65536, false))
-        {
+            : this(encoding == null ? new StreamWriter(fileName) : new StreamWriter(fileName, false, encoding)) {
         }
 
         public XmlAttributePreservingWriter(Stream w, Encoding encoding)
@@ -25,7 +24,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         public XmlAttributePreservingWriter(TextWriter textWriter)
         {
             _textWriter = new AttributeTextWriter(textWriter);
-            _xmlWriter = Create(_textWriter);
+            _xmlWriter = new XmlTextWriter(_textWriter);
         }
 
         public void WriteAttributeWhitespace(string whitespace)
@@ -121,10 +120,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             public string AttributeLeadingWhitespace
             {
-                set
-                {
-                    _leadingWhitespace = value;
-                }
+                set => _leadingWhitespace = value;
             }
 
             public string AttributeNewLineString { get; set; } = "\r\n";
@@ -300,6 +296,8 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             public override void Flush() => _baseWriter.Flush();
 
+            public override void Close() => _baseWriter.Close();
+
             protected override void Dispose(bool disposing)
             {
                 _baseWriter.Dispose();
@@ -307,12 +305,13 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
+        public override void Close() => _xmlWriter.Close();
+
         protected override void Dispose(bool disposing)
         {
             _xmlWriter.Dispose();
             base.Dispose(disposing);
         }
-
         public override void Flush() => _xmlWriter.Flush();
 
         public override string LookupPrefix(string ns) => _xmlWriter.LookupPrefix(ns);

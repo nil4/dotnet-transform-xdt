@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26621.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DotNet.Xdt.Tools", "Microsoft.DotNet.Xdt.Tools\Microsoft.DotNet.Xdt.Tools.csproj", "{7E89DBBC-A6D2-473C-8FEC-44C6E516C7E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.DotNet.Xdt.Tools", "Microsoft.DotNet.Xdt.Tools\Microsoft.DotNet.Xdt.Tools.csproj", "{7E89DBBC-A6D2-473C-8FEC-44C6E516C7E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{403FCE60-1904-4470-A131-5FE5E0121A5D}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{403FCE60-1
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.DotNet.Xdt.Tools.Tests", "Microsoft.DotNet.Xdt.Tools.Tests\Microsoft.DotNet.Xdt.Tools.Tests.csproj", "{DE6DFB12-1B48-434D-81E4-67CDED85218E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,8 +36,23 @@ Global
 		{7E89DBBC-A6D2-473C-8FEC-44C6E516C7E0}.Release|x64.Build.0 = Release|Any CPU
 		{7E89DBBC-A6D2-473C-8FEC-44C6E516C7E0}.Release|x86.ActiveCfg = Release|Any CPU
 		{7E89DBBC-A6D2-473C-8FEC-44C6E516C7E0}.Release|x86.Build.0 = Release|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Debug|x64.Build.0 = Debug|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Release|x64.ActiveCfg = Release|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Release|x64.Build.0 = Release|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE6DFB12-1B48-434D-81E4-67CDED85218E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {54448D63-76C6-4C8D-AD0F-A81072E68203}
 	EndGlobalSection
 EndGlobal

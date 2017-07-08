@@ -1,4 +1,4 @@
-# dotnet-transform-xdt
+# dotnet-transform-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master)
 
 `dotnet-transform-xdt` is a [dotnet CLI](https://github.com/dotnet/cli) tool for applying
 [XML Document Transformation](https://msdn.microsoft.com/en-us/library/dd465326.aspx)

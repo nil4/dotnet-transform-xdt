@@ -63,7 +63,7 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
         }
 
         public void LogError(string message, params object[] messageArgs) 
-            => LogError(message, messageArgs);
+            => LogError("", message, messageArgs);
 
         public void LogError(string file, string message, params object[] messageArgs) 
             => LogError(file, 0, 0, message, messageArgs);

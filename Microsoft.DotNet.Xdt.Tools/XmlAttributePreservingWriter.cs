@@ -9,11 +9,12 @@ namespace Microsoft.DotNet.Xdt.Tools
 {
     internal class XmlAttributePreservingWriter : XmlWriter
     {
-        private readonly XmlWriter _xmlWriter;
+        private readonly XmlTextWriter _xmlWriter;
         private readonly AttributeTextWriter _textWriter;
 
         public XmlAttributePreservingWriter(string fileName, Encoding encoding)
-            : this(encoding == null ? new StreamWriter(fileName) : new StreamWriter(fileName, false, encoding)) {
+            : this(encoding == null ? new StreamWriter(fileName) : new StreamWriter(fileName, false, encoding))
+        {
         }
 
         public XmlAttributePreservingWriter(Stream w, Encoding encoding)
@@ -148,8 +149,8 @@ namespace Microsoft.DotNet.Xdt.Tools
                 switch (_state)
                 {
                     case State.WaitingForAttributeLeadingSpace:
-                    if (value == ' ')
-                    {
+                        if (value == ' ')
+                        {
                             ChangeState(State.ReadingAttribute);
                             break;
                         }
@@ -172,19 +173,19 @@ namespace Microsoft.DotNet.Xdt.Tools
                 switch (value)
                 {
                     case ' ':
-                    if (_state == State.Writing)
-                    {
+                        if (_state == State.Writing)
+                        {
                             ChangeState(State.Buffering);
                         }
                         break;
                     case '/':
                         break;
                     case '>':
-                    if (_state == State.Buffering)
-                    {
-                            string currentBuffer = _writeBuffer.ToString();
-                        if (currentBuffer.EndsWith(" /", StringComparison.Ordinal))
+                        if (_state == State.Buffering)
                         {
+                            string currentBuffer = _writeBuffer.ToString();
+                            if (currentBuffer.EndsWith(" /", StringComparison.Ordinal))
+                            {
                                 // We've identified the string " />" at the
                                 // end of the buffer, so remove the space
                                 _writeBuffer.Remove(currentBuffer.LastIndexOf(' '), 1);
@@ -193,8 +194,8 @@ namespace Microsoft.DotNet.Xdt.Tools
                         }
                         break;
                     default:
-                    if (_state == State.Buffering)
-                    {
+                        if (_state == State.Buffering)
+                        {
                             ChangeState(State.Writing);
                         }
                         break;
@@ -205,22 +206,22 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 if (_state != newState)
                 {
-                State oldState = _state;
-                _state = newState;
+                    State oldState = _state;
+                    _state = newState;
 
-                // Handle buffer management for different states
+                    // Handle buffer management for different states
                     if (StateRequiresBuffer(newState))
                     {
-                    CreateBuffer();
-                }
+                        CreateBuffer();
+                    }
                     else if (StateRequiresBuffer(oldState))
                     {
-                    FlushBuffer();
+                        FlushBuffer();
+                    }
                 }
             }
-            }
 
-            private static bool StateRequiresBuffer(State state) 
+            private static bool StateRequiresBuffer(State state)
             {
                 return state == State.Buffering || state == State.ReadingAttribute;
             }
@@ -312,6 +313,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             _xmlWriter.Dispose();
             base.Dispose(disposing);
         }
+
         public override void Flush() => _xmlWriter.Flush();
 
         public override string LookupPrefix(string ns) => _xmlWriter.LookupPrefix(ns);

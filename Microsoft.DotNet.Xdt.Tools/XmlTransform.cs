@@ -219,7 +219,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 try
                 {
                     _currentTargetNode = node;
-                    _currentTransformNode = originalTransformNode.CloneNode(true);
+                    _currentTransformNode = originalTransformNode.Clone();
 
                     ApplyOnce();
                 }

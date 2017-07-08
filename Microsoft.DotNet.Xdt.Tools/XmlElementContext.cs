@@ -146,7 +146,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
             else
             {
-                XmlReader reader = XmlReader.Create(new StringReader(sourceNode.OuterXml));
+                var reader = new XmlTextReader(new StringReader(sourceNode.OuterXml));
                 clonedNode = TargetDocument.ReadNode(reader);
             }
 

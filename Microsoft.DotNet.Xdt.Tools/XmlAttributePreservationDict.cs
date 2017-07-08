@@ -66,15 +66,14 @@ namespace Microsoft.DotNet.Xdt.Tools
                 xmlDocString = elementStartTag.Substring(0, elementStartTag.Length - 1) + "/>";
             }
 
-            XmlReader xmlReader = XmlReader.Create(new StringReader(xmlDocString), new XmlReaderSettings {NameTable = null});
-            var lineInfo = xmlReader as IXmlLineInfo;
+            var xmlReader = new XmlTextReader(new StringReader(xmlDocString)) {Namespaces = false};
 
             xmlReader.Read();
 
             bool hasMoreAttributes = xmlReader.MoveToFirstAttribute();
             while (hasMoreAttributes)
             {
-                onAttributeSpotted(lineInfo?.LineNumber ?? 0, lineInfo?.LinePosition ?? 0, xmlReader.Name);
+                onAttributeSpotted(xmlReader.LineNumber, xmlReader.LinePosition, xmlReader.Name);
                 hasMoreAttributes = xmlReader.MoveToNextAttribute();
             }
 

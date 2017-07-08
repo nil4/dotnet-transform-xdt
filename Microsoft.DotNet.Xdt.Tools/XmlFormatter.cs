@@ -42,10 +42,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         private XmlNode CurrentNode
         {
-            get
-            {
-                return _currentNode;
-            }
+            get => _currentNode;
             set
             {
                 PreviousNode = _currentNode;

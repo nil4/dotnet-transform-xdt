@@ -41,10 +41,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             _xmlTransformation = new XmlFileInfoDocument();
             if (isTransformAFile)
             {
-                using (FileStream stream = File.OpenRead(transform))
-                {
-                    _xmlTransformation.Load(stream);
-                }
+                _xmlTransformation.Load(transform);
             }
             else
             {

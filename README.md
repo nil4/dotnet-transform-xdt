@@ -220,12 +220,3 @@ Options:
   --output|-o     The path where the output (transformed) file will be written
   --verbose|-v    Print verbose messages
 ```
-
-
-### Known issues
-
-- Whitespace in the output XML file is not always correctly preserved. As a workaround, run `dotnet transform-xdt`  before `dotnet publish-iis`, as the latter will format the file.
-- Logging and diagnostics are messy and should be cleaned up (like [dotnet-watch](https://github.com/aspnet/dotnet-watch))
-- Unit tests have not been ported.
-
-Is the list above missing anything? Please [log an issue](https://github.com/nil4/dotnet-transform-xdt/issues).

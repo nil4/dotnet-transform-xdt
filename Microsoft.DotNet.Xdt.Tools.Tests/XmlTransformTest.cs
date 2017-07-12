@@ -59,11 +59,11 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
         [Fact]
         public void WarningsAndErrors() => Transform_ExpectFail(nameof(WarningsAndErrors));
 
-        private static void Transform_ExpectSuccess(string baseFileName)
+        static void Transform_ExpectSuccess(string baseFileName)
         {
             string src = TestResource($"{baseFileName}_source.xml");
             string transformFile = TestResource($"{baseFileName}_transform.xml");
-            string baselineFile = TestResource($"{baseFileName}_destination.bsl");
+            string baselineFile = TestResource($"{baseFileName}_baseline.xml");
             string destFile = OutputFile("result.xml", baseFileName);
             string expectedLog = TestResource($"{baseFileName}.log");
             var logger = new TestTransformationLogger();
@@ -87,7 +87,7 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
             Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
         }
 
-        private static void Transform_ExpectFail(string baseFileName)
+        static void Transform_ExpectFail(string baseFileName)
         {
             string src = TestResource($"{baseFileName}_source.xml");
             string transformFile = TestResource($"{baseFileName}_transform.xml");
@@ -113,14 +113,14 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
             Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
         }
 
-        private static string TestResource(string fileName)
+        static string TestResource(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "Resources", fileName);
+            string path = Path.Combine(Environment.CurrentDirectory, "Resources", fileName);
             if (File.Exists(path)) return path;
             throw new IOException($"Cannot not find test resource: {Path.GetFullPath(path)}");
         }
 
-        private static string OutputFile(string fileName, string testName)
+        static string OutputFile(string fileName, string testName)
         {
             if (!Directory.Exists(testName)) Directory.CreateDirectory(testName);
             return Path.Combine(testName, fileName);

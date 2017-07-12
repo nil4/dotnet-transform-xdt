@@ -7,13 +7,11 @@ namespace Microsoft.DotNet.Xdt.Tools
 {
     public class XmlTransformationLogger
     {
-        private readonly IXmlTransformationLogger _externalLogger;
-        private XmlNode _currentReferenceNode;
+        readonly IXmlTransformationLogger _externalLogger;
+        XmlNode _currentReferenceNode;
 
-        internal XmlTransformationLogger(IXmlTransformationLogger logger)
-        {
-            _externalLogger = logger;
-        }
+        internal XmlTransformationLogger(IXmlTransformationLogger logger) 
+            => _externalLogger = logger;
 
         internal void LogErrorFromException(Exception ex)
         {
@@ -31,14 +29,10 @@ namespace Microsoft.DotNet.Xdt.Tools
                         nodeException.LinePosition);
                 }
                 else
-                {
                     _externalLogger.LogErrorFromException(ex);
-                }
             }
             else
-            {
                 throw ex;
-            }
         }
 
         internal bool HasLoggedErrors { get; set; }
@@ -58,37 +52,31 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public bool SupressWarnings { get; set; }
 
-        public void LogMessage(string message, params object[] messageArgs) => _externalLogger?.LogMessage(message, messageArgs);
+        public void LogMessage(string message, params object[] messageArgs) 
+            => _externalLogger?.LogMessage(message, messageArgs);
 
-        public void LogMessage(MessageType type, string message, params object[] messageArgs) => _externalLogger?.LogMessage(type, message, messageArgs);
+        public void LogMessage(MessageType type, string message, params object[] messageArgs) 
+            => _externalLogger?.LogMessage(type, message, messageArgs);
 
         public void LogWarning(string message, params object[] messageArgs)
         {
+            // SupressWarnings downgrade the Warning to LogMessage
             if (SupressWarnings)
-            {
-                // SupressWarnings downgrade the Warning to LogMessage
                 LogMessage(message, messageArgs);
-            }
             else
             {
                 if (CurrentReferenceNode != null)
-                {
                     LogWarning(CurrentReferenceNode, message, messageArgs);
-                }
                 else
-                {
                     _externalLogger?.LogWarning(message, messageArgs);
-                }
             }
         }
 
         public void LogWarning(XmlNode referenceNode, string message, params object[] messageArgs)
         {
+            // SupressWarnings downgrade the Warning to LogMessage
             if (SupressWarnings)
-            {
-                // SupressWarnings downgrade the Warning to LogMessage
                 LogMessage(message, messageArgs);
-            }
             else
             {
                 if (_externalLogger != null)
@@ -121,17 +109,11 @@ namespace Microsoft.DotNet.Xdt.Tools
             HasLoggedErrors = true;
 
             if (CurrentReferenceNode != null)
-            {
                 LogError(CurrentReferenceNode, message, messageArgs);
-            }
             else if (_externalLogger != null)
-            {
                 _externalLogger.LogError(message, messageArgs);
-            }
             else
-            {
                 throw new XmlTransformationException(string.Format(CultureInfo.CurrentCulture, message, messageArgs));
-            }
         }
 
         public void LogError(XmlNode referenceNode, string message, params object[] messageArgs)
@@ -161,20 +143,22 @@ namespace Microsoft.DotNet.Xdt.Tools
                 }
             }
             else
-            {
                 throw new XmlNodeException(string.Format(CultureInfo.CurrentCulture, message, messageArgs), referenceNode);
-            }
         }
 
-        public void StartSection(string message, params object[] messageArgs) => _externalLogger?.StartSection(message, messageArgs);
+        public void StartSection(string message, params object[] messageArgs) 
+            => _externalLogger?.StartSection(message, messageArgs);
 
-        public void StartSection(MessageType type, string message, params object[] messageArgs) => _externalLogger?.StartSection(type, message, messageArgs);
+        public void StartSection(MessageType type, string message, params object[] messageArgs) 
+            => _externalLogger?.StartSection(type, message, messageArgs);
 
-        public void EndSection(string message, params object[] messageArgs) => _externalLogger?.EndSection(message, messageArgs);
+        public void EndSection(string message, params object[] messageArgs) 
+            => _externalLogger?.EndSection(message, messageArgs);
 
-        public void EndSection(MessageType type, string message, params object[] messageArgs) => _externalLogger?.EndSection(type, message, messageArgs);
+        public void EndSection(MessageType type, string message, params object[] messageArgs) 
+            => _externalLogger?.EndSection(type, message, messageArgs);
 
-        private static string ConvertUriToFileName(XmlDocument xmlDocument)
+        static string ConvertUriToFileName(XmlDocument xmlDocument)
         {
             var errorInfoDocument = xmlDocument as XmlFileInfoDocument;
             string uri = errorInfoDocument != null ? errorInfoDocument.FileName : xmlDocument.BaseURI;
@@ -182,15 +166,13 @@ namespace Microsoft.DotNet.Xdt.Tools
             return ConvertUriToFileName(uri);
         }
 
-        private static string ConvertUriToFileName(string fileName)
+        static string ConvertUriToFileName(string fileName)
         {
             try
             {
                 var uri = new Uri(fileName);
                 if (uri.IsFile && string.IsNullOrEmpty(uri.Host))
-                {
                     fileName = uri.LocalPath;
-                }
             }
             catch (UriFormatException)
             {

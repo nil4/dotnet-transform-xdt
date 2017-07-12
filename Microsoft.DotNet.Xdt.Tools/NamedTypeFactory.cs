@@ -5,10 +5,10 @@ using System.IO;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal class NamedTypeFactory
+    class NamedTypeFactory
     {
-        private readonly string _relativePathRoot;
-        private readonly List<Registration> _registrations = new List<Registration>();
+        readonly string _relativePathRoot;
+        readonly List<Registration> _registrations = new List<Registration>();
 
         internal NamedTypeFactory(string relativePathRoot)
         {
@@ -17,20 +17,14 @@ namespace Microsoft.DotNet.Xdt.Tools
             CreateDefaultRegistrations();
         }
 
-        private void CreateDefaultRegistrations()
-        {
-            AddAssemblyRegistration(GetType().Assembly, GetType().Namespace);
-        }
+        void CreateDefaultRegistrations() 
+            => AddAssemblyRegistration(GetType().Assembly, GetType().Namespace);
 
-        internal void AddAssemblyRegistration(Assembly assembly, string nameSpace)
-        {
-            _registrations.Add(new Registration(assembly, nameSpace));
-        }
+        internal void AddAssemblyRegistration(Assembly assembly, string nameSpace) 
+            => _registrations.Add(new Registration(assembly, nameSpace));
 
-        internal void AddAssemblyRegistration(string assemblyName, string nameSpace)
-        {
-            _registrations.Add(new AssemblyNameRegistration(assemblyName, nameSpace));
-        }
+        internal void AddAssemblyRegistration(string assemblyName, string nameSpace) 
+            => _registrations.Add(new AssemblyNameRegistration(assemblyName, nameSpace));
 
         internal void AddPathRegistration(string path, string nameSpace)
         {
@@ -48,23 +42,21 @@ namespace Microsoft.DotNet.Xdt.Tools
             if (string.IsNullOrEmpty(typeName)) return null;
 
             Type type = GetType(typeName);
+
             if (type == null)
-            {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_UnknownTypeName, typeName, typeof(TObjectType).Name));
-            }
+
             if (!type.IsSubclassOf(typeof(TObjectType)))
-            {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_IncorrectBaseType, type.FullName, typeof(TObjectType).Name));
-            }
+
             ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
             if (constructor == null)
-            {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_NoValidConstructor, type.FullName));
-            }
+
             return constructor.Invoke(Array.Empty<object>()) as TObjectType;
         }
 
-        private Type GetType(string typeName)
+        Type GetType(string typeName)
         {
             Type foundType = null;
             foreach (Registration registration in _registrations)
@@ -73,18 +65,14 @@ namespace Microsoft.DotNet.Xdt.Tools
                 Type regType = registration.Assembly.GetType(string.Concat(registration.NameSpace, ".", typeName));
                 if (regType == null) continue;
                 if (foundType == null)
-                {
                     foundType = regType;
-                }
                 else
-                {
                     throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_AmbiguousTypeMatch, typeName));
-                }
             }
             return foundType;
         }
 
-        private class Registration
+        class Registration
         {
             public Registration(Assembly assembly, string nameSpace)
             {
@@ -93,20 +81,18 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
 
             public bool IsValid => Assembly != null;
-
             public string NameSpace { get; }
-
             public Assembly Assembly { get; }
         }
 
-        private class AssemblyNameRegistration : Registration
+        class AssemblyNameRegistration : Registration
         {
             public AssemblyNameRegistration(string assemblyName, string nameSpace)
                 : base(Assembly.Load(assemblyName), nameSpace)
             { }
         }
 
-        private class PathRegistration : Registration
+        class PathRegistration : Registration
         {
             public PathRegistration(string path, string nameSpace)
                 : base(Assembly.LoadFile(path), nameSpace)

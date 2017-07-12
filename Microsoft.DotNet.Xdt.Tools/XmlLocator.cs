@@ -22,35 +22,34 @@ namespace Microsoft.DotNet.Xdt.Tools
 
     public abstract class Locator
     {
-        private IList<string> _arguments;
-        private string _parentPath;
-        private XmlElementContext _context;
-        private XmlTransformationLogger _logger;
+        IList<string> _arguments;
+        string _parentPath;
+        XmlElementContext _context;
+        XmlTransformationLogger _logger;
 
         protected virtual string ParentPath => _parentPath;
 
         protected XmlNode CurrentElement => _context.Element;
 
-        protected virtual string NextStepNodeTest
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(CurrentElement.NamespaceURI) && string.IsNullOrEmpty(CurrentElement.Prefix))
-                {
-                    return string.Concat("_defaultNamespace:", CurrentElement.LocalName);
-                }
-                return CurrentElement.Name;
-            }
-        }
-        protected virtual XPathAxis NextStepAxis => XPathAxis.Child;
+        protected virtual string NextStepNodeTest 
+            => !string.IsNullOrEmpty(CurrentElement.NamespaceURI) && string.IsNullOrEmpty(CurrentElement.Prefix) 
+                ? string.Concat("_defaultNamespace:", CurrentElement.LocalName) 
+                : CurrentElement.Name;
 
-        protected virtual string ConstructPath() => AppendStep(ParentPath, NextStepAxis, NextStepNodeTest, ConstructPredicate());
+        protected virtual XPathAxis NextStepAxis 
+            => XPathAxis.Child;
 
-        protected string AppendStep(string basePath, string stepNodeTest) => AppendStep(basePath, XPathAxis.Child, stepNodeTest, string.Empty);
+        protected virtual string ConstructPath() 
+            => AppendStep(ParentPath, NextStepAxis, NextStepNodeTest, ConstructPredicate());
 
-        protected string AppendStep(string basePath, XPathAxis stepAxis, string stepNodeTest) => AppendStep(basePath, stepAxis, stepNodeTest, string.Empty);
+        protected string AppendStep(string basePath, string stepNodeTest) 
+            => AppendStep(basePath, XPathAxis.Child, stepNodeTest, string.Empty);
 
-        protected string AppendStep(string basePath, string stepNodeTest, string predicate) => AppendStep(basePath, XPathAxis.Child, stepNodeTest, predicate);
+        protected string AppendStep(string basePath, XPathAxis stepAxis, string stepNodeTest) 
+            => AppendStep(basePath, stepAxis, stepNodeTest, string.Empty);
+
+        protected string AppendStep(string basePath, string stepNodeTest, string predicate) 
+            => AppendStep(basePath, XPathAxis.Child, stepNodeTest, predicate);
 
         protected string AppendStep(string basePath, XPathAxis stepAxis, string stepNodeTest, string predicate)
         {
@@ -71,9 +70,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 {
                     _logger = _context.GetService<XmlTransformationLogger>();
                     if (_logger != null)
-                    {
                         _logger.CurrentReferenceNode = _context.LocatorAttribute;
-                    }
                 }
                 return _logger;
             }
@@ -86,9 +83,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             get
             {
                 if (_arguments == null && ArgumentString != null)
-                {
                     _arguments = XmlArgumentUtility.SplitArguments(ArgumentString);
-                }
                 return _arguments;
             }
         }
@@ -98,9 +93,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         protected void EnsureArguments(int min)
         {
             if (Arguments == null || Arguments.Count < min)
-            {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_RequiresMinimumArguments, GetType().Name, min));
-            }
         }
 
         protected void EnsureArguments(int min, int max)
@@ -109,17 +102,13 @@ namespace Microsoft.DotNet.Xdt.Tools
             if (min == max)
             {
                 if (Arguments == null || Arguments.Count != min)
-                {
                     throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_RequiresExactArguments, GetType().Name, min));
-                }
             }
 
             EnsureArguments(min);
 
             if (Arguments.Count > max)
-            {
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_TooManyArguments, GetType().Name));
-            }
         }
 
         internal string ConstructPath(string parentPath, XmlElementContext context, string argumentString)
@@ -184,16 +173,16 @@ namespace Microsoft.DotNet.Xdt.Tools
             return resultPath;
         }
 
-        private void ReleaseLogger()
+        void ReleaseLogger()
         {
             if (_logger != null)
             {
-            _logger.CurrentReferenceNode = null;
-            _logger = null;
-        }
+                _logger.CurrentReferenceNode = null;
+                _logger = null;
+            }
         }
 
-        private static string GetAxisString(XPathAxis stepAxis)
+        static string GetAxisString(XPathAxis stepAxis)
         {
             switch (stepAxis)
             {
@@ -225,30 +214,24 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private static string EnsureTrailingSlash(string basePath)
+        static string EnsureTrailingSlash(string basePath)
         {
             if (!basePath.EndsWith("/", StringComparison.Ordinal))
-            {
                 basePath = string.Concat(basePath, "/");
-            }
 
             return basePath;
         }
 
-        private static string EnsureBracketedPredicate(string predicate)
+        static string EnsureBracketedPredicate(string predicate)
         {
             if (string.IsNullOrEmpty(predicate))
-            {
                 return string.Empty;
-            }
+
             if (!predicate.StartsWith("[", StringComparison.Ordinal))
-            {
                 predicate = string.Concat("[", predicate);
-            }
+
             if (!predicate.EndsWith("]", StringComparison.Ordinal))
-            {
                 predicate = string.Concat(predicate, "]");
-            }
 
             return predicate;
         }

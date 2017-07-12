@@ -3,20 +3,18 @@ using System.IO;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal class PositionTrackingTextReader : TextReader
+    class PositionTrackingTextReader : TextReader
     {
-        private readonly TextReader _internalReader;
+        readonly TextReader _internalReader;
 
-        private int _lineNumber = 1;
-        private int _linePosition = 1;
-        private int _characterPosition = 1;
+        int _lineNumber = 1;
+        int _linePosition = 1;
+        int _characterPosition = 1;
 
-        private const int NewlineCharacter = '\n';
+        const int NewlineCharacter = '\n';
 
-        public PositionTrackingTextReader(TextReader textReader)
-        {
-            _internalReader = textReader;
-        }
+        public PositionTrackingTextReader(TextReader textReader) 
+            => _internalReader = textReader;
 
         public override int Read()
         {
@@ -32,14 +30,10 @@ namespace Microsoft.DotNet.Xdt.Tools
         public bool ReadToPosition(int lineNumber, int linePosition)
         {
             while (_lineNumber < lineNumber && Peek() != -1)
-            {
                 ReadLine();
-            }
 
             while (_linePosition < linePosition && Peek() != -1)
-            {
                 Read();
-            }
 
             return _lineNumber == lineNumber && _linePosition == linePosition;
         }
@@ -47,14 +41,12 @@ namespace Microsoft.DotNet.Xdt.Tools
         public bool ReadToPosition(int characterPosition)
         {
             while (_characterPosition < characterPosition && Peek() != -1)
-            {
                 Read();
-            }
 
             return _characterPosition == characterPosition;
         }
 
-        private void UpdatePosition(int character)
+        void UpdatePosition(int character)
         {
             if (character == NewlineCharacter)
             {
@@ -62,21 +54,19 @@ namespace Microsoft.DotNet.Xdt.Tools
                 _linePosition = 1;
             }
             else
-            {
                 _linePosition++;
-            }
+
             _characterPosition++;
         }
     }
 
-    internal class WhitespaceTrackingTextReader : PositionTrackingTextReader
+    class WhitespaceTrackingTextReader : PositionTrackingTextReader
     {
-        private StringBuilder _precedingWhitespace = new StringBuilder();
+        readonly StringBuilder _precedingWhitespace = new StringBuilder();
 
         public WhitespaceTrackingTextReader(TextReader reader)
             : base(reader)
-        {
-        }
+        { }
 
         public override int Read()
         {
@@ -89,20 +79,16 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public string PrecedingWhitespace => _precedingWhitespace.ToString();
 
-        private void UpdateWhitespaceTracking(char character)
+        void UpdateWhitespaceTracking(char character)
         {
             if (char.IsWhiteSpace(character))
-            {
                 AppendWhitespaceCharacter(character);
-            }
             else
-            {
                 ResetWhitespaceString();
-            }
         }
 
-        private void AppendWhitespaceCharacter(char character) => _precedingWhitespace.Append(character);
+        void AppendWhitespaceCharacter(char character) => _precedingWhitespace.Append(character);
 
-        private void ResetWhitespaceString() => _precedingWhitespace = new StringBuilder();
+        void ResetWhitespaceString() => _precedingWhitespace.Clear();
     }
 }

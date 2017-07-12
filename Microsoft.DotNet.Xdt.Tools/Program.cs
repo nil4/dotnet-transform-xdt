@@ -8,7 +8,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 {
     public class Program
     {
-        private const string Prefix = "[XDT] ";
+        const string Prefix = "[XDT] ";
 
         public static int Main(string[] args)
         {
@@ -42,6 +42,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                     Console.Error.WriteLine($"{Prefix}Input file not found: {inputPath}");
                     return 3;
                 }
+
                 if (!File.Exists(transformPath))
                 {
                     Console.Error.WriteLine($"{Prefix}Transform file not found: {transformPath}");
@@ -94,16 +95,15 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private sealed class ConsoleTransformationLogger : IXmlTransformationLogger
+        sealed class ConsoleTransformationLogger : IXmlTransformationLogger
         {
-            private readonly bool _verbose;
+            readonly bool _verbose;
 
-            internal ConsoleTransformationLogger(bool verbose)
-            {
-                _verbose = verbose;
-            }
+            internal ConsoleTransformationLogger(bool verbose) 
+                => _verbose = verbose;
 
-            private bool ShouldPrint(MessageType type) => type == MessageType.Normal || _verbose;
+            bool ShouldPrint(MessageType type) 
+                => type == MessageType.Normal || _verbose;
 
             public void LogMessage(string message, params object[] messageArgs) 
                 => Console.WriteLine(Prefix + message, messageArgs);

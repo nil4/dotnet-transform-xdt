@@ -8,11 +8,11 @@ namespace Microsoft.DotNet.Xdt.Tools
 {
     public class XmlFileInfoDocument : XmlDocument, IDisposable
     {
-        private Encoding _textEncoding;
-        private XmlTextReader _reader;
+        Encoding _textEncoding;
+        XmlTextReader _reader;
 
-        private int _lineNumberOffset;
-        private int _linePositionOffset;
+        int _lineNumberOffset;
+        int _linePositionOffset;
 
         public override void Load(string filename)
         {
@@ -25,21 +25,17 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             _reader = reader as XmlTextReader;
             if (_reader != null)
-            {
                 FileName = _reader.BaseURI;
-            }
 
             base.Load(reader);
 
             if (_reader != null)
-            {
                 _textEncoding = _reader.Encoding;
-            }
 
             FirstLoad = false;
         }
 
-        private void LoadFromFileName(string filename)
+        void LoadFromFileName(string filename)
         {
             FileName = filename;
 
@@ -47,9 +43,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             try
             {
                 if (PreserveWhitespace)
-                {
                     PreservationProvider = new XmlAttributePreservationProvider(filename);
-                }
 
                 reader = new StreamReader(filename, true);
                 LoadFromTextReader(reader);
@@ -65,16 +59,14 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private void LoadFromTextReader(TextReader textReader)
+        void LoadFromTextReader(TextReader textReader)
         {
             var streamReader = textReader as StreamReader;
             if (streamReader != null)
             {
                 var fileStream = streamReader.BaseStream as FileStream;
                 if (fileStream != null)
-                {
                     FileName = fileStream.Name;
-                }
 
                 _textEncoding = GetEncodingFromStream(streamReader.BaseStream);
             }
@@ -84,12 +76,10 @@ namespace Microsoft.DotNet.Xdt.Tools
             base.Load(_reader);
 
             if (_textEncoding == null)
-            {
                 _textEncoding = _reader.Encoding;
-            }
         }
 
-        private static Encoding GetEncodingFromStream(Stream stream)
+        static Encoding GetEncodingFromStream(Stream stream)
         {
             Encoding encoding = null;
             if (stream.CanSeek)
@@ -156,31 +146,28 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         internal string FileName { get; private set; }
 
-        private int CurrentLineNumber => _reader?.LineNumber + _lineNumberOffset ?? 0;
+        int CurrentLineNumber => _reader?.LineNumber + _lineNumberOffset ?? 0;
 
-        private int CurrentLinePosition => _reader?.LinePosition + _linePositionOffset ?? 0;
+        int CurrentLinePosition => _reader?.LinePosition + _linePositionOffset ?? 0;
 
-        private bool FirstLoad { get; set; } = true;
+        bool FirstLoad { get; set; } = true;
 
-        private XmlAttributePreservationProvider PreservationProvider { get; set; }
+        XmlAttributePreservationProvider PreservationProvider { get; set; }
 
-        private Encoding TextEncoding
+        Encoding TextEncoding
         {
             get
             {
                 if (_textEncoding != null)
-                {
                     return _textEncoding;
-                }
+                
                 // Copied from base implementation of XmlDocument
                 if (HasChildNodes)
                 {
-                    XmlDeclaration declaration = FirstChild as XmlDeclaration;
+                    var declaration = FirstChild as XmlDeclaration;
                     string value = declaration?.Encoding;
                     if (value?.Length > 0)
-                    {
                         return Encoding.GetEncoding(value);
-                    }
                 }
                 return null;
             }
@@ -201,6 +188,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                     var textWriter = new XmlTextWriter(filename, TextEncoding) { Formatting = Formatting.Indented };
                     xmlWriter = textWriter;
                 }
+                
                 WriteTo(xmlWriter);
             }
             finally
@@ -236,15 +224,11 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        public override XmlElement CreateElement(string prefix, string localName, string namespaceUri)
-        {
-            return HasErrorInfo ? new XmlFileInfoElement(prefix, localName, namespaceUri, this) : base.CreateElement(prefix, localName, namespaceUri);
-        }
+        public override XmlElement CreateElement(string prefix, string localName, string namespaceUri) 
+            => HasErrorInfo ? new XmlFileInfoElement(prefix, localName, namespaceUri, this) : base.CreateElement(prefix, localName, namespaceUri);
 
-        public override XmlAttribute CreateAttribute(string prefix, string localName, string namespaceUri)
-        {
-            return HasErrorInfo ? new XmlFileInfoAttribute(prefix, localName, namespaceUri, this) : base.CreateAttribute(prefix, localName, namespaceUri);
-        }
+        public override XmlAttribute CreateAttribute(string prefix, string localName, string namespaceUri) 
+            => HasErrorInfo ? new XmlFileInfoAttribute(prefix, localName, namespaceUri, this) : base.CreateAttribute(prefix, localName, namespaceUri);
 
         internal bool IsNewNode(XmlNode node)
         {
@@ -256,18 +240,16 @@ namespace Microsoft.DotNet.Xdt.Tools
             return element != null && !element.IsOriginal;
         }
 
-        private XmlElement FindContainingElement(XmlNode node)
+        static XmlElement FindContainingElement(XmlNode node)
         {
             while (node != null && !(node is XmlElement))
-            {
                 node = node.ParentNode;
-            }
             return node as XmlElement;
         }
 
-        private class XmlFileInfoElement : XmlElement, IXmlLineInfo, IXmlFormattableAttributes
+        class XmlFileInfoElement : XmlElement, IXmlLineInfo, IXmlFormattableAttributes
         {
-            private readonly XmlAttributePreservationDict _preservationDict;
+            readonly XmlAttributePreservationDict _preservationDict;
 
             internal XmlFileInfoElement(string prefix, string localName, string namespaceUri, XmlFileInfoDocument document)
                 : base(prefix, localName, namespaceUri, document)
@@ -277,22 +259,16 @@ namespace Microsoft.DotNet.Xdt.Tools
                 IsOriginal = document.FirstLoad;
 
                 if (document.PreservationProvider != null)
-                {
                     _preservationDict = document.PreservationProvider.GetDictAtPosition(LineNumber, LinePosition - 1);
-                }
                 if (_preservationDict == null)
-                {
                     _preservationDict = new XmlAttributePreservationDict();
-                }
             }
 
             public override void WriteTo(XmlWriter w)
             {
                 string prefix = Prefix;
                 if (!string.IsNullOrEmpty(NamespaceURI))
-                {
                     prefix = w.LookupPrefix(NamespaceURI) ?? Prefix;
-                }
 
                 w.WriteStartElement(prefix, LocalName, NamespaceURI);
 
@@ -300,19 +276,13 @@ namespace Microsoft.DotNet.Xdt.Tools
                 {
                     var preservingWriter = w as XmlAttributePreservingWriter;
                     if (preservingWriter == null || _preservationDict == null)
-                    {
                         WriteAttributesTo(w);
-                    }
                     else
-                    {
                         WritePreservedAttributesTo(preservingWriter);
-                    }
                 }
 
                 if (IsEmpty)
-                {
                     w.WriteEndElement();
-                }
                 else
                 {
                     WriteContentTo(w);
@@ -320,17 +290,14 @@ namespace Microsoft.DotNet.Xdt.Tools
                 }
             }
 
-            private void WriteAttributesTo(XmlWriter w)
+            void WriteAttributesTo(XmlWriter w)
             {
                 XmlAttributeCollection attrs = Attributes;
                 for (var i = 0; i < attrs.Count; i += 1)
-                {
-                    XmlAttribute attr = attrs[i];
-                    attr.WriteTo(w);
-                }
+                    attrs[i].WriteTo(w);
             }
 
-            private void WritePreservedAttributesTo(XmlAttributePreservingWriter preservingWriter) 
+            void WritePreservedAttributesTo(XmlAttributePreservingWriter preservingWriter) 
                 => _preservationDict.WritePreservedAttributes(preservingWriter, Attributes);
 
             public bool HasLineInfo() => true;
@@ -341,12 +308,14 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             public bool IsOriginal { get; }
 
-            void IXmlFormattableAttributes.FormatAttributes(XmlFormatter formatter) => _preservationDict.UpdatePreservationInfo(Attributes, formatter);
+            void IXmlFormattableAttributes.FormatAttributes(XmlFormatter formatter) 
+                => _preservationDict.UpdatePreservationInfo(Attributes, formatter);
 
-            string IXmlFormattableAttributes.AttributeIndent => _preservationDict.GetAttributeNewLineString(null);
+            string IXmlFormattableAttributes.AttributeIndent 
+                => _preservationDict.GetAttributeNewLineString(null);
         }
 
-        private class XmlFileInfoAttribute : XmlAttribute, IXmlLineInfo
+        class XmlFileInfoAttribute : XmlAttribute, IXmlLineInfo
         {
             internal XmlFileInfoAttribute(string prefix, string localName, string namespaceUri, XmlFileInfoDocument document)
                 : base(prefix, localName, namespaceUri, document)
@@ -385,7 +354,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         ~XmlFileInfoDocument()
         {
-            Debug.Fail("call dispose please");
+            Debug.Fail("Call Dispose please");
             Dispose(false);
         }
     }

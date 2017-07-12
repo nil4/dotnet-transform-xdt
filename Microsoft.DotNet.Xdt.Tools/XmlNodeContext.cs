@@ -2,21 +2,16 @@ using System.Xml;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal class XmlNodeContext
+    class XmlNodeContext
     {
-        private readonly XmlNode _node;
+        public XmlNodeContext(XmlNode node) => Node = node;
 
-        public XmlNodeContext(XmlNode node)
-        {
-            _node = node;
-        }
+        public XmlNode Node { get; }
 
-        public XmlNode Node => _node;
+        public bool HasLineInfo => Node is IXmlLineInfo;
 
-        public bool HasLineInfo => _node is IXmlLineInfo;
+        public int LineNumber => (Node as IXmlLineInfo)?.LineNumber ?? 0;
 
-        public int LineNumber => (_node as IXmlLineInfo)?.LineNumber ?? 0;
-
-        public int LinePosition => (_node as IXmlLineInfo)?.LinePosition ?? 0;
+        public int LinePosition => (Node as IXmlLineInfo)?.LinePosition ?? 0;
     }
 }

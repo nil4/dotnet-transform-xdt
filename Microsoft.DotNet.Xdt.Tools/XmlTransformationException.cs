@@ -9,12 +9,10 @@ namespace Microsoft.DotNet.Xdt.Tools
     {
         public XmlTransformationException(string message)
             : base(message)
-        {
-        }
+        { }
 
         public XmlTransformationException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
+        { }
     }
 }

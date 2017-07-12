@@ -7,14 +7,12 @@ using RegularExpressions = System.Text.RegularExpressions;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal static class CommonErrors
+    static class CommonErrors
     {
         internal static void ExpectNoArguments(XmlTransformationLogger log, string transformName, string argumentString)
         {
             if (!string.IsNullOrEmpty(argumentString))
-            {
                 log.LogWarning(SR.XMLTRANSFORMATION_TransformDoesNotExpectArguments, transformName);
-            }
         }
 
         internal static void WarnIfMultipleTargets(XmlTransformationLogger log, string transformName, XmlNodeList targetNodes, bool applyTransformToAllTargets)
@@ -22,30 +20,25 @@ namespace Microsoft.DotNet.Xdt.Tools
             Debug.Assert(applyTransformToAllTargets == false);
 
             if (targetNodes.Count > 1)
-            {
                 log.LogWarning(SR.XMLTRANSFORMATION_TransformOnlyAppliesOnce, transformName);
-            }
         }
     }
 
-    internal class Replace : Transform
+    class Replace : Transform
     {
         protected override void Apply()
         {
             CommonErrors.ExpectNoArguments(Log, TransformNameShort, ArgumentString);
             CommonErrors.WarnIfMultipleTargets(Log, TransformNameShort, TargetNodes, ApplyTransformToAllTargetNodes);
 
-            XmlNode parentNode = TargetNode.ParentNode;
-            parentNode.ReplaceChild(
-                TransformNode,
-                TargetNode);
+            TargetNode.ParentNode.ReplaceChild(TransformNode, TargetNode);
 
             Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageReplace, TargetNode.Name);
         }
     }
 
 
-    internal class Remove : Transform
+    class Remove : Transform
     {
         protected override void Apply()
         {
@@ -58,29 +51,24 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             CommonErrors.ExpectNoArguments(Log, TransformNameShort, ArgumentString);
 
-            XmlNode parentNode = TargetNode.ParentNode;
-            parentNode.RemoveChild(TargetNode);
+            TargetNode.ParentNode.RemoveChild(TargetNode);
 
             Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageRemove, TargetNode.Name);
         }
     }
 
-    internal class RemoveAll : Remove
+    class RemoveAll : Remove
     {
-        public RemoveAll()
-        {
-            ApplyTransformToAllTargetNodes = true;
-        }
+        public RemoveAll() => ApplyTransformToAllTargetNodes = true;
 
         protected override void Apply() => RemoveNode();
     }
 
-    internal class Insert : Transform
+    class Insert : Transform
     {
         public Insert()
             : base(TransformFlags.UseParentAsTargetNode, MissingTargetMessage.Error)
-        {
-        }
+        { }
 
         protected override void Apply()
         {
@@ -92,7 +80,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         }
     }
 
-    internal class InsertIfMissing : Insert
+    class InsertIfMissing : Insert
     {
         protected override void Apply()
         {
@@ -106,15 +94,13 @@ namespace Microsoft.DotNet.Xdt.Tools
     }
 
 
-
-    internal abstract class InsertBase : Transform
+    abstract class InsertBase : Transform
     {
         internal InsertBase()
             : base(TransformFlags.UseParentAsTargetNode, MissingTargetMessage.Error)
-        {
-        }
+        { }
 
-        private XmlElement _siblingElement;
+        XmlElement _siblingElement;
 
         protected XmlElement SiblingElement
         {
@@ -123,24 +109,19 @@ namespace Microsoft.DotNet.Xdt.Tools
                 if (_siblingElement == null)
                 {
                     if (Arguments == null || Arguments.Count == 0)
-                    {
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertMissingArgument, GetType().Name));
-                    }
+
                     if (Arguments.Count > 1)
-                    {
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertTooManyArguments, GetType().Name));
-                    }
+
                     string xpath = Arguments[0];
                     XmlNodeList siblings = TargetNode.SelectNodes(xpath);
                     if (siblings.Count == 0)
-                    {
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertBadXPath, xpath));
-                    }
+
                     _siblingElement = siblings[0] as XmlElement;
                     if (_siblingElement == null)
-                    {
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertBadXPathResult, xpath));
-                    }
                 }
 
                 return _siblingElement;
@@ -148,7 +129,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         }
     }
 
-    internal class InsertAfter : InsertBase
+    class InsertAfter : InsertBase
     {
         protected override void Apply()
         {
@@ -158,7 +139,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         }
     }
 
-    internal class InsertBefore : InsertBase
+    class InsertBefore : InsertBase
     {
         protected override void Apply()
         {
@@ -174,27 +155,19 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             foreach (XmlAttribute transformAttribute in TransformAttributes)
             {
-                XmlAttribute targetAttribute = TargetNode.Attributes.GetNamedItem(transformAttribute.Name) as XmlAttribute;
+                var targetAttribute = TargetNode.Attributes.GetNamedItem(transformAttribute.Name) as XmlAttribute;
                 if (targetAttribute != null)
-                {
                     targetAttribute.Value = transformAttribute.Value;
-                }
                 else
-                {
-                    TargetNode.Attributes.Append((XmlAttribute)transformAttribute.CloneNode(true));
-                }
+                    TargetNode.Attributes.Append((XmlAttribute) transformAttribute.CloneNode(true));
 
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageSetAttribute, transformAttribute.Name);
             }
 
             if (TransformAttributes.Count > 0)
-            {
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageSetAttributes, TransformAttributes.Count);
-            }
             else
-            {
                 Log.LogWarning(SR.XMLTRANSFORMATION_TransformMessageNoSetAttributes);
-            }
         }
     }
 
@@ -222,9 +195,8 @@ namespace Microsoft.DotNet.Xdt.Tools
     /// </summary>
     public class SetTokenizedAttributes : AttributeTransform
     {
-
-        private SetTokenizedAttributeStorage _storageDictionary;
-        private bool _fInitStorageDictionary;
+        SetTokenizedAttributeStorage _storageDictionary;
+        bool _fInitStorageDictionary;
         public static readonly string Token = "Token";
         public static readonly string TokenNumber = "TokenNumber";
         public static readonly string XPathWithIndex = "XPathWithIndex";
@@ -232,7 +204,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         public static readonly string XpathLocator = "XpathLocator";
         public static readonly string XPathWithLocator = "XPathWithLocator";
 
-        private XmlAttribute _tokenizeValueCurrentXmlAttribute;
+        XmlAttribute _tokenizeValueCurrentXmlAttribute;
 
 
         protected SetTokenizedAttributeStorage TransformStorage
@@ -258,9 +230,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 fTokenizeParameter = storage.EnableTokenizeParameters;
                 if (fTokenizeParameter)
-                {
                     parameters = storage.DictionaryList;
-                }
             }
 
             foreach (XmlAttribute transformAttribute in TransformAttributes)
@@ -270,12 +240,10 @@ namespace Microsoft.DotNet.Xdt.Tools
                 string newValue = TokenizeValue(targetAttribute, transformAttribute, fTokenizeParameter, parameters);
 
                 if (targetAttribute != null)
-                {
                     targetAttribute.Value = newValue;
-                }
                 else
                 {
-                    var newAttribute = (XmlAttribute)transformAttribute.CloneNode(true);
+                    var newAttribute = (XmlAttribute) transformAttribute.CloneNode(true);
                     newAttribute.Value = newValue;
                     TargetNode.Attributes.Append(newAttribute);
                 }
@@ -284,56 +252,25 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
 
             if (TransformAttributes.Count > 0)
-            {
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageSetAttributes, TransformAttributes.Count);
-            }
             else
-            {
                 Log.LogWarning(SR.XMLTRANSFORMATION_TransformMessageNoSetAttributes);
-            }
         }
 
 
-        private static RegularExpressions.Regex _sDirRegex;
-        private static RegularExpressions.Regex _sParentAttribRegex;
-        private static RegularExpressions.Regex _sTokenFormatRegex;
+        static RegularExpressions.Regex _sDirRegex;
+        static RegularExpressions.Regex _sParentAttribRegex;
+        static RegularExpressions.Regex _sTokenFormatRegex;
 
         // Directory registrory
-        internal static RegularExpressions.Regex DirRegex
-        {
-            get
-            {
-                if (_sDirRegex == null)
-                {
-                    _sDirRegex = new RegularExpressions.Regex(@"\G\{%(\s*(?<attrname>\w+(?=\W))(\s*(?<equal>=)\s*'(?<attrval>[^']*)'|\s*(?<equal>=)\s*(?<attrval>[^\s%>]*)|(?<equal>)(?<attrval>\s*?)))*\s*?%\}");
-                }
-                return _sDirRegex;
-            }
-        }
+        internal static RegularExpressions.Regex DirRegex => _sDirRegex 
+            ?? (_sDirRegex = new RegularExpressions.Regex(@"\G\{%(\s*(?<attrname>\w+(?=\W))(\s*(?<equal>=)\s*'(?<attrval>[^']*)'|\s*(?<equal>=)\s*(?<attrval>[^\s%>]*)|(?<equal>)(?<attrval>\s*?)))*\s*?%\}"));
 
-        internal static RegularExpressions.Regex ParentAttributeRegex
-        {
-            get
-            {
-                if (_sParentAttribRegex == null)
-                {
-                    _sParentAttribRegex = new RegularExpressions.Regex(@"\G\$\((?<tagname>[\w:\.]+)\)");
-                }
-                return _sParentAttribRegex;
-            }
-        }
+        internal static RegularExpressions.Regex ParentAttributeRegex => _sParentAttribRegex 
+            ?? (_sParentAttribRegex = new RegularExpressions.Regex(@"\G\$\((?<tagname>[\w:\.]+)\)"));
 
-        internal static RegularExpressions.Regex TokenFormatRegex
-        {
-            get
-            {
-                if (_sTokenFormatRegex == null)
-                {
-                    _sTokenFormatRegex = new RegularExpressions.Regex(@"\G\#\((?<tagname>[\w:\.]+)\)");
-                }
-                return _sTokenFormatRegex;
-            }
-        }
+        internal static RegularExpressions.Regex TokenFormatRegex => _sTokenFormatRegex 
+            ?? (_sTokenFormatRegex = new RegularExpressions.Regex(@"\G\#\((?<tagname>[\w:\.]+)\)"));
 
         protected delegate string GetValueCallback(string key);
 
@@ -343,22 +280,18 @@ namespace Microsoft.DotNet.Xdt.Tools
             var sourceAttribute = TargetNode.Attributes.GetNamedItem(attributeName) as XmlAttribute;
             if (sourceAttribute == null)
             {
-                if (string.Compare(attributeName, _tokenizeValueCurrentXmlAttribute.Name, StringComparison.OrdinalIgnoreCase) != 0)
-                {   // if it is other attributename, we fall back to the current now 
+                // if it is other attributename, we fall back to the current now 
+                if (string.Compare(attributeName, _tokenizeValueCurrentXmlAttribute.Name, StringComparison.OrdinalIgnoreCase) != 0) 
                     sourceAttribute = TransformNode.Attributes.GetNamedItem(attributeName) as XmlAttribute;
-                }
             }
             if (sourceAttribute != null)
-            {
                 dataValue = sourceAttribute.Value;
-            }
             return dataValue;
         }
 
-
         //DirRegex treat single quote differently
-        protected string EscapeDirRegexSpecialCharacter(string value, bool escape) => escape ? value.Replace("'", "&apos;") : value.Replace("&apos;", "'");
-
+        protected string EscapeDirRegexSpecialCharacter(string value, bool escape) 
+            => escape ? value.Replace("'", "&apos;") : value.Replace("&apos;", "'");
 
         protected static string SubstituteKownValue(string transformValue, RegularExpressions.Regex patternRegex, string patternPrefix, GetValueCallback getValueDelegate)
         {
@@ -377,9 +310,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                         position = match.Index + match.Length;
                     }
                     else
-                    {
                         position++;
-                    }
                 }
             } while (position > -1);
 
@@ -388,7 +319,6 @@ namespace Microsoft.DotNet.Xdt.Tools
             {
                 strbuilder.Remove(0, strbuilder.Length);
                 position = 0;
-                var index = 0;
                 foreach (RegularExpressions.Match match in matchsExpr)
                 {
                     strbuilder.Append(transformValue.Substring(position, match.Index - position));
@@ -397,17 +327,9 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                     string newValue = getValueDelegate(attributeName);
 
-                    if (newValue != null) // null indicate that the attribute is not exist
-                    {
-                        strbuilder.Append(newValue);
-                    }
-                    else
-                    {
-                        // keep original value
-                        strbuilder.Append(match.Value);
-                    }
+                    // null indicate that the attribute is not exist
+                    strbuilder.Append(newValue ?? match.Value);
                     position = match.Index + match.Length;
-                    index++;
                 }
                 strbuilder.Append(transformValue.Substring(position));
 
@@ -417,12 +339,10 @@ namespace Microsoft.DotNet.Xdt.Tools
             return transformValue;
         }
 
-        private string GetXPathToAttribute(XmlAttribute xmlAttribute)
-        {
-            return GetXPathToAttribute(xmlAttribute, null);
-        }
+        string GetXPathToAttribute(XmlAttribute xmlAttribute) 
+            => GetXPathToAttribute(xmlAttribute, null);
 
-        private string GetXPathToAttribute(XmlAttribute xmlAttribute, IList<string> locators)
+        string GetXPathToAttribute(XmlAttribute xmlAttribute, IList<string> locators)
         {
             string path = string.Empty;
             if (xmlAttribute != null)
@@ -439,15 +359,11 @@ namespace Microsoft.DotNet.Xdt.Tools
                             if (!string.IsNullOrEmpty(val))
                             {
                                 if (identifier.Length != 0)
-                                {
                                     identifier.Append(" and ");
-                                }
                                 identifier.Append(string.Format(System.Globalization.CultureInfo.InvariantCulture, "@{0}='{1}'", match, val));
                             }
                             else
-                            {
                                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_MatchAttributeDoesNotExist, match));
-                            }
                         }
                     }
 
@@ -470,20 +386,18 @@ namespace Microsoft.DotNet.Xdt.Tools
             return path;
         }
 
-        private static string GetXPathToNode(XmlNode xmlNode)
+        static string GetXPathToNode(XmlNode xmlNode)
         {
             if (xmlNode == null || xmlNode.NodeType == XmlNodeType.Document)
-            {
                 return null;
-            }
             string parentPath = GetXPathToNode(xmlNode.ParentNode);
             return string.Concat(parentPath, "/", xmlNode.Name);
         }
 
-        private string TokenizeValue(XmlAttribute targetAttribute,
-                                     XmlAttribute transformAttribute,
-                                     bool fTokenizeParameter,
-                                     List<Dictionary<string, string>> parameters)
+        string TokenizeValue(XmlAttribute targetAttribute,
+            XmlAttribute transformAttribute,
+            bool fTokenizeParameter,
+            List<Dictionary<string, string>> parameters)
         {
             Debug.Assert(!fTokenizeParameter || parameters != null);
 
@@ -514,9 +428,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                             position = match.Index + match.Length;
                         }
                         else
-                        {
                             position++;
-                        }
                     }
                 } while (position > -1);
 
@@ -545,22 +457,17 @@ namespace Microsoft.DotNet.Xdt.Tools
                                 string name = attrnames[i].Value;
                                 string val = null;
                                 if (attrvalues != null && i < attrvalues.Count)
-                                {
                                     val = EscapeDirRegexSpecialCharacter(attrvalues[i].Value, false);
-                                }
                                 paramDictionary[name] = val;
                             }
 
                             //Identify the Token format
                             string strTokenFormat;
                             if (!paramDictionary.TryGetValue(Token, out strTokenFormat))
-                            {
                                 strTokenFormat = _storageDictionary.TokenFormat;
-                            }
+
                             if (!string.IsNullOrEmpty(strTokenFormat))
-                            {
                                 paramDictionary[Token] = strTokenFormat;
-                            }
 
                             // Second translation of #() -- replace with the existing Parameters
                             int count = paramDictionary.Count;
@@ -582,19 +489,17 @@ namespace Microsoft.DotNet.Xdt.Tools
                             }
 
                             if (paramDictionary.TryGetValue(Token, out strTokenFormat))
-                            {
                                 // Replace with token
                                 strbuilder.Append(strTokenFormat);
-                            }
+
                             string attributeLocator;
                             if (paramDictionary.TryGetValue(XpathLocator, out attributeLocator) && !string.IsNullOrEmpty(attributeLocator))
                             {
                                 IList<string> locators = XmlArgumentUtility.SplitArguments(attributeLocator);
                                 string xpathwithlocator = GetXPathToAttribute(targetAttribute, locators);
+
                                 if (!string.IsNullOrEmpty(xpathwithlocator))
-                                {
                                     paramDictionary[XPathWithLocator] = xpathwithlocator;
-                                }
                             }
                             parameters.Add(paramDictionary);
                         }
@@ -623,13 +528,9 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
 
             if (TargetAttributes.Count > 0)
-            {
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageRemoveAttributes, TargetAttributes.Count);
-            }
             else
-            {
                 Log.LogWarning(TargetNode, SR.XMLTRANSFORMATION_TransformMessageNoRemoveAttributes);
-            }
         }
     }
 }

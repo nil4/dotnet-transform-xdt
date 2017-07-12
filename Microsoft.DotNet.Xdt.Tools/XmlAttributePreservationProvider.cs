@@ -5,10 +5,10 @@ using System.Diagnostics;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal class XmlAttributePreservationProvider : IDisposable
+    class XmlAttributePreservationProvider : IDisposable
     {
-        private StreamReader _streamReader;
-        private PositionTrackingTextReader _reader;
+        readonly StreamReader _streamReader;
+        readonly PositionTrackingTextReader _reader;
 
         public XmlAttributePreservationProvider(string fileName)
         {
@@ -28,10 +28,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 do
                 {
                     character = _reader.Read();
-                    if (character == '\"')
-                    {
-                        inAttribute = !inAttribute;
-                    }
+                    if (character == '\"') inAttribute = !inAttribute;
                     sb.Append((char)character);
                 }
                 while (character > 0 && ((char)character != '>' || inAttribute));
@@ -56,21 +53,13 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public void Dispose()
         {
-            if (_streamReader != null)
-            {
-                _streamReader.Close();
-                _streamReader = null;
-            }
-            if (_reader != null)
-            {
-                _reader.Dispose();
-                _reader = null;
-            }
+            _streamReader?.Close();
+            _reader?.Dispose();
         }
 
         ~XmlAttributePreservationProvider()
         {
-            Debug.Fail("call dispose please");
+            Debug.Fail("Call Dispose please");
             Dispose();
         }
     }

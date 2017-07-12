@@ -11,27 +11,25 @@ namespace Microsoft.DotNet.Xdt.Tools
         internal static readonly string TransformNamespace = "http://schemas.microsoft.com/XML-Document-Transform";
         internal static readonly string SupressWarnings = "SupressWarnings";
 
-        private readonly string _transformFile;
+        readonly string _transformFile;
 
-        private XmlDocument _xmlTransformation;
-        private XmlDocument _xmlTarget;
-        private XmlTransformableDocument _xmlTransformable;
+        XmlDocument _xmlTransformation;
+        XmlDocument _xmlTarget;
+        XmlTransformableDocument _xmlTransformable;
 
-        private readonly XmlTransformationLogger _logger;
+        readonly XmlTransformationLogger _logger;
 
-        private NamedTypeFactory _namedTypeFactory;
-        private ServiceContainer _transformationServiceContainer = new ServiceContainer();
-        private ServiceContainer _documentServiceContainer;
+        NamedTypeFactory _namedTypeFactory;
+        ServiceContainer _transformationServiceContainer = new ServiceContainer();
+        ServiceContainer _documentServiceContainer;
 
         public XmlTransformation(string transformFile)
             : this(transformFile, true, null)
-        {
-        }
+        { }
 
         public XmlTransformation(string transform, IXmlTransformationLogger logger)
             : this(transform, true, logger)
-        {
-        }
+        { }
 
         public XmlTransformation(string transform, bool isTransformAFile, IXmlTransformationLogger logger)
         {
@@ -40,13 +38,9 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             _xmlTransformation = new XmlFileInfoDocument();
             if (isTransformAFile)
-            {
                 _xmlTransformation.Load(transform);
-            }
             else
-            {
                 _xmlTransformation.LoadXml(transform);
-            }
 
             InitializeTransformationServices();
 
@@ -68,7 +62,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public bool HasTransformNamespace { get; private set; }
 
-        private void InitializeTransformationServices()
+        void InitializeTransformationServices()
         {
             // Initialize NamedTypeFactory
             _namedTypeFactory = new NamedTypeFactory(_transformFile);
@@ -78,18 +72,16 @@ namespace Microsoft.DotNet.Xdt.Tools
             _transformationServiceContainer.AddService(_logger.GetType(), _logger);
         }
 
-        private void InitializeDocumentServices(XmlDocument document)
+        void InitializeDocumentServices(XmlDocument document)
         {
             Debug.Assert(_documentServiceContainer == null);
             _documentServiceContainer = new ServiceContainer();
 
             if (document is IXmlOriginalDocumentService)
-            {
                 _documentServiceContainer.AddService(typeof(IXmlOriginalDocumentService), document);
-            }
         }
 
-        private void ReleaseDocumentServices()
+        void ReleaseDocumentServices()
         {
             if (_documentServiceContainer != null)
             {
@@ -98,7 +90,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private void PreprocessTransformDocument()
+        void PreprocessTransformDocument()
         {
             HasTransformNamespace = false;
             foreach (XmlAttribute attribute in _xmlTransformation.SelectNodes("//namespace::*"))
@@ -144,30 +136,20 @@ namespace Microsoft.DotNet.Xdt.Tools
                     catch (Exception ex)
                     {
                         if (context != null)
-                        {
                             ex = WrapException(ex, context);
-                        }
 
                         _logger.LogErrorFromException(ex);
                         throw new XmlTransformationException(SR.XMLTRANSFORMATION_FatalTransformSyntaxError, ex);
-                    }
-                    finally
-                    {
-                        context = null;
                     }
                 }
             }
         }
 
-        public void AddTransformationService(Type serviceType, object serviceInstance)
-        {
-            _transformationServiceContainer.AddService(serviceType, serviceInstance);
-        }
+        public void AddTransformationService(Type serviceType, object serviceInstance) 
+            => _transformationServiceContainer.AddService(serviceType, serviceInstance);
 
-        public void RemoveTransformationService(Type serviceType)
-        {
-            _transformationServiceContainer.RemoveService(serviceType);
-        }
+        public void RemoveTransformationService(Type serviceType) 
+            => _transformationServiceContainer.RemoveService(serviceType);
 
         public bool Apply(XmlDocument xmlTarget)
         {
@@ -189,9 +171,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                         TransformLoop(_xmlTransformation);
                     }
                     else
-                    {
                         _logger.LogMessage(MessageType.Normal, "The expected namespace {0} was not found in the transform file", TransformNamespace);
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -210,20 +190,14 @@ namespace Microsoft.DotNet.Xdt.Tools
             return false;
         }
 
-        private void TransformLoop(XmlDocument xmlSource)
-        {
-            TransformLoop(new XmlNodeContext(xmlSource));
-        }
+        void TransformLoop(XmlDocument xmlSource) => TransformLoop(new XmlNodeContext(xmlSource));
 
-        private void TransformLoop(XmlNodeContext parentContext)
+        void TransformLoop(XmlNodeContext parentContext)
         {
             foreach (XmlNode node in parentContext.Node.ChildNodes)
             {
                 var element = node as XmlElement;
-                if (element == null)
-                {
-                    continue;
-                }
+                if (element == null) continue;
 
                 XmlElementContext context = CreateElementContext(parentContext as XmlElementContext, element);
                 try
@@ -237,30 +211,21 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private XmlElementContext CreateElementContext(XmlElementContext parentContext, XmlElement element)
-        {
-            return new XmlElementContext(parentContext, element, _xmlTarget, this);
-        }
+        XmlElementContext CreateElementContext(XmlElementContext parentContext, XmlElement element) 
+            => new XmlElementContext(parentContext, element, _xmlTarget, this);
 
-        private void HandleException(Exception ex)
-        {
-            _logger.LogErrorFromException(ex);
-        }
+        void HandleException(Exception ex) 
+            => _logger.LogErrorFromException(ex);
 
-        private void HandleException(Exception ex, XmlNodeContext context)
-        {
-            HandleException(WrapException(ex, context));
-        }
+        void HandleException(Exception ex, XmlNodeContext context) 
+            => HandleException(WrapException(ex, context));
 
-        private static Exception WrapException(Exception ex, XmlNodeContext context)
-        {
-            return XmlNodeException.Wrap(ex, context.Node);
-        }
+        static Exception WrapException(Exception ex, XmlNodeContext context) 
+            => XmlNodeException.Wrap(ex, context.Node);
 
-        private void HandleElement(XmlElementContext context)
+        void HandleElement(XmlElementContext context)
         {
-            string argumentString;
-            Transform transform = context.ConstructTransform(out argumentString);
+            Transform transform = context.ConstructTransform(out string argumentString);
             if (transform != null)
             {
 
@@ -296,11 +261,11 @@ namespace Microsoft.DotNet.Xdt.Tools
             TransformLoop(context);
         }
 
-        private void OnApplyingTransform() => _xmlTransformable?.OnBeforeChange();
+        void OnApplyingTransform() => _xmlTransformable?.OnBeforeChange();
 
-        private void OnAppliedTransform() => _xmlTransformable?.OnAfterChange();
+        void OnAppliedTransform() => _xmlTransformable?.OnAfterChange();
 
-        private void PreprocessImportElement(XmlElementContext context)
+        void PreprocessImportElement(XmlElementContext context)
         {
             string assemblyName = null;
             string nameSpace = null;
@@ -328,39 +293,27 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
 
             if (assemblyName != null && path != null)
-            {
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportAttributeConflict), context.Element);
-            }
+
             if (assemblyName == null && path == null)
-            {
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportMissingAssembly), context.Element);
-            }
+
             if (nameSpace == null)
-            {
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportMissingNamespace), context.Element);
-            }
+
             if (assemblyName != null)
-            {
                 _namedTypeFactory.AddAssemblyRegistration(assemblyName, nameSpace);
-            }
             else
-            {
                 _namedTypeFactory.AddPathRegistration(path, nameSpace);
-            }
         }
 
         public object GetService(Type serviceType)
         {
             object service = null;
             if (_documentServiceContainer != null)
-            {
                 service = _documentServiceContainer.GetService(serviceType);
-            }
-            if (service == null)
-            {
-                service = _transformationServiceContainer.GetService(serviceType);
-            }
-            return service;
+
+            return service ?? _transformationServiceContainer.GetService(serviceType);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -399,7 +352,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         ~XmlTransformation()
         {
-            Debug.Fail("call dispose please");
+            Debug.Fail("Call Dispose please");
             Dispose(false);
         }
     }

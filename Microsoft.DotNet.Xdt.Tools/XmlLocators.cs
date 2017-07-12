@@ -4,11 +4,9 @@ using System.Globalization;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal sealed class DefaultLocator : Locator
+    sealed class DefaultLocator : Locator
     {
-        // Uses all the default behavior
-        private static DefaultLocator _instance;
-        internal static DefaultLocator Instance => _instance ?? (_instance = new DefaultLocator());
+        internal static DefaultLocator Instance { get; } = new DefaultLocator();
     }
 
     public sealed class Match : Locator
@@ -29,9 +27,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                     keyPredicate = keyPredicate == null ? keySegment : string.Concat(keyPredicate, " and ", keySegment);
                 }
                 else
-                {
                     throw new XmlTransformationException(string.Format(CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_MatchAttributeDoesNotExist, key));
-                }
             }
 
             return keyPredicate;

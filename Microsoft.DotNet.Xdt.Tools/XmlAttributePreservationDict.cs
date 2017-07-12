@@ -6,26 +6,16 @@ using System.IO;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    internal class XmlAttributePreservationDict
+    class XmlAttributePreservationDict
     {
-        private readonly List<string> _orderedAttributes = new List<string>();
-        private readonly Dictionary<string, string> _leadingSpaces = new Dictionary<string, string>();
+        readonly List<string> _orderedAttributes = new List<string>();
+        readonly Dictionary<string, string> _leadingSpaces = new Dictionary<string, string>();
 
-        private string _attributeNewLineString;
-        private bool _computedOneAttributePerLine;
-        private bool _oneAttributePerLine;
+        string _attributeNewLineString;
+        bool? _oneAttributePerLine;
 
-        private bool OneAttributePerLine
-        {
-            get
-            {
-                if (_computedOneAttributePerLine) return _oneAttributePerLine;
-
-                _computedOneAttributePerLine = true;
-                _oneAttributePerLine = ComputeOneAttributePerLine();
-                return _oneAttributePerLine;
-            }
-        }
+        bool OneAttributePerLine => _oneAttributePerLine
+            ?? (_oneAttributePerLine = ComputeOneAttributePerLine()).GetValueOrDefault(false);
 
         internal void ReadPreservationInfo(string elementStartTag)
         {
@@ -36,35 +26,27 @@ namespace Microsoft.DotNet.Xdt.Tools
                 (int line, int linePosition, string attributeName) => 
                 {
                     _orderedAttributes.Add(attributeName);
+
                     if (whitespaceReader.ReadToPosition(line, linePosition))
-                    {
                         _leadingSpaces.Add(attributeName, whitespaceReader.PrecedingWhitespace);
-                    }
                     else
-                    {
                         Debug.Fail("Couldn't get leading whitespace for attribute");
-                    }
                 }
                 );
 
             if (whitespaceReader.ReadToPosition(lastCharacter))
-            {
                 _leadingSpaces.Add(string.Empty, whitespaceReader.PrecedingWhitespace);
-            }
             else
-            {
                 Debug.Fail("Couldn't get trailing whitespace for tag");
-            }
         }
 
-        private static int EnumerateAttributes(string elementStartTag, Action<int, int, string> onAttributeSpotted)
+        static int EnumerateAttributes(string elementStartTag, Action<int, int, string> onAttributeSpotted)
         {
             bool selfClosed = (elementStartTag.EndsWith("/>", StringComparison.Ordinal));
             string xmlDocString = elementStartTag;
+
             if (!selfClosed)
-            {
                 xmlDocString = elementStartTag.Substring(0, elementStartTag.Length - 1) + "/>";
-            }
 
             var xmlReader = new XmlTextReader(new StringReader(xmlDocString)) {Namespaces = false};
 
@@ -78,10 +60,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
 
             int lastCharacter = elementStartTag.Length;
-            if (selfClosed)
-            {
-                lastCharacter--;
-            }
+            if (selfClosed) lastCharacter--;
             return lastCharacter;
         }
 
@@ -89,9 +68,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             string oldNewLineString = null;
             if (_attributeNewLineString != null)
-            {
                 oldNewLineString = writer.SetAttributeNewLineString(_attributeNewLineString);
-            }
 
             try
             {
@@ -100,24 +77,18 @@ namespace Microsoft.DotNet.Xdt.Tools
                     XmlAttribute attr = attributes[attributeName];
                     if (attr == null) continue;
                     if (_leadingSpaces.ContainsKey(attributeName))
-                    {
                         writer.WriteAttributeWhitespace(_leadingSpaces[attributeName]);
-                    }
 
                     attr.WriteTo(writer);
                 }
 
                 if (_leadingSpaces.ContainsKey(string.Empty))
-                {
                     writer.WriteAttributeTrailingWhitespace(_leadingSpaces[string.Empty]);
-                }
             }
             finally
             {
                 if (oldNewLineString != null)
-                {
                     writer.SetAttributeNewLineString(oldNewLineString);
-                }
             }
         }
 
@@ -126,6 +97,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             if (updatedAttributes.Count == 0)
             {
                 if (_orderedAttributes.Count <= 0) return;
+                
                 // All attributes were removed, clear preservation info
                 _leadingSpaces.Clear();
                 _orderedAttributes.Clear();
@@ -136,17 +108,13 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                 // Prepopulate the list with attributes that existed before
                 foreach (string attributeName in _orderedAttributes)
-                {
                     attributeExists[attributeName] = false;
-                }
 
                 // Update the list with attributes that exist now
                 foreach (XmlAttribute attribute in updatedAttributes)
                 {
                     if (!attributeExists.ContainsKey(attribute.Name))
-                    {
                         _orderedAttributes.Add(attribute.Name);
-                    }
                     attributeExists[attribute.Name] = true;
                 }
 
@@ -178,14 +146,10 @@ namespace Microsoft.DotNet.Xdt.Tools
                             if (firstAttribute)
                             {
                                 if (keepLeadingWhitespace == null)
-                                {
                                     keepLeadingWhitespace = leadingSpace;
-                                }
                             }
                             else if (ContainsNewLine(leadingSpace))
-                            {
                                 keepLeadingWhitespace = leadingSpace;
-                            }
 
                             _leadingSpaces.Remove(key);
                         }
@@ -196,9 +160,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                         // Exception to rule #2 above: Don't replace an existing
                         // newline with one that was removed
                         if (firstAttribute || !_leadingSpaces.ContainsKey(key) || !ContainsNewLine(_leadingSpaces[key]))
-                        {
                             _leadingSpaces[key] = keepLeadingWhitespace;
-                        }
                         keepLeadingWhitespace = null;
                     }
 
@@ -206,24 +168,18 @@ namespace Microsoft.DotNet.Xdt.Tools
                     else if (!_leadingSpaces.ContainsKey(key))
                     {
                         if (firstAttribute)
-                        {
                             // This will prevent the textwriter from writing a
                             // newline before the first attribute
                             _leadingSpaces[key] = " ";
-                        }
                         else if (OneAttributePerLine)
-                        {
                             // Add the indent space between each attribute
                             _leadingSpaces[key] = GetAttributeNewLineString(formatter);
-                        }
                         else
-                        {
                             // Don't add any hard-coded spaces. All new attributes
                             // should be at the end, so they'll be formatted while
                             // writing. Make sure we have the right indent string,
                             // though.
                             EnsureAttributeNewLineString(formatter);
-                        }
                     }
 
                     // firstAttribute remains true until we find the first
@@ -233,28 +189,23 @@ namespace Microsoft.DotNet.Xdt.Tools
             }
         }
 
-        private bool ComputeOneAttributePerLine()
+        bool ComputeOneAttributePerLine()
         {
             if (_leadingSpaces.Count > 1)
             {
                 // If there is a newline between each pair of attributes, then
                 // we'll continue putting newlines between all attributes. If
                 // there's no newline between one pair, then we won't.
-                bool firstAttribute = true;
+                var firstAttribute = true;
                 foreach (string attributeName in _orderedAttributes)
                 {
                     // The space in front of the first attribute doesn't count,
                     // because that space isn't between attributes.
                     if (firstAttribute)
-                    {
                         firstAttribute = false;
-                    }
-                    else if (_leadingSpaces.ContainsKey(attributeName) &&
-                        !ContainsNewLine(_leadingSpaces[attributeName]))
-                    {
+                    else if (_leadingSpaces.ContainsKey(attributeName) && !ContainsNewLine(_leadingSpaces[attributeName]))
                         // This means there are two attributes on one line
                         return false;
-                    }
                 }
 
                 return true;
@@ -266,24 +217,22 @@ namespace Microsoft.DotNet.Xdt.Tools
             return false;
         }
 
-        private static bool ContainsNewLine(string space) => space.IndexOf("\n", StringComparison.Ordinal) >= 0;
+        static bool ContainsNewLine(string space) 
+            => space.IndexOf("\n", StringComparison.Ordinal) >= 0;
 
-        public string GetAttributeNewLineString(XmlFormatter formatter) => _attributeNewLineString ?? (_attributeNewLineString = ComputeAttributeNewLineString(formatter));
+        public string GetAttributeNewLineString(XmlFormatter formatter) 
+            => _attributeNewLineString ?? (_attributeNewLineString = ComputeAttributeNewLineString(formatter));
 
-        private string ComputeAttributeNewLineString(XmlFormatter formatter) => LookAheadForNewLineString() ?? formatter?.CurrentAttributeIndent;
+        string ComputeAttributeNewLineString(XmlFormatter formatter) 
+            => LookAheadForNewLineString() ?? formatter?.CurrentAttributeIndent;
 
-        private string LookAheadForNewLineString()
+        string LookAheadForNewLineString()
         {
             foreach (string space in _leadingSpaces.Values)
-            {
-                if (ContainsNewLine(space))
-                {
-                    return space;
-                }
-            }
+                if (ContainsNewLine(space)) return space;
             return null;
         }
 
-        private void EnsureAttributeNewLineString(XmlFormatter formatter) => GetAttributeNewLineString(formatter);
+        void EnsureAttributeNewLineString(XmlFormatter formatter) => GetAttributeNewLineString(formatter);
     }
 }

@@ -7,19 +7,13 @@ namespace Microsoft.DotNet.Xdt.Tools
     [Serializable]
     public sealed class XmlNodeException : XmlTransformationException
     {
-        private readonly XmlFileInfoDocument _document;
-        private readonly IXmlLineInfo _lineInfo;
+        readonly XmlFileInfoDocument _document;
+        readonly IXmlLineInfo _lineInfo;
 
-        public static Exception Wrap(Exception ex, XmlNode node)
-        {
-            if (ex is XmlNodeException)
-            {
-                // If this is already an XmlNodeException, then it probably
-                // got its node closer to the error, making it more accurate
-                return ex;
-            }
-            return new XmlNodeException(ex, node);
-        }
+        // If this is already an XmlNodeException, then it probably
+        // got its node closer to the error, making it more accurate
+        public static Exception Wrap(Exception ex, XmlNode node) 
+            => ex is XmlNodeException ? ex : new XmlNodeException(ex, node);
 
         public XmlNodeException(Exception innerException, XmlNode node)
             : base(innerException.Message, innerException)

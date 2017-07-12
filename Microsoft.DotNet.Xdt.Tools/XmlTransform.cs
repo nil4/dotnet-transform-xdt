@@ -24,22 +24,20 @@ namespace Microsoft.DotNet.Xdt.Tools
 
     public abstract class Transform
     {
-        private XmlTransformationLogger _logger;
-        private XmlElementContext _context;
-        private XmlNode _currentTransformNode;
-        private XmlNode _currentTargetNode;
+        XmlTransformationLogger _logger;
+        XmlElementContext _context;
+        XmlNode _currentTransformNode;
+        XmlNode _currentTargetNode;
 
-        private IList<string> _arguments;
+        IList<string> _arguments;
 
         protected Transform()
             : this(TransformFlags.None)
-        {
-        }
+        { }
 
         protected Transform(TransformFlags flags)
             : this(flags, MissingTargetMessage.Warning)
-        {
-        }
+        { }
 
         protected Transform(TransformFlags flags, MissingTargetMessage message)
         {
@@ -63,19 +61,14 @@ namespace Microsoft.DotNet.Xdt.Tools
             get
             {
                 if (_currentTargetNode == null)
-                {
                     foreach (XmlNode targetNode in TargetNodes)
-                    {
                         return targetNode;
-                    }
-                }
                 return _currentTargetNode;
             }
         }
 
         protected XmlNodeList TargetNodes => UseParentAsTargetNode ? _context.TargetParents : _context.TargetNodes;
-
-
+        
         protected XmlNodeList TargetChildNodes => _context.TargetNodes;
 
         protected XmlTransformationLogger Log
@@ -86,15 +79,11 @@ namespace Microsoft.DotNet.Xdt.Tools
                 {
                     _logger = _context.GetService<XmlTransformationLogger>();
                     if (_logger != null)
-                    {
                         _logger.CurrentReferenceNode = _context.TransformAttribute;
-                    }
                 }
                 return _logger;
             }
         }
-
-
 
         protected T GetService<T>() where T : class => _context.GetService<T>();
 
@@ -105,28 +94,25 @@ namespace Microsoft.DotNet.Xdt.Tools
             get
             {
                 if (_arguments == null && ArgumentString != null)
-                {
                     _arguments = XmlArgumentUtility.SplitArguments(ArgumentString);
-                }
                 return _arguments;
             }
         }
 
-        private string TransformNameLong
+        string TransformNameLong
         {
             get
             {
                 if (_context.HasLineInfo)
-                {
                     return string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_TransformNameFormatLong, TransformName, _context.TransformLineNumber, _context.TransformLinePosition);
-                }
                 return TransformNameShort;
             }
         }
 
-        internal string TransformNameShort => string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_TransformNameFormatShort, TransformName);
+        internal string TransformNameShort 
+            => string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_TransformNameFormatShort, TransformName);
 
-        private string TransformName => GetType().Name;
+        string TransformName => GetType().Name;
 
         internal void Execute(XmlElementContext context, string argumentString)
         {
@@ -135,83 +121,66 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             if (_context == null && ArgumentString == null)
             {
-            var error = false;
-            var startedSection = false;
+                var error = false;
+                var startedSection = false;
 
                 try
                 {
-                _context = context;
-                ArgumentString = argumentString;
-                _arguments = null;
+                    _context = context;
+                    ArgumentString = argumentString;
+                    _arguments = null;
 
                     if (ShouldExecuteTransform())
                     {
-                startedSection = true;
+                        startedSection = true;
 
-                Log.StartSection(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformBeginExecutingMessage, TransformNameLong);
-                Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusXPath, context.XPath);
+                        Log.StartSection(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformBeginExecutingMessage, TransformNameLong);
+                        Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusXPath, context.XPath);
 
                         if (ApplyTransformToAllTargetNodes)
-                        {
-                    ApplyOnAllTargetNodes();
-                }
+                            ApplyOnAllTargetNodes();
                         else
-                        {
-                    ApplyOnce();
-                }
-            }
-                }
-            catch (Exception ex)
-            {
-                error = true;
-                    if (context.TransformAttribute != null)
-                    {
-                        Log.LogErrorFromException(XmlNodeException.Wrap(ex, context.TransformAttribute));
-            }
-                    else
-                    {
-                        Log.LogErrorFromException(ex);
+                            ApplyOnce();
                     }
+                }
+                catch (Exception ex)
+                {
+                    error = true;
+                    Log.LogErrorFromException(context.TransformAttribute != null 
+                        ? XmlNodeException.Wrap(ex, context.TransformAttribute) 
+                        : ex);
                 }
                 finally
                 {
                     if (startedSection)
                     {
-                        if (error)
-                        {
-                            Log.EndSection(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformErrorExecutingMessage, TransformNameShort);
-                }
-                        else
-                        {
-                            Log.EndSection(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformEndExecutingMessage, TransformNameShort);
-                        }
+                        Log.EndSection(MessageType.Verbose, error
+                            ? SR.XMLTRANSFORMATION_TransformErrorExecutingMessage
+                            : SR.XMLTRANSFORMATION_TransformEndExecutingMessage, TransformNameShort);
                     }
                     else
-                    {
-                    Log.LogMessage(MessageType.Normal, SR.XMLTRANSFORMATION_TransformNotExecutingMessage, TransformNameLong);
+                        Log.LogMessage(MessageType.Normal, SR.XMLTRANSFORMATION_TransformNotExecutingMessage, TransformNameLong);
+
+                    _context = null;
+                    ArgumentString = null;
+                    _arguments = null;
+
+                    ReleaseLogger();
                 }
-
-                _context = null;
-                ArgumentString = null;
-                _arguments = null;
-
-                ReleaseLogger();
             }
         }
-        }
 
-        private void ReleaseLogger()
+        void ReleaseLogger()
         {
             if (_logger != null)
             {
-            _logger.CurrentReferenceNode = null;
-            _logger = null;
-        }
+                _logger.CurrentReferenceNode = null;
+                _logger = null;
+            }
         }
 
-        private bool ApplyOnAllTargetNodes()
+        void ApplyOnAllTargetNodes()
         {
-            var error = false;
             XmlNode originalTransformNode = TransformNode;
 
             foreach (XmlNode node in TargetNodes)
@@ -226,64 +195,41 @@ namespace Microsoft.DotNet.Xdt.Tools
                 catch (Exception ex)
                 {
                     Log.LogErrorFromException(ex);
-                    error = true;
                 }
             }
 
             _currentTargetNode = null;
-
-            return error;
         }
 
-        private void ApplyOnce()
+        void ApplyOnce()
         {
             WriteApplyMessage(TargetNode);
             Apply();
         }
 
-        private void WriteApplyMessage(XmlNode targetNode)
+        void WriteApplyMessage(XmlNode targetNode)
         {
-            var lineInfo = targetNode as IXmlLineInfo;
-            if (lineInfo != null)
-            {
+            if (targetNode is IXmlLineInfo lineInfo)
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusApplyTarget, targetNode.Name, lineInfo.LineNumber, lineInfo.LinePosition);
-            }
             else
-            {
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusApplyTargetNoLineInfo, targetNode.Name);
-            }
         }
 
-        private bool ShouldExecuteTransform()
+        bool ShouldExecuteTransform() => HasRequiredTarget();
+
+        bool HasRequiredTarget()
         {
-            return HasRequiredTarget();
-        }
+            bool hasRequiredTarget = UseParentAsTargetNode
+                ? _context.HasTargetParent(out XmlElementContext matchFailureContext, out bool existedInOriginal)
+                : _context.HasTargetNode(out matchFailureContext, out existedInOriginal);
 
-        private bool HasRequiredTarget()
-        {
-            bool hasRequiredTarget;
-            bool existedInOriginal;
-            XmlElementContext matchFailureContext;
+            if (hasRequiredTarget) return true;
 
-            if (UseParentAsTargetNode)
-            {
-                hasRequiredTarget = _context.HasTargetParent(out matchFailureContext, out existedInOriginal);
-            }
-            else
-            {
-                hasRequiredTarget = _context.HasTargetNode(out matchFailureContext, out existedInOriginal);
-            }
-
-            if (!hasRequiredTarget)
-            {
             HandleMissingTarget(matchFailureContext, existedInOriginal);
             return false;
         }
 
-            return true;
-        }
-
-        private void HandleMissingTarget(XmlElementContext matchFailureContext, bool existedInOriginal)
+        void HandleMissingTarget(XmlElementContext matchFailureContext, bool existedInOriginal)
         {
             string messageFormat = existedInOriginal
                 ? SR.XMLTRANSFORMATION_TransformSourceMatchWasRemoved

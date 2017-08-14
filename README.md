@@ -15,10 +15,10 @@ the individual steps.
 
 ### <a name="msbuild"></a> How to use with MSBuild/csproj tooling
 
-**Note**: if you are using project.json tooling (CLI preview 2 or earlier, or Visual Studio 2015),
+**Note**: if you are using project.json tooling (CLI 1.0.0 preview 2 or earlier, or Visual Studio 2015),
 please refer to the [project.json section below](#project-json).
 
-Run `dotnet --version` in a command prompt and make sure you're using version **`2.0.0-preview2`** or later.
+Run `dotnet --version` in a command prompt and make sure you're using version **`2.0.0`** or later.
 
 Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files
 `XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config`
@@ -47,7 +47,7 @@ they must currently be added by editing the project file.
 
 ```xml
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0-preview1" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
     ... other package references ...
   <ItemGroup>
 ```
@@ -148,7 +148,7 @@ Note that under `<aspNetCore>`, the `<environmentVariables>` section was inserte
 
 ### <a name="project-json"></a> How to Install (project.json tooling)
 
-**Note**: if you are using MSBuild/csproj tooling (CLI preview 4 or later, or Visual Studio 2017),
+**Note**: if you are using MSBuild/csproj tooling (CLI 1.0.0 preview 4 or later, or Visual Studio 2017),
 please refer to the [MSBuild/csproj section above](#msbuild).
 
 Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` file:

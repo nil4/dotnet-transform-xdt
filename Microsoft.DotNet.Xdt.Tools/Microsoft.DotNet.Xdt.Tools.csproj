@@ -7,7 +7,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <Version>2.0.0-preview1</Version>  
+    <Version>2.0.0-preview2</Version>  
     <PackageVersion>$(Version)</PackageVersion>
     <PackageId>Microsoft.DotNet.Xdt.Tools</PackageId>
     <PackageType>DotnetCliTool</PackageType>
@@ -15,7 +15,7 @@
     <Description>XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.</Description>
     <AssemblyTitle>XDT (XML Document Transform) tool for .NET Core CLI</AssemblyTitle>
     <PackageTags>dotnetcore;xdt;transform;xml</PackageTags>
-    <PackageReleaseNotes>Support dotnet SDK 2.0.0-preview2</PackageReleaseNotes>
+    <PackageReleaseNotes>Support dotnet SDK 2.0.0</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/nil4/dotnet-transform-xdt</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

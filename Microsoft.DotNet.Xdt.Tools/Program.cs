@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Xml;
-using Microsoft.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {

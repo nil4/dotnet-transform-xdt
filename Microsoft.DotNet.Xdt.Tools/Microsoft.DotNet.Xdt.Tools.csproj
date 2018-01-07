@@ -23,6 +23,6 @@
     <MinClientVersion>3.5</MinClientVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.0.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.1.1" />
   </ItemGroup>
 </Project>

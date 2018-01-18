@@ -49,7 +49,7 @@ they must currently be added by editing the project file.
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
     ... other package references ...
-  <ItemGroup>
+  </ItemGroup>
 ```
 
 Run `dotnet restore` and `dotnet build` in the `XdtSample` folder. If you now run `dotnet transform-xdt`

@@ -60,9 +60,10 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             get
             {
-                if (_currentTargetNode == null)
-                    foreach (XmlNode targetNode in TargetNodes)
-                        return targetNode;
+                if (_currentTargetNode != null) return _currentTargetNode;
+
+                foreach (XmlNode targetNode in TargetNodes)
+                    return targetNode;
                 return _currentTargetNode;
             }
         }

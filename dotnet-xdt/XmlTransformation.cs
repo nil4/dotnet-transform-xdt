@@ -231,8 +231,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                 bool fOriginalSupressWarning = _logger.SupressWarnings;
 
-                var supressWarningsAttribute = context.Element.Attributes.GetNamedItem(SupressWarnings, TransformNamespace) as XmlAttribute;
-                if (supressWarningsAttribute != null)
+                if (context.Element.Attributes.GetNamedItem(SupressWarnings, TransformNamespace) is XmlAttribute supressWarningsAttribute)
                 {
                     bool fSupressWarning = Convert.ToBoolean(supressWarningsAttribute.Value, System.Globalization.CultureInfo.InvariantCulture);
                     _logger.SupressWarnings = fSupressWarning;
@@ -336,8 +335,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 _xmlTransformable = null;
             }
 
-            var xmlFileInfoDocument = _xmlTransformation as XmlFileInfoDocument;
-            if (xmlFileInfoDocument != null)
+            if (_xmlTransformation is XmlFileInfoDocument xmlFileInfoDocument)
             {
                 xmlFileInfoDocument.Dispose();
                 _xmlTransformation = null;

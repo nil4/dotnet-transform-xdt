@@ -27,8 +27,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         public static void Format(XmlDocument document)
         {
-            var errorInfoDocument = document as XmlFileInfoDocument;
-            if (errorInfoDocument != null)
+            if (document is XmlFileInfoDocument errorInfoDocument)
             {
                 var formatter = new XmlFormatter(errorInfoDocument);
                 formatter.FormatLoop(errorInfoDocument);

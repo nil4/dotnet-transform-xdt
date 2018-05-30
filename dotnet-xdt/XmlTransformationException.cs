@@ -2,8 +2,7 @@ using System;
 
 namespace Microsoft.DotNet.Xdt.Tools
 {
-    // This doesn't do anything, except mark an error as having come from
-    // the transformation engine
+    // This doesn't do anything, except mark an error as having come from the transformation engine
     [Serializable]
     public class XmlTransformationException : Exception
     {

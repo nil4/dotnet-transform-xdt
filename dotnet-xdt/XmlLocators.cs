@@ -19,9 +19,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             foreach (string key in Arguments)
             {
-                var keyAttribute = CurrentElement.Attributes.GetNamedItem(key) as XmlAttribute;
-
-                if (keyAttribute != null)
+                if (CurrentElement.Attributes.GetNamedItem(key) is XmlAttribute keyAttribute)
                 {
                     string keySegment = string.Format(CultureInfo.InvariantCulture, "@{0}='{1}'", keyAttribute.Name, keyAttribute.Value);
                     keyPredicate = keyPredicate == null ? keySegment : string.Concat(keyPredicate, " and ", keySegment);

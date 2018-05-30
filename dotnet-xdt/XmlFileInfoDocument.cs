@@ -61,11 +61,9 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         void LoadFromTextReader(TextReader textReader)
         {
-            var streamReader = textReader as StreamReader;
-            if (streamReader != null)
+            if (textReader is StreamReader streamReader)
             {
-                var fileStream = streamReader.BaseStream as FileStream;
-                if (fileStream != null)
+                if (streamReader.BaseStream is FileStream fileStream)
                     FileName = fileStream.Name;
 
                 _textEncoding = GetEncodingFromStream(streamReader.BaseStream);
@@ -111,8 +109,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             XmlNode clone;
             try
             {
-                var lineInfo = element as IXmlLineInfo;
-                if (lineInfo != null)
+                if (element is IXmlLineInfo lineInfo)
                 {
                     _reader = new XmlTextReader(new StringReader(element.OuterXml));
 
@@ -236,8 +233,7 @@ namespace Microsoft.DotNet.Xdt.Tools
             // else that gets added must be contained by a new element.
             // So to determine what's new, we search up the tree for a new
             // element that contains this node.
-            var element = FindContainingElement(node) as XmlFileInfoElement;
-            return element != null && !element.IsOriginal;
+            return FindContainingElement(node) is XmlFileInfoElement element && !element.IsOriginal;
         }
 
         static XmlElement FindContainingElement(XmlNode node)

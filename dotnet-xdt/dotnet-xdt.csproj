@@ -1,24 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(Pack)' == 'lib' ">netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(Pack)' == 'tool' ">netcoreapp2.1</TargetFrameworks>
+
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
     <DebugType>embedded</DebugType>
+    <RootNamespace>DotNet.Xdt</RootNamespace>
 
-    <Version>2.1.0-preview.1</Version>
+    <FileVersion>2.1.0</FileVersion>
+    <Version>$(FileVersion)-preview.1</Version>
     <_ReleaseNotes>
       Support for .NET Core 2.1.
     </_ReleaseNotes>
   </PropertyGroup>
 
-  <PropertyGroup Label="Library" Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+  <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == 'netstandard2.0' ">
     <AssemblyName>DotNet.Xdt</AssemblyName>
     <AssemblyTitle>.NET Standard 2.0 library for XDT (XML Document Transform).</AssemblyTitle>
     <Description>$(AssemblyTitle)</Description>
     <_PackageTags>netstandard20</_PackageTags>
   </PropertyGroup>
 
-  <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
+  <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFrameworks)' != 'netstandard2.0' ">
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
 
@@ -43,5 +48,20 @@
     <RepositoryUrl>https://github.com/nil4/dotnet-transform-xdt.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <MinClientVersion>4.0</MinClientVersion>
+
+    <!-- Disable 'The package uses SemVer 2.0.0' warning; https://github.com/NuGet/Home/issues/4687 -->
+    <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="SR.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="SR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SR.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

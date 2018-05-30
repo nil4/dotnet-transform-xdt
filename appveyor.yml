@@ -1,4 +1,4 @@
-image: Visual Studio 2017 Preview
+image: Visual Studio 2017
 
 version: 2.1.{build}
 
@@ -24,17 +24,10 @@ install:
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 
 build_script:
-- ps: >-
-    dotnet --version
-    
-    dotnet restore -v Minimal
-    
-    dotnet build -c Release
-    
-    dotnet pack dotnet-xdt\\tool -c Release
+- ps: & build.cmd
 
 test_script:
-- ps: dotnet test dotnet-xdt.tests -c Release
+- ps: cd dotnet-xdt.tests && dotnet fixie --configuration Release --report dotnet-xdt.tests.xml
 
 artifacts:
 - path: dotnet-xdt/bin/**/*.nupkg

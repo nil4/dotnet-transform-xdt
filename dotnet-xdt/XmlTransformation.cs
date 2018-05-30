@@ -112,8 +112,7 @@ namespace DotNet.Xdt
 
                 foreach (XmlNode node in namespaceNodes)
                 {
-                    var element = node as XmlElement;
-                    if (element == null)
+                    if (!(node is XmlElement element))
                     {
                         Debug.Fail("The XPath for elements returned something that wasn't an element?");
                         continue;

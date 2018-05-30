@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -10,8 +11,8 @@ namespace DotNet.Xdt.Tests
         [Fact]
         public void Support_WriteToStream()
         {
-            string source = TestResource("Web.config");
-            string transformFile = TestResource("Web.Release.config");
+            string source = TestResource($"Web.config");
+            string transformFile = TestResource($"Web.Release.config");
             string destFile = OutputFile("MyWeb.config", nameof(Support_WriteToStream));
 
             //execute
@@ -113,9 +114,9 @@ namespace DotNet.Xdt.Tests
             Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
         }
 
-        static string TestResource(string fileName)
+        static string TestResource(FormattableString fileName)
         {
-            string path = Path.Combine(Environment.CurrentDirectory, "Resources", fileName);
+            string path = Path.Combine(Environment.CurrentDirectory, "Resources", fileName.ToString(CultureInfo.InvariantCulture));
             if (File.Exists(path)) return path;
             throw new IOException($"Cannot not find test resource: {Path.GetFullPath(path)}");
         }

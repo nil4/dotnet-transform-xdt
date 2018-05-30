@@ -1,6 +1,6 @@
 image: Visual Studio 2017 Preview
 
-version: 2.0.{build}
+version: 2.1.{build}
 
 configuration: Release
 
@@ -9,7 +9,7 @@ clone_depth: 1
 environment:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  CLI_VERSION: 2.0.0
+  CLI_VERSION: 2.1.0
 
 install:
 - ps: >-
@@ -17,7 +17,7 @@ install:
 
     mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
     
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dotnet/cli/release/2.0.0/scripts/obtain/dotnet-install.ps1" -OutFile "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1"
+    Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1"
     
     & "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1" -Version $env:CLI_VERSION -InstallDir $env:DOTNET_INSTALL_DIR
     
@@ -31,12 +31,12 @@ build_script:
     
     dotnet build -c Release
     
-    dotnet pack Microsoft.DotNet.Xdt.Tools -c Release
+    dotnet pack dotnet-xdt\\tool -c Release
 
 test_script:
-- ps: dotnet test Microsoft.DotNet.Xdt.Tools.Tests -c Release
+- ps: dotnet test dotnet-xdt.tests -c Release
 
 artifacts:
-- path: Microsoft.DotNet.Xdt.Tools/bin/**/*.nupkg
+- path: dotnet-xdt/bin/**/*.nupkg
 
 deploy: off

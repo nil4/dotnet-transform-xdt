@@ -21,7 +21,7 @@ namespace Microsoft.DotNet.Xdt.Tools.Tests
             => _log.AppendLine(string.Concat(IndentString, string.Format(message, messageArgs)));
 
         public void LogWarning(string message, params object[] messageArgs) 
-            => LogWarning(message, messageArgs);
+            => LogWarning("", message, messageArgs);
 
         public void LogWarning(string file, string message, params object[] messageArgs) 
             => LogWarning(file, 0, 0, message, messageArgs);

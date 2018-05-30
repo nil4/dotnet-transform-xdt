@@ -19,8 +19,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
             if (_externalLogger != null)
             {
-                var nodeException = ex as XmlNodeException;
-                if (nodeException != null && nodeException.HasErrorInfo)
+                if (ex is XmlNodeException nodeException && nodeException.HasErrorInfo)
                 {
                     _externalLogger.LogErrorFromException(
                         nodeException,
@@ -82,9 +81,8 @@ namespace Microsoft.DotNet.Xdt.Tools
                 if (_externalLogger != null)
                 {
                     string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
-                    var lineInfo = referenceNode as IXmlLineInfo;
 
-                    if (lineInfo != null)
+                    if (referenceNode is IXmlLineInfo lineInfo)
                     {
                         _externalLogger.LogWarning(
                             fileName,
@@ -123,9 +121,8 @@ namespace Microsoft.DotNet.Xdt.Tools
             if (_externalLogger != null)
             {
                 string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
-                var lineInfo = referenceNode as IXmlLineInfo;
 
-                if (lineInfo != null)
+                if (referenceNode is IXmlLineInfo lineInfo)
                 {
                     _externalLogger.LogError(
                         fileName,
@@ -160,9 +157,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
         static string ConvertUriToFileName(XmlDocument xmlDocument)
         {
-            var errorInfoDocument = xmlDocument as XmlFileInfoDocument;
-            string uri = errorInfoDocument != null ? errorInfoDocument.FileName : xmlDocument.BaseURI;
-
+            string uri = xmlDocument is XmlFileInfoDocument errorInfoDocument ? errorInfoDocument.FileName : xmlDocument.BaseURI;
             return ConvertUriToFileName(uri);
         }
 

@@ -24,10 +24,22 @@ install:
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 
 build_script:
-- ps: & build.cmd
+- ps: >-
+    dotnet --version
+    
+    dotnet.exe msbuild /t:Restore /p:Configuration=Release;Pack=lib
+
+    dotnet.exe msbuild /t:Pack    /p:Configuration=Release;Pack=lib
+
+    dotnet.exe msbuild /t:Restore /p:Configuration=Release;Pack=tool
+
+    dotnet.exe msbuild /t:Pack    /p:Configuration=Release;Pack=tool
 
 test_script:
-- ps: cd dotnet-xdt.tests && dotnet fixie --configuration Release --report dotnet-xdt.tests.xml
+- ps: >-
+    cd dotnet-xdt.tests
+    
+    dotnet fixie --configuration Release --report dotnet-xdt.tests.xml
 
 artifacts:
 - path: dotnet-xdt/bin/**/*.nupkg

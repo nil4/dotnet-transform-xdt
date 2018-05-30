@@ -112,8 +112,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                 foreach (XmlNode node in namespaceNodes)
                 {
-                    var element = node as XmlElement;
-                    if (element == null)
+                    if (!(node is XmlElement element))
                     {
                         Debug.Fail("The XPath for elements returned something that wasn't an element?");
                         continue;
@@ -196,8 +195,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             foreach (XmlNode node in parentContext.Node.ChildNodes)
             {
-                var element = node as XmlElement;
-                if (element == null) continue;
+                if (!(node is XmlElement element)) continue;
 
                 XmlElementContext context = CreateElementContext(parentContext as XmlElementContext, element);
                 try
@@ -231,8 +229,7 @@ namespace Microsoft.DotNet.Xdt.Tools
 
                 bool fOriginalSupressWarning = _logger.SupressWarnings;
 
-                var supressWarningsAttribute = context.Element.Attributes.GetNamedItem(SupressWarnings, TransformNamespace) as XmlAttribute;
-                if (supressWarningsAttribute != null)
+                if (context.Element.Attributes.GetNamedItem(SupressWarnings, TransformNamespace) is XmlAttribute supressWarningsAttribute)
                 {
                     bool fSupressWarning = Convert.ToBoolean(supressWarningsAttribute.Value, System.Globalization.CultureInfo.InvariantCulture);
                     _logger.SupressWarnings = fSupressWarning;
@@ -336,8 +333,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                 _xmlTransformable = null;
             }
 
-            var xmlFileInfoDocument = _xmlTransformation as XmlFileInfoDocument;
-            if (xmlFileInfoDocument != null)
+            if (_xmlTransformation is XmlFileInfoDocument xmlFileInfoDocument)
             {
                 xmlFileInfoDocument.Dispose();
                 _xmlTransformation = null;

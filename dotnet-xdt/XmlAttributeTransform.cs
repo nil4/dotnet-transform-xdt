@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Diagnostics;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     public abstract class AttributeTransform : Transform
     {

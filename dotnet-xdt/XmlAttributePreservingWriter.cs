@@ -5,7 +5,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     class XmlAttributePreservingWriter : XmlWriter
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     class NamedTypeFactory
     {

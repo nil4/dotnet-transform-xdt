@@ -5,7 +5,7 @@ using System.Xml;
 using System.Diagnostics;
 using RegularExpressions = System.Text.RegularExpressions;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     static class CommonErrors
     {

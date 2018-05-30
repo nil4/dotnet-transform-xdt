@@ -1,6 +1,6 @@
 using System;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     public enum MessageType
     {

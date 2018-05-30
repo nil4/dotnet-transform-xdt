@@ -3,7 +3,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     public class XmlTransformationLogger
     {

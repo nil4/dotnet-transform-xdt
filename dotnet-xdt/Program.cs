@@ -1,97 +1,164 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
-using McMaster.Extensions.CommandLineUtils;
 
-namespace Microsoft.DotNet.Xdt.Tools
+#if NETCOREAPP
+namespace DotNet.Xdt
 {
-    public class Program
+    static class Program
     {
-        const string Prefix = "[XDT] ";
+        const string ToolName = "dotnet-xdt";
+        const string Prefix = "[" + ToolName + "] ";
+
+        const int Success = 0;
+        const int ErrorUsage = 1;
+        const int ErrorFailed = 2;
 
         public static int Main(string[] args)
         {
-            var app = new CommandLineApplication
+            string inputFilePath = null, outputFilePath = null, transformFilePath = null;
+            bool verbose = false, quiet = false, printUsage = false;
+
+            if (!ParseArguments(args, ref inputFilePath, ref outputFilePath, ref transformFilePath, ref verbose, ref quiet, ref printUsage))
             {
-                Name = "dotnet-transform-xdt",
-                FullName = ".NET Core XML Document Transformation",
-                Description = "XML Document Transformation for .NET Core applications"
-            };
-            app.HelpOption("-?|-h|--help");
+                if (printUsage)
+                {
+                    PrintUsage(Console.Out);
+                    return ErrorUsage;
+                }
 
-            CommandOption inputFilePath = app.Option("--xml|-x", "The path to the XML file to transform", CommandOptionType.SingleValue);
-            CommandOption transformFilePath = app.Option("--transform|-t", "The path to the XDT transform file to apply", CommandOptionType.SingleValue);
-            CommandOption outputFilePath = app.Option("--output|-o", "The path where the output (transformed) file will be written", CommandOptionType.SingleValue);
-            CommandOption verboseOption = app.Option("--verbose|-v", "Print verbose messages", CommandOptionType.NoValue);
+                PrintUsage(Console.Error);
+                return ErrorUsage;
+            }
 
-            app.OnExecute(() =>
+            if (!File.Exists(inputFilePath))
             {
-                string inputPath = inputFilePath.Value();
-                string transformPath = transformFilePath.Value();
-                string outputPath = outputFilePath.Value();
+                LogError($"Input file not found: {inputFilePath}");
+                return ErrorUsage;
+            }
 
-                if (inputPath == null || transformPath == null || outputPath == null)
-                {
-                    app.ShowHelp();
-                    return 2;
-                }
+            if (!File.Exists(transformFilePath))
+            {
+                LogError($"Transform file not found: {transformFilePath}");
+                return ErrorUsage;
+            }
 
-                if (!File.Exists(inputPath))
-                {
-                    Console.Error.WriteLine($"{Prefix}Input file not found: {inputPath}");
-                    return 3;
-                }
+            if (!quiet) Log($"Transforming '{inputFilePath}' using '{transformFilePath}' into '{outputFilePath}'");
 
-                if (!File.Exists(transformPath))
-                {
-                    Console.Error.WriteLine($"{Prefix}Transform file not found: {transformPath}");
-                    return 4;
-                }
-
-                Console.WriteLine($"{Prefix}Transforming '{inputPath}' using '{transformPath}' into '{outputPath}'");
-
+            try
+            {
                 var sourceXml = new XmlTransformableDocument { PreserveWhitespace = true };
 
-                using (FileStream sourceStream = File.OpenRead(inputPath))
-                using (FileStream transformStream = File.OpenRead(transformPath))
-                using (var transformation = new XmlTransformation(transformStream, new ConsoleTransformationLogger(verboseOption.HasValue())))
+                using (var sourceStream = File.OpenRead(inputFilePath))
+                using (var transformStream = File.OpenRead(transformFilePath))
+                using (var transformation = new XmlTransformation(transformStream, new ConsoleTransformationLogger(verbose)))
                 {
                     sourceXml.Load(sourceStream);
                     transformation.Apply(sourceXml);
                 }
 
-                using (FileStream outputStream = File.Create(outputPath))
-                using (XmlWriter outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings
-                {
-                    Indent = true,
-                    Encoding = Encoding.UTF8,
-                }))
+                using (FileStream outputStream = File.Create(outputFilePath))
+                using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings { Indent = true, Encoding = Encoding.UTF8 }))
                 {
                     sourceXml.WriteTo(outputWriter);
                 }
 
-                return 0;
-            });
-
-            if (args == null ||
-                args.Length == 0 ||
-                args[0].Equals("-?", StringComparison.OrdinalIgnoreCase) ||
-                args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) ||
-                args[0].Equals("--help", StringComparison.OrdinalIgnoreCase))
-            {
-                app.ShowHelp();
-                return 1;
-            }
-
-            try
-            {
-                return app.Execute(args);
+                return Success;
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(Prefix + "Failed: " + ex.Message);
-                return 1;
+                LogError($"Failed: {ex}");
+                return ErrorFailed;
+            }
+        }
+
+        static void Log(FormattableString message)
+        {
+            Console.Write(Prefix);
+            Console.WriteLine(message.ToString(CultureInfo.InvariantCulture));
+        }
+
+        static void LogError(FormattableString message)
+        {
+            Console.Error.Write(Prefix);
+            Console.Error.WriteLine(message.ToString(CultureInfo.InvariantCulture));
+        }
+
+        static void PrintUsage(TextWriter writer)
+        {
+            writer.WriteLine(".NET XML Document Transform");
+            writer.WriteLine();
+            writer.WriteLine($"Usage: {ToolName} <arguments> [options]");
+            writer.WriteLine();
+            writer.WriteLine("Required arguments:");
+            writer.WriteLine("  --xml|-x         Input XML file to transform");
+            writer.WriteLine("  --transform|-t   XDT transform file to apply");
+            writer.WriteLine("  --output|-o      Path where the output file will be written");
+            writer.WriteLine();
+            writer.WriteLine("Options:");
+            writer.WriteLine("  --help|-h|-?     Print usage information");
+            writer.WriteLine("  --quiet|-q       Print only error messages");
+            writer.WriteLine("  --verbose|-v     Print verbose messages while transforming");
+            writer.WriteLine();
+            writer.WriteLine($"Example: {ToolName} --xml original.xml --transform delta.xml --output final.xml --verbose");
+        }
+
+        static bool ParseArguments(IReadOnlyList<string> args, ref string inputFilePath, ref string outputFilePath, 
+            ref string transformFilePath, ref bool verbose, ref bool quiet, ref bool showHelp)
+        {
+            for (var i = 0; i < args.Count; i++)
+            {
+                switch (args[i])
+                {
+                case "-x":
+                case "--xml":
+                    if (!TryRead(i + 1, ref inputFilePath)) return false;
+                    break;
+
+                case "-o":
+                case "--output":
+                    if (!TryRead(i + 1, ref outputFilePath)) return false;
+                    break;
+
+                case "-t":
+                case "--transform":
+                    if (!TryRead(i + 1, ref transformFilePath)) return false;
+                    break;
+
+                case "-v":
+                case "--verbose":
+                    verbose = true;
+                    break;
+
+                case "-q":
+                case "--quiet":
+                    quiet = true;
+                    break;
+
+                case "-?":
+                case "-h":
+                case "--help":
+                    showHelp = true;
+                    return false;
+
+                default:
+                    LogError($"Invalid argument: '{args[i]}'");
+                    return false;
+                }
+            }
+
+            return !string.IsNullOrWhiteSpace(inputFilePath)
+                && !string.IsNullOrWhiteSpace(outputFilePath)
+                && !string.IsNullOrWhiteSpace(transformFilePath);
+
+            bool TryRead(int index, ref string value)
+            {
+                if (index >= args.Count || value != null) return false;
+                value = args[index];
+                return true;
             }
         }
 
@@ -158,3 +225,4 @@ namespace Microsoft.DotNet.Xdt.Tools
         }
     }
 }
+#endif

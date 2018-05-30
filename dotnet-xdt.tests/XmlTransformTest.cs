@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace Microsoft.DotNet.Xdt.Tools.Tests
+namespace DotNet.Xdt.Tests
 {
     public class XmlTransformTest
     {

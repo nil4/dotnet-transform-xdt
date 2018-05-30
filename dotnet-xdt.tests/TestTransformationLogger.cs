@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Microsoft.DotNet.Xdt.Tools.Tests
+namespace DotNet.Xdt.Tests
 {
     class TestTransformationLogger : IXmlTransformationLogger
     {

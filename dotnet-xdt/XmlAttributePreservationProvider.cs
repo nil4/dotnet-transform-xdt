@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     class XmlAttributePreservationProvider : IDisposable
     {

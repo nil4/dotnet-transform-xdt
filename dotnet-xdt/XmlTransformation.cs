@@ -4,7 +4,7 @@ using System.Xml;
 using System.IO;
 using System.ComponentModel.Design;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     public class XmlTransformation : IServiceProvider, IDisposable
     {

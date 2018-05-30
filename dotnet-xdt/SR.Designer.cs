@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.DotNet.Xdt.Tools {
+namespace DotNet.Xdt {
     using System;
     using System.Reflection;
     

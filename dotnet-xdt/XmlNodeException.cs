@@ -2,7 +2,7 @@ using System;
 using System.Xml;
 using System.Runtime.Serialization;
 
-namespace Microsoft.DotNet.Xdt.Tools
+namespace DotNet.Xdt
 {
     [Serializable]
     public sealed class XmlNodeException : XmlTransformationException

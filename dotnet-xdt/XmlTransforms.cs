@@ -155,8 +155,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         {
             foreach (XmlAttribute transformAttribute in TransformAttributes)
             {
-                var targetAttribute = TargetNode.Attributes.GetNamedItem(transformAttribute.Name) as XmlAttribute;
-                if (targetAttribute != null)
+                if (TargetNode.Attributes.GetNamedItem(transformAttribute.Name) is XmlAttribute targetAttribute)
                     targetAttribute.Value = transformAttribute.Value;
                 else
                     TargetNode.Attributes.Append((XmlAttribute) transformAttribute.CloneNode(true));
@@ -462,8 +461,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                             }
 
                             //Identify the Token format
-                            string strTokenFormat;
-                            if (!paramDictionary.TryGetValue(Token, out strTokenFormat))
+                            if (!paramDictionary.TryGetValue(Token, out string strTokenFormat))
                                 strTokenFormat = _storageDictionary.TokenFormat;
 
                             if (!string.IsNullOrEmpty(strTokenFormat))
@@ -492,8 +490,7 @@ namespace Microsoft.DotNet.Xdt.Tools
                                 // Replace with token
                                 strbuilder.Append(strTokenFormat);
 
-                            string attributeLocator;
-                            if (paramDictionary.TryGetValue(XpathLocator, out attributeLocator) && !string.IsNullOrEmpty(attributeLocator))
+                            if (paramDictionary.TryGetValue(XpathLocator, out string attributeLocator) && !string.IsNullOrEmpty(attributeLocator))
                             {
                                 IList<string> locators = XmlArgumentUtility.SplitArguments(attributeLocator);
                                 string xpathwithlocator = GetXPathToAttribute(targetAttribute, locators);

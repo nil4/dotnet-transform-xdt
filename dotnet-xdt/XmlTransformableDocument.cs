@@ -17,7 +17,7 @@ namespace Microsoft.DotNet.Xdt.Tools
         internal void OnAfterChange()
         { }
 
-        void CloneOriginalDocument() => _xmlOriginal = (XmlDocument)Clone();
+        void CloneOriginalDocument() => _xmlOriginal = (XmlDocument) Clone();
 
         // FUTURE: Write a comparison algorithm to see if xmlLeft and
         // xmlRight are different in any significant way. Until then,

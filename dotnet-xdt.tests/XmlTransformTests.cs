@@ -2,13 +2,12 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Xunit;
+using Shouldly;
 
 namespace DotNet.Xdt.Tests
 {
-    public class XmlTransformTest
+    public class XmlTransformTests
     {
-        [Fact]
         public void Support_WriteToStream()
         {
             string source = TestResource($"Web.config");
@@ -22,43 +21,43 @@ namespace DotNet.Xdt.Tests
 
                 using (var transform = new XmlTransformation(transformFile))
                 {
-                    bool succeed = transform.Apply(x);
+                    bool applied = transform.Apply(x);
 
                     using (var fsDestFile = new FileStream(destFile, FileMode.OpenOrCreate))
                     {
                         x.Save(fsDestFile);
 
                         //verify, we have a success transform
-                        Assert.True(succeed);
+                        applied.ShouldBeTrue();
 
                         //verify, the stream is not closed
-                        Assert.True(fsDestFile.CanWrite, "The file stream can not be written. was it closed?");
+                        fsDestFile.CanWrite.ShouldBeTrue("The file stream can not be written. was it closed?");
                     }
 
                     //sanity verify the content is right, (xml was transformed)
                     string content = File.ReadAllText(destFile);
-                    Assert.DoesNotContain("debug=\"true\"", content);
+                    content.ShouldNotContain("debug=\"true\"");
 
                     //sanity verify the line format is not lost (otherwsie we will have only one long line)
-                    Assert.InRange(File.ReadLines(destFile).Count(), 10, int.MaxValue);
+                    File.ReadLines(destFile).Count().ShouldBeGreaterThan(10);
                 }
             }
         }
 
-        [Fact]
-        public void AttributeFormatting() => Transform_ExpectSuccess(nameof(AttributeFormatting));
+        public void AttributeFormatting() 
+            => Transform_ExpectSuccess(nameof(AttributeFormatting));
 
-        [Fact]
-        public void TagFormatting() => Transform_ExpectSuccess(nameof(TagFormatting));
+        public void TagFormatting() 
+            => Transform_ExpectSuccess(nameof(TagFormatting));
 
         //2 edge cases we didn't handle well and then fixed it per customer feedback.
         //    a. '>' in the attribute value
         //    b. element with only one character such as <p>
-        [Fact]
-        public void EdgeCase() => Transform_ExpectSuccess(nameof(EdgeCase));
+        public void EdgeCase() 
+            => Transform_ExpectSuccess(nameof(EdgeCase));
 
-        [Fact]
-        public void WarningsAndErrors() => Transform_ExpectFail(nameof(WarningsAndErrors));
+        public void WarningsAndErrors() 
+            => Transform_ExpectFail(nameof(WarningsAndErrors));
 
         static void Transform_ExpectSuccess(string baseFileName)
         {
@@ -69,7 +68,7 @@ namespace DotNet.Xdt.Tests
             string expectedLog = TestResource($"{baseFileName}.log");
             var logger = new TestTransformationLogger();
 
-            bool succeed;
+            bool applied;
             using (var x = new XmlTransformableDocument { PreserveWhitespace = true })
             {
                 x.Load(src);
@@ -77,15 +76,15 @@ namespace DotNet.Xdt.Tests
                 using (var xmlTransform = new XmlTransformation(transformFile, logger))
                 {
                     //execute
-                    succeed = xmlTransform.Apply(x);
+                    applied = xmlTransform.Apply(x);
                     x.Save(destFile);
                 }
             }
             
             //test
-            Assert.True(succeed, baseFileName);
-            Assert.Equal(File.ReadAllText(baselineFile), File.ReadAllText(destFile));
-            Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
+            applied.ShouldBeTrue(baseFileName);
+            File.ReadAllText(destFile).ShouldBe(File.ReadAllText(baselineFile));
+            logger.LogText.ShouldBe(File.ReadAllText(expectedLog));
         }
 
         static void Transform_ExpectFail(string baseFileName)
@@ -96,7 +95,7 @@ namespace DotNet.Xdt.Tests
             string expectedLog = TestResource($"{baseFileName}.log");
             var logger = new TestTransformationLogger();
 
-            bool succeed;
+            bool applied;
             using (var x = new XmlTransformableDocument { PreserveWhitespace = true })
             {
                 x.Load(src);
@@ -104,14 +103,14 @@ namespace DotNet.Xdt.Tests
                 using (var xmlTransform = new XmlTransformation(transformFile, logger))
                 {
                     //execute
-                    succeed = xmlTransform.Apply(x);
+                    applied = xmlTransform.Apply(x);
                     x.Save(destFile);
                 }
             }
             
             //test
-            Assert.False(succeed, baseFileName);
-            Assert.Equal(File.ReadAllText(expectedLog), logger.LogText);
+            applied.ShouldBeFalse(baseFileName);
+            logger.LogText.ShouldBe(File.ReadAllText(expectedLog));
         }
 
         static string TestResource(FormattableString fileName)

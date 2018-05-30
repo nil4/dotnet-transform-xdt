@@ -19,7 +19,7 @@ install:
     
     Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1"
     
-    & "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1" -Version $env:CLI_VERSION -InstallDir $env:DOTNET_INSTALL_DIR
+    & "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1" -Channel Current -Version $env:CLI_VERSION -InstallDir $env:DOTNET_INSTALL_DIR
     
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 
@@ -27,13 +27,13 @@ build_script:
 - ps: >-
     dotnet --version
     
-    dotnet.exe msbuild /t:Restore /p:Configuration=Release;Pack=lib
+    dotnet.exe msbuild /t:Restore /p:Configuration=Release /p:Pack=lib
 
-    dotnet.exe msbuild /t:Pack    /p:Configuration=Release;Pack=lib
+    dotnet.exe msbuild /t:Pack    /p:Configuration=Release /p:Pack=lib
 
-    dotnet.exe msbuild /t:Restore /p:Configuration=Release;Pack=tool
+    dotnet.exe msbuild /t:Restore /p:Configuration=Release /p:Pack=tool
 
-    dotnet.exe msbuild /t:Pack    /p:Configuration=Release;Pack=tool
+    dotnet.exe msbuild /t:Pack    /p:Configuration=Release /p:Pack=tool
 
 test_script:
 - ps: >-

@@ -1,28 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <AssemblyName>dotnet-xdt</AssemblyName>
-    <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp2.1;netstandard2.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
+    <DebugType>embedded</DebugType>
+
+    <Version>2.1.0-preview.1</Version>
+    <_ReleaseNotes>
+      Support for .NET Core 2.1.
+    </_ReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup>
-    <Version>2.0.0</Version>  
+
+  <PropertyGroup Label="Library" Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <AssemblyName>DotNet.Xdt</AssemblyName>
+    <AssemblyTitle>.NET Standard 2.0 library for XDT (XML Document Transform).</AssemblyTitle>
+    <Description>$(AssemblyTitle)</Description>
+    <_PackageTags>netstandard20</_PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+
+    <AssemblyName>dotnet-xdt</AssemblyName>
+    <AssemblyTitle>XDT (XML Document Transform) global tool for .NET Core SDK.</AssemblyTitle>
+    <Description>
+      XDT (XML Document Transform) for .NET Core SDK. 
+      Contains the dotnet-xdt command for transforming XML files.
+    </Description>
+    <_PackageTags>netcore21;global-tool</_PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
     <PackageVersion>$(Version)</PackageVersion>
-    <PackageId>Microsoft.DotNet.Xdt.Tools</PackageId>
-    <PackageType>DotnetCliTool</PackageType>
+    <PackageId>$(AssemblyName)</PackageId>
     <Authors>nil4 &lt;https://github.com/nil4&gt;</Authors>
-    <Description>XDT (XML Document Transform) publish tool for .NET Core CLI. Contains the dotnet-transform-xdt command for transforming XML files at publishing time.</Description>
-    <AssemblyTitle>XDT (XML Document Transform) tool for .NET Core CLI</AssemblyTitle>
-    <PackageTags>dotnetcore;xdt;transform;xml</PackageTags>
-    <PackageReleaseNotes>Support dotnet SDK 2.0.0</PackageReleaseNotes>
+    <PackageTags>$(_PackageTags);xdt;transform;xml</PackageTags>
+    <PackageReleaseNotes>$(_ReleaseNotes)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/nil4/dotnet-transform-xdt</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/nil4/dotnet-transform-xdt.git</RepositoryUrl>
-    <MinClientVersion>3.5</MinClientVersion>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <MinClientVersion>4.0</MinClientVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.0.0" />
-  </ItemGroup>
 </Project>

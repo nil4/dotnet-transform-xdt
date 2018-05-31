@@ -39,6 +39,8 @@ test_script:
 - ps: >-
     cd dotnet-xdt.tests
     
+    dotnet restore /p:Configuration=Release
+
     dotnet fixie --configuration Release --report dotnet-xdt.tests.xml
 
 artifacts:

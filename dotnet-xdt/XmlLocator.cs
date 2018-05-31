@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace DotNet.Xdt
 {
-    public enum XPathAxis
+    enum XPathAxis
     {
         Child,
         Descendant,
@@ -20,7 +20,7 @@ namespace DotNet.Xdt
         AncestorOrSelf,
     }
 
-    public abstract class Locator
+    abstract class Locator
     {
         IList<string> _arguments;
         string _parentPath;

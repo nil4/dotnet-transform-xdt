@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace DotNet.Xdt
 {
-    public enum MissingTargetMessage
+    enum MissingTargetMessage
     {
         None,
         Information,
@@ -14,7 +14,7 @@ namespace DotNet.Xdt
     }
 
     [Flags]
-    public enum TransformFlags
+    enum TransformFlags
     {
         None = 0,
         ApplyTransformToAllTargetNodes = 1,
@@ -22,7 +22,7 @@ namespace DotNet.Xdt
     }
 
 
-    public abstract class Transform
+    abstract class Transform
     {
         XmlTransformationLogger _logger;
         XmlElementContext _context;

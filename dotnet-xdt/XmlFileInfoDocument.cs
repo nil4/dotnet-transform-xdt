@@ -16,6 +16,9 @@ namespace DotNet.Xdt
 
         public override void Load(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentException("File name must not be empty", nameof(filename));
+
             LoadFromFileName(filename);
 
             FirstLoad = false;
@@ -23,6 +26,8 @@ namespace DotNet.Xdt
 
         public override void Load(XmlReader reader)
         {
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
+
             _reader = reader as XmlTextReader;
             if (_reader != null)
                 FileName = _reader.BaseURI;
@@ -172,6 +177,9 @@ namespace DotNet.Xdt
 
         public override void Save(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentException("File name cannot be empty", nameof(filename));
+
             XmlWriter xmlWriter = null;
             try
             {
@@ -198,19 +206,21 @@ namespace DotNet.Xdt
             }
         }
 
-        public override void Save(Stream w)
+        public override void Save(Stream stream)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
             XmlWriter xmlWriter = null;
             try
             {
                 if (PreserveWhitespace)
                 {
                     XmlFormatter.Format(this);
-                    xmlWriter = new XmlAttributePreservingWriter(w, TextEncoding);
+                    xmlWriter = new XmlAttributePreservingWriter(stream, TextEncoding);
                 }
                 else
                 {
-                    XmlTextWriter textWriter = new XmlTextWriter(w, TextEncoding) {Formatting = Formatting.Indented};
+                    XmlTextWriter textWriter = new XmlTextWriter(stream, TextEncoding) {Formatting = Formatting.Indented};
                     xmlWriter = textWriter;
                 }
                 WriteTo(xmlWriter);

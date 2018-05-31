@@ -13,43 +13,46 @@ environment:
 
 install:
 - ps: >-
-    $env:DOTNET_INSTALL_DIR = "..\.dotnet"
+    $env:DOTNET_ROOT = "..\.dotnet"
 
-    mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
-    
-    Invoke-WebRequest -Uri "https://download.microsoft.com/download/8/8/5/88544F33-836A-49A5-8B67-451C24709A8F/dotnet-sdk-2.1.300-win-x64.zip" -OutFile dotnet-sdk.zip
-    
-    Expand-Archive dotnet-sdk.zip "$env:DOTNET_INSTALL_DIR"
-    
-    $env:DOTNET_INSTALL_DIR = (Resolve-Path "..\.dotnet")
+    mkdir $env:DOTNET_ROOT -Force | Out-Null
 
-    $env:PATH = "$env:DOTNET_INSTALL_DIR;$env:Path"
+    $env:DOTNET_ROOT = (Resolve-Path $env:DOTNET_ROOT)
 
-    $env:DOTNET_ROOT = $env:DOTNET_INSTALL_DIR
+    Invoke-WebRequest -Uri "https://download.microsoft.com/download/8/8/5/88544F33-836A-49A5-8B67-451C24709A8F/dotnet-sdk-2.1.300-win-x64.zip" -OutFile "$env:DOTNET_ROOT\dotnet-sdk.zip"
+    
+    Expand-Archive "$env:DOTNET_ROOT\dotnet-sdk.zip" "$env:DOTNET_ROOT"
+    
+    $env:PATH = "$env:DOTNET_ROOT;$env:Path"
 
 build_script:
 - ps: >-
     dotnet --version
     
-    dotnet.exe msbuild /t:Restore /p:Configuration=Release /p:Pack=lib
+    dotnet.exe msbuild dotnet-xdt /t:Restore /p:Configuration=Release /p:As=lib
 
-    dotnet.exe msbuild /t:Pack    /p:Configuration=Release /p:Pack=lib
+    dotnet.exe msbuild dotnet-xdt /t:Pack    /p:Configuration=Release /p:As=lib
 
-    dotnet.exe msbuild /t:Restore /p:Configuration=Release /p:Pack=tool
+    dotnet.exe msbuild dotnet-xdt /t:Restore /p:Configuration=Release /p:As=tool
 
-    dotnet.exe msbuild /t:Pack    /p:Configuration=Release /p:Pack=tool
+    dotnet.exe msbuild dotnet-xdt /t:Pack    /p:Configuration=Release /p:As=tool
+
+    dotnet.exe msbuild dotnet-xdt /t:Restore /p:Configuration=Release /p:As=exe
+
+    dotnet.exe msbuild dotnet-xdt /t:Build   /p:Configuration=Release /p:As=exe
 
 test_script:
 - ps: >-
     dotnet --version
 
-    cd dotnet-xdt.tests
-    
-    dotnet restore /p:Configuration=Release
+    dotnet.exe restore /p:Configuration=Release
 
-    dotnet fixie --configuration Release --report dotnet-xdt.tests.xml
+    cd dotnet-xdt.tests
+
+    dotnet.exe fixie --configuration Release --report dotnet-xdt.tests.xml
 
 artifacts:
-- path: dotnet-xdt/bin/**/*.nupkg
+- path: dotnet-xdt/bin/Release/*.nupkg
+- path: dotnet-xdt/bin/Release/**/*.exe
 
 deploy: off

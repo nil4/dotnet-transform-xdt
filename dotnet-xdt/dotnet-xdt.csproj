@@ -47,7 +47,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/nil4/dotnet-transform-xdt.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <MinClientVersion>4.0</MinClientVersion>
+    <MinClientVersion>4.3</MinClientVersion>
 
     <!-- Disable 'The package uses SemVer 2.0.0' warning; https://github.com/NuGet/Home/issues/4687 -->
     <NoWarn>NU5105</NoWarn>

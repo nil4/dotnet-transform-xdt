@@ -37,6 +37,8 @@ build_script:
 
 test_script:
 - ps: >-
+    $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+
     cd dotnet-xdt.tests
     
     dotnet restore /p:Configuration=Release

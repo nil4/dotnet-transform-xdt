@@ -1,42 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netstandard2.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(Pack)' == 'lib' ">netstandard2.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(Pack)' == 'tool' ">netcoreapp2.1</TargetFrameworks>
+    <_ExeTFM>net461</_ExeTFM>
+    <_LibTFM>netstandard2.0</_LibTFM>
+    <_ToolTFM>netcoreapp2.1</_ToolTFM>
+
+    <TargetFrameworks>$(_ExeTFM);$(_LibTFM);$(_ToolTFM)</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(As)' == 'exe'  ">$(_ExeTFM)</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(As)' == 'lib'  ">$(_LibTFM)</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(As)' == 'tool' ">$(_ToolTFM)</TargetFrameworks>
 
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
     <DebugType>embedded</DebugType>
+    <OutputType>Exe</OutputType>
+    
     <RootNamespace>DotNet.Xdt</RootNamespace>
+    <AssemblyName>dotnet-xdt</AssemblyName>
 
     <FileVersion>2.1.0</FileVersion>
     <Version>$(FileVersion)-preview.1</Version>
+    
     <_ReleaseNotes>
-      Support for .NET Core 2.1.
+      Use `dotnet-xdt` as a .NET Core 2.1 global tool, or standalone .NET 4.6.1 executable.
+      Use `DotNet.Xdt` as a .NET Standard 2.0 library.
     </_ReleaseNotes>
   </PropertyGroup>
 
-  <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == 'netstandard2.0' ">
+  <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == '$(_LibTFM)' ">
+    <OutputType>Library</OutputType>
     <AssemblyName>DotNet.Xdt</AssemblyName>
     <AssemblyTitle>.NET Standard 2.0 library for XDT (XML Document Transform).</AssemblyTitle>
-    <Description>$(AssemblyTitle)</Description>
     <_PackageTags>netstandard20</_PackageTags>
   </PropertyGroup>
 
-  <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFrameworks)' != 'netstandard2.0' ">
-    <OutputType>Exe</OutputType>
+  <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFrameworks)' == '$(_ToolTFM)' ">
     <PackAsTool>true</PackAsTool>
-
-    <AssemblyName>dotnet-xdt</AssemblyName>
-    <AssemblyTitle>XDT (XML Document Transform) global tool for .NET Core SDK.</AssemblyTitle>
-    <Description>
-      XDT (XML Document Transform) for .NET Core SDK. 
-      Contains the dotnet-xdt command for transforming XML files.
-    </Description>
+    <AssemblyTitle>XDT (XML Document Transform) tool for .NET Core.</AssemblyTitle>
     <_PackageTags>netcore21;global-tool</_PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Label="Executable" Condition=" '$(TargetFrameworks)' == '$(_ExeTFM)' ">
+    <IsPackable>false</IsPackable>
+    <AssemblyTitle>XDT (XML Document Transform) tool for .NET 4.6.1.</AssemblyTitle>
+  </PropertyGroup>
+
   <PropertyGroup Label="Package">
+    <Description>$(AssemblyTitle)</Description>
     <PackageVersion>$(Version)</PackageVersion>
     <PackageId>$(AssemblyName)</PackageId>
     <Authors>nil4 &lt;https://github.com/nil4&gt;</Authors>
@@ -54,10 +63,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Program.cs" Condition=" '$(OutputType)' != 'Exe' " />
+
     <EmbeddedResource Update="SR.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    
     <Compile Update="SR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

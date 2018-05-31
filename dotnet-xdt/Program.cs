@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-#if NETCOREAPP
 namespace DotNet.Xdt
 {
     static class Program
@@ -17,7 +16,7 @@ namespace DotNet.Xdt
         const int ErrorUsage = 1;
         const int ErrorFailed = 2;
 
-        public static int Main(string[] args)
+        static int Main(string[] args)
         {
             string inputFilePath = null, outputFilePath = null, transformFilePath = null;
             bool verbose = false, quiet = false, printUsage = false;
@@ -228,4 +227,3 @@ namespace DotNet.Xdt
         }
     }
 }
-#endif

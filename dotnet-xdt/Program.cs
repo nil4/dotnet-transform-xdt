@@ -116,17 +116,20 @@ namespace DotNet.Xdt
                 case "-x":
                 case "--xml":
                     if (!TryRead(i + 1, ref inputFilePath)) return false;
-                    break;
+                    ++i;
+                    continue;
 
                 case "-o":
                 case "--output":
                     if (!TryRead(i + 1, ref outputFilePath)) return false;
-                    break;
+                    ++i;
+                    continue;
 
                 case "-t":
                 case "--transform":
                     if (!TryRead(i + 1, ref transformFilePath)) return false;
-                    break;
+                    ++i;
+                    continue;
 
                 case "-v":
                 case "--verbose":

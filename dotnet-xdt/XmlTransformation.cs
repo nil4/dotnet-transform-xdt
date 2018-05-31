@@ -33,7 +33,7 @@ namespace DotNet.Xdt
 
         public XmlTransformation(string transform, bool isTransformAFile, IXmlTransformationLogger logger)
         {
-            _transformFile = transform;
+            _transformFile = transform ?? throw new ArgumentNullException(nameof(transform));
             _logger = new XmlTransformationLogger(logger);
 
             _xmlTransformation = new XmlFileInfoDocument();
@@ -49,6 +49,8 @@ namespace DotNet.Xdt
 
         public XmlTransformation(Stream transformStream, IXmlTransformationLogger logger)
         {
+            if (transformStream == null) throw new ArgumentNullException(nameof(transformStream));
+
             _logger = new XmlTransformationLogger(logger);
             _transformFile = string.Empty;
 
@@ -152,6 +154,8 @@ namespace DotNet.Xdt
 
         public bool Apply(XmlDocument xmlTarget)
         {
+            if (xmlTarget == null) throw new ArgumentNullException(nameof(xmlTarget));
+
             Debug.Assert(_xmlTarget == null, "This method should not be called recursively");
 
             if (_xmlTarget == null)

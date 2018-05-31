@@ -16,5 +16,3 @@ pushd
 cd dotnet-xdt.tests
 dotnet.exe fixie --configuration Release
 popd
-
-

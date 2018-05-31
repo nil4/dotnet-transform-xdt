@@ -18,7 +18,7 @@
     <AssemblyName>dotnet-xdt</AssemblyName>
 
     <FileVersion>2.1.0</FileVersion>
-    <Version>$(FileVersion)-preview.1</Version>
+    <Version>$(FileVersion)-preview.2</Version>
     
     <_ReleaseNotes>
       Use `dotnet-xdt` as a .NET Core 2.1 global tool, or standalone .NET 4.6.1 executable.

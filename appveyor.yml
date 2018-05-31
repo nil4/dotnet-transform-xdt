@@ -17,9 +17,9 @@ install:
 
     mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
     
-    Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1"
+    Invoke-WebRequest -Uri "https://download.microsoft.com/download/8/8/5/88544F33-836A-49A5-8B67-451C24709A8F/dotnet-sdk-2.1.300-win-x64.zip" -OutFile dotnet-sdk.zip
     
-    & "$($env:DOTNET_INSTALL_DIR)\dotnet-install.ps1" -Version $env:CLI_VERSION -InstallDir $env:DOTNET_INSTALL_DIR
+    Expand-Archive dotnet-sdk.zip "$env:DOTNET_INSTALL_DIR"
     
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 

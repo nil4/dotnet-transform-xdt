@@ -9,7 +9,7 @@ namespace DotNet.Xdt
         internal static DefaultLocator Instance { get; } = new DefaultLocator();
     }
 
-    public sealed class Match : Locator
+    sealed class Match : Locator
     {
         protected override string ConstructPredicate()
         {
@@ -32,7 +32,7 @@ namespace DotNet.Xdt
         }
     }
 
-    public sealed class Condition : Locator
+    sealed class Condition : Locator
     {
         protected override string ConstructPredicate()
         {
@@ -41,7 +41,7 @@ namespace DotNet.Xdt
         }
     }
 
-    public sealed class XPath : Locator
+    sealed class XPath : Locator
     {
         protected override string ParentPath => ConstructPath();
 

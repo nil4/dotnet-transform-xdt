@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace DotNet.Xdt
 {
-    public abstract class AttributeTransform : Transform
+    abstract class AttributeTransform : Transform
     {
         XmlNode _transformAttributeSource;
         XmlNodeList _transformAttributes;

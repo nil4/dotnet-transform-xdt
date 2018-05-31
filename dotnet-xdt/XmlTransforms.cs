@@ -149,7 +149,7 @@ namespace DotNet.Xdt
         }
     }
 
-    public class SetAttributes : AttributeTransform
+    class SetAttributes : AttributeTransform
     {
         protected override void Apply()
         {
@@ -171,7 +171,7 @@ namespace DotNet.Xdt
     }
 
 
-    public class SetTokenizedAttributeStorage
+    class SetTokenizedAttributeStorage
     {
         public List<Dictionary<string, string>> DictionaryList { get; set; }
         public string TokenFormat { get; set; }
@@ -192,7 +192,7 @@ namespace DotNet.Xdt
     /// 1. if it trigger by the regular TransformXml task, it only replace the $(name) from the parent node
     /// 2. If it trigger by the TokenizedTransformXml task, it replace $(name) then parse the declareation of the parameter
     /// </summary>
-    public class SetTokenizedAttributes : AttributeTransform
+    class SetTokenizedAttributes : AttributeTransform
     {
         SetTokenizedAttributeStorage _storageDictionary;
         bool _fInitStorageDictionary;
@@ -513,7 +513,7 @@ namespace DotNet.Xdt
 
     }
 
-    public class RemoveAttributes : AttributeTransform
+    class RemoveAttributes : AttributeTransform
     {
         protected override void Apply()
         {

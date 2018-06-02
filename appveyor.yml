@@ -31,7 +31,6 @@ install:
     $env:PATH = "$env:DOTNET_ROOT;$env:Path"
 
 build_script:
-- ps: 'dir env:'
 - cmd: call build.cmd
 
 test_script:

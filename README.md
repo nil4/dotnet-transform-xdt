@@ -3,7 +3,7 @@
 Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 to e.g. .NET configuration files, or any other XML-structured content.
 
-### Global tool for .NET Core 2.1 and later
+### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later
 
 .NET Core 2.1 introduces the concept of [global tools](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools),
 meaning that you can install `dotnet-xdt` using the .NET CLI and use it everywhere. One advantage of this approach 
@@ -29,7 +29,7 @@ available on the latest .NET Core.
 
 Read on if this is a concern for your application.
 
-### Project tool for .NET Core 2.0 and earlier
+### <a name="dotnet-transform-xdt-tool"></a> Project tool for .NET Core 2.0 and earlier
 
 .NET Core 2.0 and earlier do not support global tools. 
 
@@ -45,7 +45,7 @@ below for details. [A separate repository](https://github.com/nil4/xdt-samples/)
 few self-contained sample projects that use `dotnet-transform-xdt` 
 for Web.config transformations at publish time. 
 
-### Standalone executable for Windows
+### <a name="dotnet-xdt-exe"></a>Standalone executable for Windows
 
 You can also download a standalone `dotnet-xdt.exe` that runs on any Windows PC with .NET 
 Framework 4.6.1 installed. It has no external dependencies, nor does it require .NET Core.
@@ -53,7 +53,7 @@ It *might* run on Mono, but this scenario is not tested.
 
 Download the latest build of `dotnet-xdt.exe` from the [AppVeyor build artifacts page](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/build/artifacts).
 
-### .NET Standard 2.0 library 
+### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library 
 
 For complete flexibility, reference the cross-platform `DotNet.Xdt` NuGet package in your application:
 
@@ -225,7 +225,7 @@ Note that under `<aspNetCore>`, the `<environmentVariables>` section was inserte
 `Web.Release.config` file.
 
 <details>
-<summary><h3>Usage with <code>project.json</code> tooling</summary>
+<summary><h3><a name="project-json"></a>Usage with <code>project.json</code> tooling</summary>
 
 Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` file:
 

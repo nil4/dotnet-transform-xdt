@@ -224,9 +224,9 @@ It should look similar to this:
 Note that under `<aspNetCore>`, the `<environmentVariables>` section was inserted, as configured in the
 `Web.Release.config` file.
 
-<details>
-<summary><h3><a name="project-json"></a>Usage with <code>project.json</code> tooling</summary>
+<h3><a name="project-json"></a>Use with <code>project.json</code> tooling</h3>
 
+<details>
 Add `Microsoft.DotNet.Xdt.Tools` to the `tools` sections of your `project.json` file:
 
 ```json

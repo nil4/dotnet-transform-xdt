@@ -1,10 +1,82 @@
-# dotnet-transform-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master)
+# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master)
 
-`dotnet-transform-xdt` is a [dotnet CLI](https://github.com/dotnet/cli) tool for applying
-[XML Document Transformation](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
-(typically, to ASP.NET configuration files at publish time, but not limited to this scenario).
+Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
+to your files, e.g. ASP.NET configuration files at build/publish time, or any other XML file.
 
-It is a port of <http://xdt.codeplex.com/> compatible with [.NET Core](http://dotnet.github.io/).
+### Global tool for .NET Core 2.1 and later
+
+.NET Core 2.1 introduces the concept of [global tools](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools),
+meaning that you can install `dotnet-xdt` using the .NET CLI and use it everywhere. One advantage of this approach 
+is that you can use the same command, for both installation and usage, across all platforms.
+
+> :warning: To use global tools you need .Net Core SDK 2.1.300 or later. 
+
+Install `dotnet-xdt` once:
+
+```cmd
+dotnet tool install --global dotnet-xdt --version 2.1.0-preview.2
+```
+
+And then you can apply XDT transforms from the command-line, in any folder, e.g.:
+
+```cmd
+dotnet xdt --source original.xml --transform delta.xml --output final.xml
+```
+
+### Project tool for .NET Core 2.0 and earlier
+
+.NET Core 2.0 and earlier do not support global tools; however, an earlier version of this tool, 
+called <code>dotnet-<b>transform</b>-xdt</code>, can be installed as a [project-level tool](https://docs.microsoft.com/en-us/dotnet/core/tools/extensibility#per-project-based-extensibility).
+
+One limitation of this approach is that the tool can only be used from the project folder. 
+See the [Legacy `dotnet-transform-xdt` for .NET Core 2.0 and earlier](#legacy) section 
+below for details.
+
+
+### Standalone executable for Windows
+
+You can also download and run a standalone `dotnet-xdt.exe` that runs on any Windows PC with .NET 
+Framework 4.6.1 installed. It has no external dependencies, nor does it require .NET Core.
+
+Download the latest build of `dotnet-xdt.exe` from the [AppVeyor build artifacts page](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/build/artifacts).
+
+### .NET Standard 2.0 library 
+
+Add a reference to the cross-platform `DotNet.Xdt` NuGet package to your project:
+
+```cmd
+dotnet add package DotNet.Xdt --version 2.1.0-preview.2
+```
+
+And then you can apply XDT transforms to XML files (or other XML sources, as long as they can be read 
+and written to/from a `Stream`). Here is an example:
+
+```csharp
+var document = new XmlTransformableDocument { PreserveWhitespace = true };
+
+using (var sourceStream = File.OpenRead(sourceFilePath))
+using (var transformStream = File.OpenRead(transformFilePath))
+using (var transformation = new XmlTransformation(transformStream, new MyTransformationLogger()))
+{
+    document.Load(sourceStream);
+    transformation.Apply(document);
+}
+
+using (FileStream outputStream = File.Create(outputFilePath))
+using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings { Indent = true }))
+{
+    document.WriteTo(outputWriter);
+}
+```
+
+## <a name="legacy"></a> Legacy `dotnet-transform-xdt` for .NET Core 2.0 and earlier
+
+*`dotnet-xdt` is a [global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) that can only be installed on .NET Core 2.1 or later.*
+
+***`dotnet-transform-xdt`** is the previous version of this tool, which can be used 
+on previous .NET Core versions. Expand the section below for details.*
+
+<details>
 
 ### Sample projects
 
@@ -13,7 +85,7 @@ transformations at publish time. Clone the repository to test the scenarios out,
 [review the commit history](https://github.com/nil4/xdt-samples/commits/master) for
 the individual steps.
 
-### <a name="msbuild"></a> How to use with MSBuild/csproj tooling
+### <a name="msbuild"></a> Use with MSBuild/csproj tooling
 
 **Note**: if you are using project.json tooling (CLI 1.0.0 preview 2 or earlier, or Visual Studio 2015),
 please refer to the [project.json section below](#project-json).
@@ -220,3 +292,5 @@ Options:
   --output|-o     The path where the output (transformed) file will be written
   --verbose|-v    Print verbose messages
 ```
+
+</details>

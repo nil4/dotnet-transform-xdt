@@ -220,7 +220,7 @@ namespace DotNet.Xdt
                 }
                 else
                 {
-                    XmlTextWriter textWriter = new XmlTextWriter(stream, TextEncoding) {Formatting = Formatting.Indented};
+                    XmlTextWriter textWriter = new XmlTextWriter(stream, TextEncoding) { Formatting = Formatting.Indented };
                     xmlWriter = textWriter;
                 }
                 WriteTo(xmlWriter);

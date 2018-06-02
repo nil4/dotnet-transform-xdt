@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{403FCE60-1
 		global.json = global.json
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
+		test.cmd = test.cmd
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-xdt.tests", "dotnet-xdt.tests\dotnet-xdt.tests.csproj", "{DE6DFB12-1B48-434D-81E4-67CDED85218E}"

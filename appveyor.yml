@@ -49,10 +49,11 @@ test_script:
 
     cd dotnet-xdt.tests
 
-    dotnet.exe fixie --configuration Release --report dotnet-xdt.tests.xml
+    dotnet.exe fixie --configuration Release --report tests-results.xml
 
 artifacts:
 - path: dotnet-xdt/bin/Release/*.nupkg
 - path: dotnet-xdt/bin/Release/**/*.exe
+- path: dotnet-xdt.tests/**/tests-results.xml
 
 deploy: off

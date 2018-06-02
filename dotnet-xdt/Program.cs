@@ -18,10 +18,10 @@ namespace DotNet.Xdt
 
         static int Main(string[] args)
         {
-            string inputFilePath = null, outputFilePath = null, transformFilePath = null;
-            bool verbose = false, quiet = false, printUsage = false;
+            string sourceFilePath = null, outputFilePath = null, transformFilePath = null;
+            bool verbose = false, printUsage = false;
 
-            if (!ParseArguments(args, ref inputFilePath, ref outputFilePath, ref transformFilePath, ref verbose, ref quiet, ref printUsage))
+            if (!ParseArguments(args, ref sourceFilePath, ref outputFilePath, ref transformFilePath, ref verbose, ref printUsage))
             {
                 if (printUsage)
                 {
@@ -33,9 +33,9 @@ namespace DotNet.Xdt
                 return ErrorUsage;
             }
 
-            if (!File.Exists(inputFilePath))
+            if (!File.Exists(sourceFilePath))
             {
-                LogError($"Input file not found: {inputFilePath}");
+                LogError($"Source file not found: {sourceFilePath}");
                 return ErrorUsage;
             }
 
@@ -45,13 +45,13 @@ namespace DotNet.Xdt
                 return ErrorUsage;
             }
 
-            if (!quiet) Log($"Transforming '{inputFilePath}' using '{transformFilePath}' into '{outputFilePath}'");
+            Log($"Transforming '{sourceFilePath}' using '{transformFilePath}' into '{outputFilePath}'");
 
             try
             {
                 var sourceXml = new XmlTransformableDocument { PreserveWhitespace = true };
 
-                using (var sourceStream = File.OpenRead(inputFilePath))
+                using (var sourceStream = File.OpenRead(sourceFilePath))
                 using (var transformStream = File.OpenRead(transformFilePath))
                 using (var transformation = new XmlTransformation(transformStream, new ConsoleTransformationLogger(verbose)))
                 {
@@ -69,7 +69,7 @@ namespace DotNet.Xdt
             }
             catch (Exception ex)
             {
-                LogError($"Failed: {ex}");
+                LogError($"Unexpected error: {ex}");
                 return ErrorFailed;
             }
         }
@@ -93,7 +93,7 @@ namespace DotNet.Xdt
             writer.WriteLine($"Usage: {ToolName} <arguments> [options]");
             writer.WriteLine();
             writer.WriteLine("Required arguments:");
-            writer.WriteLine("  --xml|-x         Input XML file to transform");
+            writer.WriteLine("  --source|-s      Source XML file to transform");
             writer.WriteLine("  --transform|-t   XDT transform file to apply");
             writer.WriteLine("  --output|-o      Path where the output file will be written");
             writer.WriteLine();
@@ -102,42 +102,36 @@ namespace DotNet.Xdt
             writer.WriteLine("  --quiet|-q       Print only error messages");
             writer.WriteLine("  --verbose|-v     Print verbose messages while transforming");
             writer.WriteLine();
-            writer.WriteLine($"Example: {ToolName} --xml original.xml --transform delta.xml --output final.xml --verbose");
+            writer.WriteLine($"Example: {ToolName} --source original.xml --transform delta.xml --output final.xml --verbose");
         }
 
-        static bool ParseArguments(IReadOnlyList<string> args, ref string inputFilePath, ref string outputFilePath, 
-            ref string transformFilePath, ref bool verbose, ref bool quiet, ref bool showHelp)
+        static bool ParseArguments(IReadOnlyList<string> args, ref string sourceFilePath, ref string outputFilePath, 
+            ref string transformFilePath, ref bool verbose, ref bool showHelp)
         {
             for (var i = 0; i < args.Count; i++)
             {
                 switch (args[i])
                 {
-                case "-x":
-                case "--xml":
-                    if (!TryRead(i + 1, ref inputFilePath)) return false;
-                    ++i;
-                    continue;
+                case "-s":
+                case "--source":
+                case "-x":      // back-compat alias
+                case "--xml":   // back-compat alias
+                    if (!TryRead(ref i, ref sourceFilePath)) return false;
+                    break;
 
                 case "-o":
                 case "--output":
-                    if (!TryRead(i + 1, ref outputFilePath)) return false;
-                    ++i;
-                    continue;
+                    if (!TryRead(ref i, ref outputFilePath)) return false;
+                    break;
 
                 case "-t":
                 case "--transform":
-                    if (!TryRead(i + 1, ref transformFilePath)) return false;
-                    ++i;
-                    continue;
+                    if (!TryRead(ref i, ref transformFilePath)) return false;
+                    break;
 
                 case "-v":
                 case "--verbose":
                     verbose = true;
-                    break;
-
-                case "-q":
-                case "--quiet":
-                    quiet = true;
                     break;
 
                 case "-?":
@@ -152,12 +146,13 @@ namespace DotNet.Xdt
                 }
             }
 
-            return !string.IsNullOrWhiteSpace(inputFilePath)
+            return !string.IsNullOrWhiteSpace(sourceFilePath)
                 && !string.IsNullOrWhiteSpace(outputFilePath)
                 && !string.IsNullOrWhiteSpace(transformFilePath);
 
-            bool TryRead(int index, ref string value)
+            bool TryRead(ref int index, ref string value)
             {
+                ++index;
                 if (index >= args.Count || value != null) return false;
                 value = args[index];
                 return true;

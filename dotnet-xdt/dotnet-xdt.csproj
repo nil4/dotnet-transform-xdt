@@ -20,10 +20,7 @@
     <FileVersion>2.1.0</FileVersion>
     <Version>$(FileVersion)-preview.2</Version>
     
-    <_ReleaseNotes>
-      Use `dotnet-xdt` as a .NET Core 2.1 global tool, or standalone .NET 4.6.1 executable.
-      Use `DotNet.Xdt` as a .NET Standard 2.0 library.
-    </_ReleaseNotes>
+    <_ReleaseNotes>Use `dotnet-xdt` as a .NET Core 2.1 global tool, or standalone .NET 4.6.1 executable. Reference `DotNet.Xdt` as a .NET Standard 2.0 library.</_ReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == '$(_LibTFM)' ">
@@ -36,7 +33,7 @@
   <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFrameworks)' == '$(_ToolTFM)' ">
     <PackAsTool>true</PackAsTool>
     <AssemblyTitle>XDT (XML Document Transform) tool for .NET Core.</AssemblyTitle>
-    <_PackageTags>netcore21;global-tool</_PackageTags>
+    <_PackageTags>netcoreapp21;global-tool</_PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Label="Executable" Condition=" '$(TargetFrameworks)' == '$(_ExeTFM)' ">

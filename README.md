@@ -51,7 +51,7 @@ You can also download a standalone `dotnet-xdt.exe` that runs on any Windows PC 
 Framework 4.6.1 installed. It has no external dependencies, nor does it require .NET Core.
 It *might* run on Mono, but this scenario is not tested.
 
-Download the latest build of `dotnet-xdt.exe` from the [AppVeyor build artifacts page](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/build/artifacts).
+Download the latest build of `dotnet-xdt.exe` from the [releases page](https://github.com/nil4/dotnet-transform-xdt/releases).
 
 ### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library 
 

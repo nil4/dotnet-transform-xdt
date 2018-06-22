@@ -99,7 +99,7 @@ please refer to the [project.json section below](#project-json).
 
 Run `dotnet --version` in a command prompt and make sure you're using version **`2.0.0`** or later.
 
-Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files
+Create a new folder (`XdtSample`) and run `dotnet new web` inside it. Verify that the files
 `XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config`
 inside that folder and set its content to:
 

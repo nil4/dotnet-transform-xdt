@@ -11,6 +11,7 @@
 
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
+    <Features>strict</Features>
     <DebugType>embedded</DebugType>
     <OutputType>Exe</OutputType>
     

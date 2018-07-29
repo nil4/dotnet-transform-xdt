@@ -1,9 +1,9 @@
-# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master) [![NuGet package](https://img.shields.io/nuget/dt/dotnet-xdt.svg)](https://www.nuget.org/packages/dotnet-xdt/) 
+# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master)
 
 Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 to e.g. .NET configuration files, or any other XML-structured content.
 
-### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later
+### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later  [![NuGet package](https://img.shields.io/nuget/dt/dotnet-xdt.svg)](https://www.nuget.org/packages/dotnet-xdt/) 
 
 .NET Core 2.1 introduces the concept of [global tools](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools),
 meaning that you can install `dotnet-xdt` using the .NET CLI and use it everywhere. One advantage of this approach 

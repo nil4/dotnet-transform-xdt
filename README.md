@@ -1,4 +1,4 @@
-# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master)
+# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master) [![NuGet package](https://img.shields.io/nuget/dt/dotnet-xdt.svg)](https://www.nuget.org/packages/dotnet-xdt/) 
 
 Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 to e.g. .NET configuration files, or any other XML-structured content.
@@ -53,7 +53,7 @@ It *might* run on Mono, but this scenario is not tested.
 
 Download the latest build of `dotnet-xdt.exe` from the [releases page](https://github.com/nil4/dotnet-transform-xdt/releases).
 
-### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library 
+### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library [![NuGet package](https://img.shields.io/nuget/dt/DotNet.Xdt.svg)](https://www.nuget.org/packages/DotNet.Xdt/) 
 
 For complete flexibility, reference the cross-platform `DotNet.Xdt` NuGet package in your application:
 
@@ -85,7 +85,7 @@ using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings {
 }
 ```
 
-## <a name="legacy"></a> Project-level `dotnet-transform-xdt` tool
+## <a name="legacy"></a> Project-level `dotnet-transform-xdt` tool [![NuGet package](https://img.shields.io/nuget/dt/Microsoft.DotNet.Xdt.Tools.svg)](https://www.nuget.org/packages/Microsoft.DotNet.Xdt.Tools/) 
 
 *`dotnet-xdt` is a [global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) that can only be installed on .NET Core 2.1 or later.*
 

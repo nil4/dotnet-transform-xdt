@@ -11,6 +11,7 @@
 
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
+    <Features>strict</Features>
     <DebugType>embedded</DebugType>
     <OutputType>Exe</OutputType>
     
@@ -18,7 +19,7 @@
     <AssemblyName>dotnet-xdt</AssemblyName>
 
     <FileVersion>2.1.0</FileVersion>
-    <Version>$(FileVersion)-rc.1</Version>
+    <Version>$(FileVersion)</Version>
     
     <_ReleaseNotes>Use `dotnet-xdt` as a .NET Core 2.1 global tool, or standalone .NET 4.6.1 executable. Reference `DotNet.Xdt` as a .NET Standard 2.0 library.</_ReleaseNotes>
   </PropertyGroup>

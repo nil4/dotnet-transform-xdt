@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
     <LangVersion>latest</LangVersion>
+    <Features>strict</Features>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
@@ -15,8 +16,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fixie" Version="2.0.0" />
-    <PackageReference Include="Shouldly" Version="3.0.0" />
+    <PackageReference Include="Fixie" Version="2.0.2" />
+    <PackageReference Include="Shouldly" Version="3.0.1" />
     <DotNetCliToolReference Include="Fixie.Console" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>

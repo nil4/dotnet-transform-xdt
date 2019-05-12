@@ -3,7 +3,7 @@
 Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 to e.g. .NET configuration files, or any other XML-structured content.
 
-### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later
+### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later  [![NuGet package](https://img.shields.io/nuget/dt/dotnet-xdt.svg)](https://www.nuget.org/packages/dotnet-xdt/) 
 
 .NET Core 2.1 introduces the concept of [global tools](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools),
 meaning that you can install `dotnet-xdt` using the .NET CLI and use it everywhere. One advantage of this approach 
@@ -14,7 +14,7 @@ is that you can use the same command, for both installation and usage, across al
 Install `dotnet-xdt` as a global tool (only once):
 
 ```cmd
-dotnet tool install --global dotnet-xdt --version 2.1.0-rc.1
+dotnet tool install --global dotnet-xdt --version 2.1.0
 ```
 
 And then you can apply XDT transforms, from the command-line, anywhere on your PC, e.g.:
@@ -51,14 +51,14 @@ You can also download a standalone `dotnet-xdt.exe` that runs on any Windows PC 
 Framework 4.6.1 installed. It has no external dependencies, nor does it require .NET Core.
 It *might* run on Mono, but this scenario is not tested.
 
-Download the latest build of `dotnet-xdt.exe` from the [AppVeyor build artifacts page](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/build/artifacts).
+Download the latest build of `dotnet-xdt.exe` from the [releases page](https://github.com/nil4/dotnet-transform-xdt/releases).
 
-### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library 
+### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library [![NuGet package](https://img.shields.io/nuget/dt/DotNet.Xdt.svg)](https://www.nuget.org/packages/DotNet.Xdt/) 
 
 For complete flexibility, reference the cross-platform `DotNet.Xdt` NuGet package in your application:
 
 ```cmd
-dotnet add package DotNet.Xdt --version 2.1.0-rc.1
+dotnet add package DotNet.Xdt --version 2.1.0
 ```
 
 You can apply XDT transforms to any XML file, or other XML sources that can be read from
@@ -85,7 +85,7 @@ using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings {
 }
 ```
 
-## <a name="legacy"></a> Project-level `dotnet-transform-xdt` tool
+## <a name="legacy"></a> Project-level `dotnet-transform-xdt` tool [![NuGet package](https://img.shields.io/nuget/dt/Microsoft.DotNet.Xdt.Tools.svg)](https://www.nuget.org/packages/Microsoft.DotNet.Xdt.Tools/) 
 
 *`dotnet-xdt` is a [global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) that can only be installed on .NET Core 2.1 or later.*
 
@@ -99,7 +99,7 @@ please refer to the [project.json section below](#project-json).
 
 Run `dotnet --version` in a command prompt and make sure you're using version **`2.0.0`** or later.
 
-Create a new folder (`XdtSample`) and run `dotnet new -t web` inside it. Verify that the files
+Create a new folder (`XdtSample`) and run `dotnet new web` inside it. Verify that the files
 `XdtSample.csproj` and `web.config` file are present. Create a new file named `Web.Release.config`
 inside that folder and set its content to:
 

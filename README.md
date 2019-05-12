@@ -1,4 +1,4 @@
-# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master)
+# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master) [![Build status](https://dev.azure.com/nil4-github/dotnet-transform-xdt/_apis/build/status/dotnet-transform-xdt)](https://dev.azure.com/nil4-github/dotnet-transform-xdt/_build/latest?definitionId=1)
 
 Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 to e.g. .NET configuration files, or any other XML-structured content.

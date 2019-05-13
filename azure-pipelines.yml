@@ -1,0 +1,46 @@
+pool:
+  name: Hosted Windows 2019 with VS2019
+  demands: Cmd
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install SDK 2.2.202'
+  inputs:
+    version: 2.2.202
+
+- task: BatchScript@1
+  displayName: 'Run build.cmd'
+  inputs:
+    filename: build.cmd
+    failOnStandardError: true
+
+- task: CopyFiles@2
+  displayName: 'Collect artifacts'
+  inputs:
+    SourceFolder: 'dotnet-xdt/bin/Release'
+    Contents: |
+     *.nupkg
+     net*/*.exe
+    TargetFolder: '$(build.stagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish artifacts'
+  inputs:
+    PathtoPublish: '$(build.stagingDirectory)'
+    ArtifactName: build
+
+- task: BatchScript@1
+  displayName: 'Run test.cmd'
+  inputs:
+    filename: test.cmd
+    failOnStandardError: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testResultsFormat: XUnit
+    testResultsFiles: '**/test-results.xml'
+    searchFolder: 'dotnet-xdt.tests/bin/Release'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+    buildConfiguration: Release

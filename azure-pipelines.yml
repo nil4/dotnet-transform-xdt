@@ -4,9 +4,9 @@ pool:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install SDK 2.2.202'
+  displayName: 'Install SDK 2.2.204'
   inputs:
-    version: 2.2.202
+    version: 2.2.204
 
 - task: BatchScript@1
   displayName: 'Run build.cmd'

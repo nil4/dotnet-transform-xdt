@@ -16,7 +16,7 @@ namespace DotNet.Xdt
             _reader = new PositionTrackingTextReader(_streamReader);
         }
 
-        public XmlAttributePreservationDict GetDictAtPosition(int lineNumber, int linePosition)
+        public XmlAttributePreservationDict? GetDictAtPosition(int lineNumber, int linePosition)
         {
             if (_reader.ReadToPosition(lineNumber, linePosition))
             {

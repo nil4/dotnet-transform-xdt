@@ -18,7 +18,7 @@ namespace DotNet.Xdt
 
         static int Main(string[] args)
         {
-            string sourceFilePath = null, outputFilePath = null, transformFilePath = null;
+            string? sourceFilePath = null, outputFilePath = null, transformFilePath = null;
             bool verbose = false, printUsage = false;
 
             if (!ParseArguments(args, ref sourceFilePath, ref outputFilePath, ref transformFilePath, ref verbose, ref printUsage))
@@ -105,8 +105,8 @@ namespace DotNet.Xdt
             writer.WriteLine($"Example: {ToolName} --source original.xml --transform delta.xml --output final.xml --verbose");
         }
 
-        static bool ParseArguments(IReadOnlyList<string> args, ref string sourceFilePath, ref string outputFilePath, 
-            ref string transformFilePath, ref bool verbose, ref bool showHelp)
+        static bool ParseArguments(IReadOnlyList<string> args, ref string? sourceFilePath, ref string? outputFilePath, 
+            ref string? transformFilePath, ref bool verbose, ref bool showHelp)
         {
             for (var i = 0; i < args.Count; i++)
             {
@@ -150,7 +150,7 @@ namespace DotNet.Xdt
                 && !string.IsNullOrWhiteSpace(outputFilePath)
                 && !string.IsNullOrWhiteSpace(transformFilePath);
 
-            bool TryRead(ref int index, ref string value)
+            bool TryRead(ref int index, ref string? value)
             {
                 ++index;
                 if (index >= args.Count || value != null) return false;
@@ -180,19 +180,19 @@ namespace DotNet.Xdt
             public void LogWarning(string message, params object[] messageArgs) 
                 => Console.WriteLine($"{Prefix}WARN: {message}", messageArgs);
 
-            public void LogWarning(string file, string message, params object[] messageArgs) 
+            public void LogWarning(string? file, string message, params object[] messageArgs) 
                 => Console.WriteLine($"{Prefix}WARN '{file}': {message}", messageArgs);
 
-            public void LogWarning(string file, int lineNumber, int linePosition, string message, params object[] messageArgs) 
+            public void LogWarning(string? file, int lineNumber, int linePosition, string message, params object[] messageArgs) 
                 => Console.WriteLine($"{Prefix}WARN '{file}':{lineNumber}:{linePosition}: {message}", messageArgs);
 
             public void LogError(string message, params object[] messageArgs)
                 => Console.Error.WriteLine($"{Prefix}ERROR: {message}", messageArgs);
 
-            public void LogError(string file, string message, params object[] messageArgs)
+            public void LogError(string? file, string message, params object[] messageArgs)
                 => Console.Error.WriteLine($"{Prefix}ERROR '{file}': {message}", messageArgs);
 
-            public void LogError(string file, int lineNumber, int linePosition, string message, params object[] messageArgs)
+            public void LogError(string? file, int lineNumber, int linePosition, string message, params object[] messageArgs)
                 => Console.Error.WriteLine($"{Prefix}ERROR '{file}':{lineNumber}:{linePosition}: {message}", messageArgs);
 
             public void LogErrorFromException(Exception ex)
@@ -201,7 +201,7 @@ namespace DotNet.Xdt
             public void LogErrorFromException(Exception ex, string file)
                 => Console.Error.WriteLine($"{Prefix}ERROR '{file}': {ex}");
 
-            public void LogErrorFromException(Exception ex, string file, int lineNumber, int linePosition)
+            public void LogErrorFromException(Exception ex, string? file, int lineNumber, int linePosition)
                 => Console.Error.WriteLine($"{Prefix}ERROR '{file}':{lineNumber}:{linePosition}: {ex}");
 
             public void StartSection(string message, params object[] messageArgs)

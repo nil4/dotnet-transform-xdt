@@ -23,30 +23,30 @@ namespace DotNet.Xdt.Tests
         public void LogWarning(string message, params object[] messageArgs) 
             => LogWarning("", message, messageArgs);
 
-        public void LogWarning(string file, string message, params object[] messageArgs) 
+        public void LogWarning(string? file, string message, params object[] messageArgs) 
             => LogWarning(file, 0, 0, message, messageArgs);
 
         // we will format like: transform.xml (30, 10) warning: Argument 'snap' did not match any attributes
         const string WarningFormat = "{0} ({1}, {2}) warning: {3}";
-        public void LogWarning(string file, int lineNumber, int linePosition, string message, params object[] messageArgs) 
+        public void LogWarning(string? file, int lineNumber, int linePosition, string message, params object[] messageArgs) 
             => _log.AppendLine(string.Format(WarningFormat, Path.GetFileName(file), lineNumber, linePosition, string.Format(message,messageArgs)));
 
         public void LogError(string message, params object[] messageArgs) 
             => LogError("", message, messageArgs);
 
-        public void LogError(string file, string message, params object[] messageArgs) 
+        public void LogError(string? file, string message, params object[] messageArgs) 
             => LogError(file, 0, 0, message, messageArgs);
 
         //transform.xml(33, 10) error: Could not resolve 'ThrowException' as a type of Transform
         const string ErrorFormat = "{0} ({1}, {2}) error: {3}";
-        public void LogError(string file, int lineNumber, int linePosition, string message, params object[] messageArgs) 
+        public void LogError(string? file, int lineNumber, int linePosition, string message, params object[] messageArgs) 
             => _log.AppendLine(string.Format(ErrorFormat, Path.GetFileName(file), lineNumber, linePosition, string.Format(message,messageArgs)));
 
         public void LogErrorFromException(Exception ex) {}
 
         public void LogErrorFromException(Exception ex, string file) {}
 
-        public void LogErrorFromException(Exception ex, string file, int lineNumber, int linePosition) 
+        public void LogErrorFromException(Exception ex, string? file, int lineNumber, int linePosition) 
         {
             string message = ex.Message;
             LogError(file, lineNumber, linePosition, message);

@@ -12,11 +12,11 @@ namespace DotNet.Xdt
         readonly XmlTextWriter _xmlWriter;
         readonly AttributeTextWriter _textWriter;
 
-        public XmlAttributePreservingWriter(string fileName, Encoding encoding)
+        public XmlAttributePreservingWriter(string fileName, Encoding? encoding)
             : this(encoding == null ? new StreamWriter(fileName) : new StreamWriter(fileName, false, encoding))
         { }
 
-        public XmlAttributePreservingWriter(Stream w, Encoding encoding)
+        public XmlAttributePreservingWriter(Stream w, Encoding? encoding)
             : this(encoding == null ? new StreamWriter(w) : new StreamWriter(w, encoding))
         { }
 
@@ -86,7 +86,7 @@ namespace DotNet.Xdt
             }
 
             State _state = State.Writing;
-            StringBuilder _writeBuffer;
+            StringBuilder? _writeBuffer;
 
             readonly TextWriter _baseWriter;
 
@@ -97,7 +97,7 @@ namespace DotNet.Xdt
                 : base(CultureInfo.InvariantCulture) 
                 => _baseWriter = baseWriter;
 
-            public string AttributeLeadingWhitespace { get; set; }
+            public string? AttributeLeadingWhitespace { get; set; }
 
             public string AttributeNewLineString { get; set; } = "\r\n";
 
@@ -136,7 +136,7 @@ namespace DotNet.Xdt
                         break;
                     case State.ReadingAttribute:
                     case State.Buffering:
-                        _writeBuffer.Append(value);
+                        _writeBuffer?.Append(value);
                         break;
                 }
             }
@@ -156,12 +156,12 @@ namespace DotNet.Xdt
                     case '>':
                         if (_state == State.Buffering)
                         {
-                            string currentBuffer = _writeBuffer.ToString();
+                            string currentBuffer = _writeBuffer?.ToString() ?? "";
                             if (currentBuffer.EndsWith(" /", StringComparison.Ordinal))
                             {
                                 // We've identified the string " />" at the
                                 // end of the buffer, so remove the space
-                                _writeBuffer.Remove(currentBuffer.LastIndexOf(' '), 1);
+                                _writeBuffer?.Remove(currentBuffer.LastIndexOf(' '), 1);
                             }
                             ChangeState(State.Writing);
                         }
@@ -234,12 +234,12 @@ namespace DotNet.Xdt
                 // Write leading whitespace
                 if (AttributeLeadingWhitespace != null)
                 {
-                    _writeBuffer.Insert(0, AttributeLeadingWhitespace);
+                    _writeBuffer?.Insert(0, AttributeLeadingWhitespace);
                     AttributeLeadingWhitespace = null;
                 }
                 else
                 {
-                    int lineLength = _linePosition + _writeBuffer.Length + 1;
+                    int lineLength = _linePosition + _writeBuffer!.Length + 1;
                     if (lineLength > MaxLineLength)
                         _writeBuffer.Insert(0, AttributeNewLineString);
                     else

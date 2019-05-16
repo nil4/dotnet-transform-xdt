@@ -4,7 +4,7 @@ namespace DotNet.Xdt
 {
     public class XmlTransformableDocument : XmlFileInfoDocument, IXmlOriginalDocumentService
     {
-        XmlDocument _xmlOriginal;
+        XmlDocument? _xmlOriginal;
 
         public bool IsChanged => _xmlOriginal != null && !IsXmlEqual(_xmlOriginal, this);
 
@@ -24,7 +24,7 @@ namespace DotNet.Xdt
         // assume there's a difference.
         static bool IsXmlEqual(XmlDocument xmlOriginal, XmlDocument xmlTransformed) => false;
 
-        XmlNodeList IXmlOriginalDocumentService.SelectNodes(string xpath, XmlNamespaceManager nsmgr) 
+        XmlNodeList? IXmlOriginalDocumentService.SelectNodes(string xpath, XmlNamespaceManager nsmgr) 
             => _xmlOriginal?.SelectNodes(xpath, nsmgr);
     }
 }

@@ -8,7 +8,7 @@ namespace DotNet.Xdt
     public class XmlTransformationLogger
     {
         readonly IXmlTransformationLogger _externalLogger;
-        XmlNode _currentReferenceNode;
+        XmlNode? _currentReferenceNode;
 
         internal XmlTransformationLogger(IXmlTransformationLogger logger) 
             => _externalLogger = logger;
@@ -36,7 +36,7 @@ namespace DotNet.Xdt
 
         internal bool HasLoggedErrors { get; set; }
 
-        internal XmlNode CurrentReferenceNode
+        internal XmlNode? CurrentReferenceNode
         {
             get => _currentReferenceNode;
             set
@@ -80,7 +80,7 @@ namespace DotNet.Xdt
             {
                 if (_externalLogger != null)
                 {
-                    string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
+                    string? fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
 
                     if (referenceNode is IXmlLineInfo lineInfo)
                     {
@@ -120,7 +120,7 @@ namespace DotNet.Xdt
 
             if (_externalLogger != null)
             {
-                string fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
+                string? fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
 
                 if (referenceNode is IXmlLineInfo lineInfo)
                 {
@@ -155,13 +155,13 @@ namespace DotNet.Xdt
         public void EndSection(MessageType type, string message, params object[] messageArgs) 
             => _externalLogger?.EndSection(type, message, messageArgs);
 
-        static string ConvertUriToFileName(XmlDocument xmlDocument)
+        static string? ConvertUriToFileName(XmlDocument? xmlDocument)
         {
-            string uri = xmlDocument is XmlFileInfoDocument errorInfoDocument ? errorInfoDocument.FileName : xmlDocument.BaseURI;
+            string? uri = xmlDocument is XmlFileInfoDocument errorInfoDocument ? errorInfoDocument.FileName : xmlDocument!.BaseURI;
             return ConvertUriToFileName(uri);
         }
 
-        static string ConvertUriToFileName(string fileName)
+        static string? ConvertUriToFileName(string? fileName)
         {
             try
             {

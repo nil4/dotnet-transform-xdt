@@ -14,27 +14,27 @@ namespace DotNet.Xdt
         readonly string _transformFile;
 
         XmlDocument _xmlTransformation;
-        XmlDocument _xmlTarget;
-        XmlTransformableDocument _xmlTransformable;
+        XmlDocument? _xmlTarget;
+        XmlTransformableDocument? _xmlTransformable;
 
         readonly XmlTransformationLogger _logger;
 
-        NamedTypeFactory _namedTypeFactory;
+        NamedTypeFactory? _namedTypeFactory;
         ServiceContainer _transformationServiceContainer = new ServiceContainer();
-        ServiceContainer _documentServiceContainer;
+        ServiceContainer? _documentServiceContainer;
 
         public XmlTransformation(string transformFile)
             : this(transformFile, true, null)
         { }
 
-        public XmlTransformation(string transform, IXmlTransformationLogger logger)
+        public XmlTransformation(string transform, IXmlTransformationLogger? logger)
             : this(transform, true, logger)
         { }
 
-        public XmlTransformation(string transform, bool isTransformAFile, IXmlTransformationLogger logger)
+        public XmlTransformation(string transform, bool isTransformAFile, IXmlTransformationLogger? logger)
         {
             _transformFile = transform ?? throw new ArgumentNullException(nameof(transform));
-            _logger = new XmlTransformationLogger(logger);
+            _logger = new XmlTransformationLogger(logger!);
 
             _xmlTransformation = new XmlFileInfoDocument();
             if (isTransformAFile)
@@ -95,7 +95,7 @@ namespace DotNet.Xdt
         void PreprocessTransformDocument()
         {
             HasTransformNamespace = false;
-            foreach (XmlAttribute attribute in _xmlTransformation.SelectNodes("//namespace::*"))
+            foreach (XmlAttribute attribute in _xmlTransformation!.SelectNodes("//namespace::*"))
             {
                 if (attribute.Value.Equals(TransformNamespace, StringComparison.Ordinal))
                 {
@@ -120,7 +120,7 @@ namespace DotNet.Xdt
                         continue;
                     }
 
-                    XmlElementContext context = null;
+                    XmlElementContext? context = null;
                     try
                     {
                         switch (element.LocalName)
@@ -147,10 +147,10 @@ namespace DotNet.Xdt
         }
 
         public void AddTransformationService(Type serviceType, object serviceInstance) 
-            => _transformationServiceContainer.AddService(serviceType, serviceInstance);
+            => _transformationServiceContainer!.AddService(serviceType, serviceInstance);
 
         public void RemoveTransformationService(Type serviceType) 
-            => _transformationServiceContainer.RemoveService(serviceType);
+            => _transformationServiceContainer!.RemoveService(serviceType);
 
         public bool Apply(XmlDocument xmlTarget)
         {
@@ -214,8 +214,8 @@ namespace DotNet.Xdt
             }
         }
 
-        XmlElementContext CreateElementContext(XmlElementContext parentContext, XmlElement element) 
-            => new XmlElementContext(parentContext, element, _xmlTarget, this);
+        XmlElementContext CreateElementContext(XmlElementContext? parentContext, XmlElement element) 
+            => new XmlElementContext(parentContext, element, _xmlTarget!, this);
 
         void HandleException(Exception ex) 
             => _logger.LogErrorFromException(ex);
@@ -228,13 +228,13 @@ namespace DotNet.Xdt
 
         void HandleElement(XmlElementContext context)
         {
-            Transform transform = context.ConstructTransform(out string argumentString);
+            Transform? transform = context.ConstructTransform(out string? argumentString);
             if (transform != null)
             {
 
                 bool fOriginalSupressWarning = _logger.SupressWarnings;
 
-                if (context.Element.Attributes.GetNamedItem(SupressWarnings, TransformNamespace) is XmlAttribute supressWarningsAttribute)
+                if (context.Element!.Attributes.GetNamedItem(SupressWarnings, TransformNamespace) is XmlAttribute supressWarningsAttribute)
                 {
                     bool fSupressWarning = Convert.ToBoolean(supressWarningsAttribute.Value, System.Globalization.CultureInfo.InvariantCulture);
                     _logger.SupressWarnings = fSupressWarning;
@@ -269,11 +269,11 @@ namespace DotNet.Xdt
 
         void PreprocessImportElement(XmlElementContext context)
         {
-            string assemblyName = null;
-            string nameSpace = null;
-            string path = null;
+            string? assemblyName = null;
+            string? nameSpace = null;
+            string? path = null;
 
-            foreach (XmlAttribute attribute in context.Element.Attributes)
+            foreach (XmlAttribute attribute in context.Element!.Attributes)
             {
                 if (attribute.NamespaceURI.Length == 0)
                 {
@@ -304,14 +304,14 @@ namespace DotNet.Xdt
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportMissingNamespace), context.Element);
 
             if (assemblyName != null)
-                _namedTypeFactory.AddAssemblyRegistration(assemblyName, nameSpace);
+                _namedTypeFactory!.AddAssemblyRegistration(assemblyName, nameSpace);
             else
-                _namedTypeFactory.AddPathRegistration(path, nameSpace);
+                _namedTypeFactory!.AddPathRegistration(path!, nameSpace);
         }
 
-        public object GetService(Type serviceType)
+        public object? GetService(Type serviceType)
         {
-            object service = null;
+            object? service = null;
             if (_documentServiceContainer != null)
                 service = _documentServiceContainer.GetService(serviceType);
 
@@ -323,7 +323,7 @@ namespace DotNet.Xdt
             if (_transformationServiceContainer != null)
             {
                 _transformationServiceContainer.Dispose();
-                _transformationServiceContainer = null;
+                _transformationServiceContainer = null!;
             }
 
             if (_documentServiceContainer != null)
@@ -341,7 +341,7 @@ namespace DotNet.Xdt
             if (_xmlTransformation is XmlFileInfoDocument xmlFileInfoDocument)
             {
                 xmlFileInfoDocument.Dispose();
-                _xmlTransformation = null;
+                _xmlTransformation = null!;
             }
         }
 

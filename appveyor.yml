@@ -1,6 +1,6 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-image: Visual Studio 2017
+image: Visual Studio 2019 Preview
 
 version: 2.1.{build}
 

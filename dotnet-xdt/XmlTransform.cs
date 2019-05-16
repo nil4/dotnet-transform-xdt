@@ -24,12 +24,12 @@ namespace DotNet.Xdt
 
     abstract class Transform
     {
-        XmlTransformationLogger _logger;
-        XmlElementContext _context;
-        XmlNode _currentTransformNode;
-        XmlNode _currentTargetNode;
+        XmlTransformationLogger? _logger;
+        XmlElementContext? _context;
+        XmlNode? _currentTransformNode;
+        XmlNode? _currentTargetNode;
 
-        IList<string> _arguments;
+        IList<string>? _arguments;
 
         protected Transform()
             : this(TransformFlags.None)
@@ -54,7 +54,7 @@ namespace DotNet.Xdt
 
         protected abstract void Apply();
 
-        protected XmlNode TransformNode => _currentTransformNode ?? _context.TransformNode;
+        protected XmlNode TransformNode => _currentTransformNode ?? _context!.TransformNode;
 
         protected XmlNode TargetNode
         {
@@ -64,13 +64,13 @@ namespace DotNet.Xdt
 
                 foreach (XmlNode targetNode in TargetNodes)
                     return targetNode;
-                return _currentTargetNode;
+                return _currentTargetNode!;
             }
         }
 
-        protected XmlNodeList TargetNodes => UseParentAsTargetNode ? _context.TargetParents : _context.TargetNodes;
+        protected XmlNodeList TargetNodes => UseParentAsTargetNode ? _context!.TargetParents : _context!.TargetNodes;
         
-        protected XmlNodeList TargetChildNodes => _context.TargetNodes;
+        protected XmlNodeList TargetChildNodes => _context!.TargetNodes;
 
         protected XmlTransformationLogger Log
         {
@@ -78,17 +78,17 @@ namespace DotNet.Xdt
             {
                 if (_logger == null)
                 {
-                    _logger = _context.GetService<XmlTransformationLogger>();
+                    _logger = _context!.GetService<XmlTransformationLogger>();
                     if (_logger != null)
                         _logger.CurrentReferenceNode = _context.TransformAttribute;
                 }
-                return _logger;
+                return _logger!;
             }
         }
 
-        protected T GetService<T>() where T : class => _context.GetService<T>();
+        protected T? GetService<T>() where T : class => _context!.GetService<T>();
 
-        protected string ArgumentString { get; private set; }
+        protected string? ArgumentString { get; private set; }
 
         protected IList<string> Arguments
         {
@@ -96,7 +96,7 @@ namespace DotNet.Xdt
             {
                 if (_arguments == null && ArgumentString != null)
                     _arguments = XmlArgumentUtility.SplitArguments(ArgumentString);
-                return _arguments;
+                return _arguments!;
             }
         }
 
@@ -104,7 +104,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_context.HasLineInfo)
+                if (_context!.HasLineInfo)
                     return string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_TransformNameFormatLong, TransformName, _context.TransformLineNumber, _context.TransformLinePosition);
                 return TransformNameShort;
             }
@@ -115,7 +115,7 @@ namespace DotNet.Xdt
 
         string TransformName => GetType().Name;
 
-        internal void Execute(XmlElementContext context, string argumentString)
+        internal void Execute(XmlElementContext context, string? argumentString)
         {
             Debug.Assert(_context == null && ArgumentString == null, "Don't call Execute recursively");
             Debug.Assert(_logger == null, "Logger wasn't released from previous execution");
@@ -182,14 +182,14 @@ namespace DotNet.Xdt
 
         void ApplyOnAllTargetNodes()
         {
-            XmlNode originalTransformNode = TransformNode;
+            XmlNode? originalTransformNode = TransformNode;
 
             foreach (XmlNode node in TargetNodes)
             {
                 try
                 {
                     _currentTargetNode = node;
-                    _currentTransformNode = originalTransformNode.Clone();
+                    _currentTransformNode = originalTransformNode!.Clone();
 
                     ApplyOnce();
                 }
@@ -208,12 +208,12 @@ namespace DotNet.Xdt
             Apply();
         }
 
-        void WriteApplyMessage(XmlNode targetNode)
+        void WriteApplyMessage(XmlNode? targetNode)
         {
             if (targetNode is IXmlLineInfo lineInfo)
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusApplyTarget, targetNode.Name, lineInfo.LineNumber, lineInfo.LinePosition);
             else
-                Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusApplyTargetNoLineInfo, targetNode.Name);
+                Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformStatusApplyTargetNoLineInfo, targetNode!.Name);
         }
 
         bool ShouldExecuteTransform() => HasRequiredTarget();
@@ -221,8 +221,8 @@ namespace DotNet.Xdt
         bool HasRequiredTarget()
         {
             bool hasRequiredTarget = UseParentAsTargetNode
-                ? _context.HasTargetParent(out XmlElementContext matchFailureContext, out bool existedInOriginal)
-                : _context.HasTargetNode(out matchFailureContext, out existedInOriginal);
+                ? _context!.HasTargetParent(out XmlElementContext? matchFailureContext, out bool existedInOriginal)
+                : _context!.HasTargetNode(out matchFailureContext, out existedInOriginal);
 
             if (hasRequiredTarget) return true;
 
@@ -230,13 +230,13 @@ namespace DotNet.Xdt
             return false;
         }
 
-        void HandleMissingTarget(XmlElementContext matchFailureContext, bool existedInOriginal)
+        void HandleMissingTarget(XmlElementContext? matchFailureContext, bool existedInOriginal)
         {
             string messageFormat = existedInOriginal
                 ? SR.XMLTRANSFORMATION_TransformSourceMatchWasRemoved
                 : SR.XMLTRANSFORMATION_TransformNoMatchingTargetNodes;
 
-            string message = string.Format(System.Globalization.CultureInfo.CurrentCulture, messageFormat, matchFailureContext.XPath);
+            string message = string.Format(System.Globalization.CultureInfo.CurrentCulture, messageFormat, matchFailureContext!.XPath);
             switch (MissingTargetMessage)
             {
                 case MissingTargetMessage.None:

@@ -37,11 +37,11 @@ namespace DotNet.Xdt
             _registrations.Add(new PathRegistration(path, nameSpace));
         }
 
-        internal TObjectType Construct<TObjectType>(string typeName) where TObjectType : class
+        internal TObjectType? Construct<TObjectType>(string typeName) where TObjectType : class
         {
             if (string.IsNullOrEmpty(typeName)) return null;
 
-            Type type = GetType(typeName);
+            Type? type = GetType(typeName);
 
             if (type == null)
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_UnknownTypeName, typeName, typeof(TObjectType).Name));
@@ -56,9 +56,9 @@ namespace DotNet.Xdt
             return constructor.Invoke(Array.Empty<object>()) as TObjectType;
         }
 
-        Type GetType(string typeName)
+        Type? GetType(string typeName)
         {
-            Type foundType = null;
+            Type? foundType = null;
             foreach (Registration registration in _registrations)
             {
                 if (!registration.IsValid) continue;

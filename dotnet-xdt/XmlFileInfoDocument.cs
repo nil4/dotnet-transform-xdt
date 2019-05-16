@@ -8,8 +8,8 @@ namespace DotNet.Xdt
 {
     public class XmlFileInfoDocument : XmlDocument, IDisposable
     {
-        Encoding _textEncoding;
-        XmlTextReader _reader;
+        Encoding? _textEncoding;
+        XmlTextReader? _reader;
 
         int _lineNumberOffset;
         int _linePositionOffset;
@@ -26,9 +26,7 @@ namespace DotNet.Xdt
 
         public override void Load(XmlReader reader)
         {
-            if (reader == null) throw new ArgumentNullException(nameof(reader));
-
-            _reader = reader as XmlTextReader;
+            _reader = reader as XmlTextReader ?? throw new ArgumentNullException(nameof(reader));
             if (_reader != null)
                 FileName = _reader.BaseURI;
 
@@ -44,7 +42,7 @@ namespace DotNet.Xdt
         {
             FileName = filename;
 
-            StreamReader reader = null;
+            StreamReader? reader = null;
             try
             {
                 if (PreserveWhitespace)
@@ -82,9 +80,9 @@ namespace DotNet.Xdt
                 _textEncoding = _reader.Encoding;
         }
 
-        static Encoding GetEncodingFromStream(Stream stream)
+        static Encoding? GetEncodingFromStream(Stream stream)
         {
-            Encoding encoding = null;
+            Encoding? encoding = null;
             if (stream.CanSeek)
             {
                 var buffer = new byte[3];
@@ -106,10 +104,10 @@ namespace DotNet.Xdt
             return encoding;
         }
 
-        internal XmlNode CloneNodeFromOtherDocument(XmlNode element)
+        internal XmlNode CloneNodeFromOtherDocument(XmlNode? element)
         {
-            XmlTextReader oldReader = _reader;
-            string oldFileName = FileName;
+            XmlTextReader? oldReader = _reader;
+            string? oldFileName = FileName;
 
             XmlNode clone;
             try
@@ -129,7 +127,7 @@ namespace DotNet.Xdt
                     FileName = null;
                     _reader = null;
 
-                    clone = ReadNode(new XmlTextReader(new StringReader(element.OuterXml)));
+                    clone = ReadNode(new XmlTextReader(new StringReader(element!.OuterXml)));
                 }
             }
             finally
@@ -146,7 +144,7 @@ namespace DotNet.Xdt
 
         internal bool HasErrorInfo => _reader != null;
 
-        internal string FileName { get; private set; }
+        internal string? FileName { get; private set; }
 
         int CurrentLineNumber => _reader?.LineNumber + _lineNumberOffset ?? 0;
 
@@ -154,9 +152,9 @@ namespace DotNet.Xdt
 
         bool FirstLoad { get; set; } = true;
 
-        XmlAttributePreservationProvider PreservationProvider { get; set; }
+        XmlAttributePreservationProvider? PreservationProvider { get; set; }
 
-        Encoding TextEncoding
+        Encoding? TextEncoding
         {
             get
             {
@@ -167,7 +165,7 @@ namespace DotNet.Xdt
                 if (HasChildNodes)
                 {
                     var declaration = FirstChild as XmlDeclaration;
-                    string value = declaration?.Encoding;
+                    string? value = declaration?.Encoding;
                     if (value?.Length > 0)
                         return Encoding.GetEncoding(value);
                 }
@@ -180,7 +178,7 @@ namespace DotNet.Xdt
             if (string.IsNullOrWhiteSpace(filename))
                 throw new ArgumentException("File name cannot be empty", nameof(filename));
 
-            XmlWriter xmlWriter = null;
+            XmlWriter? xmlWriter = null;
             try
             {
                 if (PreserveWhitespace)
@@ -210,7 +208,7 @@ namespace DotNet.Xdt
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            XmlWriter xmlWriter = null;
+            XmlWriter? xmlWriter = null;
             try
             {
                 if (PreserveWhitespace)
@@ -246,7 +244,7 @@ namespace DotNet.Xdt
             return FindContainingElement(node) is XmlFileInfoElement element && !element.IsOriginal;
         }
 
-        static XmlElement FindContainingElement(XmlNode node)
+        static XmlElement? FindContainingElement(XmlNode node)
         {
             while (node != null && !(node is XmlElement))
                 node = node.ParentNode;
@@ -255,7 +253,7 @@ namespace DotNet.Xdt
 
         class XmlFileInfoElement : XmlElement, IXmlLineInfo, IXmlFormattableAttributes
         {
-            readonly XmlAttributePreservationDict _preservationDict;
+            readonly XmlAttributePreservationDict? _preservationDict;
 
             internal XmlFileInfoElement(string prefix, string localName, string namespaceUri, XmlFileInfoDocument document)
                 : base(prefix, localName, namespaceUri, document)
@@ -280,8 +278,7 @@ namespace DotNet.Xdt
 
                 if (HasAttributes)
                 {
-                    var preservingWriter = w as XmlAttributePreservingWriter;
-                    if (preservingWriter == null || _preservationDict == null)
+                    if (!(w is XmlAttributePreservingWriter preservingWriter) || _preservationDict == null)
                         WriteAttributesTo(w);
                     else
                         WritePreservedAttributesTo(preservingWriter);
@@ -304,7 +301,7 @@ namespace DotNet.Xdt
             }
 
             void WritePreservedAttributesTo(XmlAttributePreservingWriter preservingWriter) 
-                => _preservationDict.WritePreservedAttributes(preservingWriter, Attributes);
+                => _preservationDict!.WritePreservedAttributes(preservingWriter, Attributes);
 
             public bool HasLineInfo() => true;
 
@@ -315,10 +312,10 @@ namespace DotNet.Xdt
             public bool IsOriginal { get; }
 
             void IXmlFormattableAttributes.FormatAttributes(XmlFormatter formatter) 
-                => _preservationDict.UpdatePreservationInfo(Attributes, formatter);
+                => _preservationDict!.UpdatePreservationInfo(Attributes, formatter);
 
-            string IXmlFormattableAttributes.AttributeIndent 
-                => _preservationDict.GetAttributeNewLineString(null);
+            string? IXmlFormattableAttributes.AttributeIndent 
+                => _preservationDict!.GetAttributeNewLineString(null);
         }
 
         class XmlFileInfoAttribute : XmlAttribute, IXmlLineInfo

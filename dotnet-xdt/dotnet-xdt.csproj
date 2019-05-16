@@ -13,15 +13,16 @@
     <LangVersion>latest</LangVersion>
     <Features>strict</Features>
     <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <OutputType>Exe</OutputType>
     
     <RootNamespace>DotNet.Xdt</RootNamespace>
     <AssemblyName>dotnet-xdt</AssemblyName>
 
-    <FileVersion>2.1.0</FileVersion>
+    <FileVersion>2.1.1</FileVersion>
     <Version>$(FileVersion)</Version>
     
-    <_ReleaseNotes>Use `dotnet-xdt` as a .NET Core 2.1 global tool, or standalone .NET 4.6.1 executable. Reference `DotNet.Xdt` as a .NET Standard 2.0 library.</_ReleaseNotes>
+    <_ReleaseNotes>Enable [SourceLink](https://github.com/dotnet/sourcelink#readme) for access to original source code while debugging.</_ReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == '$(_LibTFM)' ">
@@ -55,10 +56,11 @@
     <RepositoryUrl>https://github.com/nil4/dotnet-transform-xdt.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <MinClientVersion>4.0</MinClientVersion>
-
-    <!-- Disable 'The package uses SemVer 2.0.0' warning; https://github.com/NuGet/Home/issues/4687 -->
-    <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup Label="SourceLink">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Program.cs" Condition=" '$(OutputType)' != 'Exe' " />

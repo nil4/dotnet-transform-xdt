@@ -4,7 +4,8 @@
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
     <LangVersion>8.0</LangVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
+    <Nullable>enable</Nullable>
+    <NullableContextOptions>$(Nullable)</NullableContextOptions>
     <Features>strict</Features>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>

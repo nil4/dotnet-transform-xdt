@@ -11,7 +11,8 @@
 
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>8.0</LangVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
+    <Nullable>enable</Nullable>
+    <NullableContextOptions>$(Nullable)</NullableContextOptions>
     <Features>strict</Features>
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>

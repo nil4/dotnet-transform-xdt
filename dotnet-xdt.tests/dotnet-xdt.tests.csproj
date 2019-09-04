@@ -18,7 +18,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fixie" Version="2.0.4" />
+    <PackageReference Include="Fixie" Version="2.1.1" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
     <DotNetCliToolReference Include="Fixie.Console" Version="2.0.4" />
   </ItemGroup>

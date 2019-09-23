@@ -11,7 +11,7 @@ clone_depth: 1
 environment:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_SDK_URL: 'https://dotnetcli.azureedge.net/dotnet/Sdk/2.2.204/dotnet-sdk-2.2.204-win-x64.zip'
+  DOTNET_SDK_URL: 'https://dotnetcli.azureedge.net/dotnet/Sdk/2.2.402/dotnet-sdk-2.2.402-win-x64.zip'
 
 cache:
   - '%LocalAppData%\NuGet\v3-cache' # NuGet v3

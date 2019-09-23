@@ -32,8 +32,8 @@ namespace DotNet.Xdt
         protected XmlNode? CurrentElement => _context?.Element;
 
         protected virtual string NextStepNodeTest 
-            => !string.IsNullOrEmpty(CurrentElement?.NamespaceURI) && string.IsNullOrEmpty(CurrentElement.Prefix) 
-                ? string.Concat("_defaultNamespace:", CurrentElement.LocalName) 
+            => !string.IsNullOrEmpty(CurrentElement?.NamespaceURI) && string.IsNullOrEmpty(CurrentElement?.Prefix) 
+                ? string.Concat("_defaultNamespace:", CurrentElement!.LocalName) 
                 : CurrentElement!.Name;
 
         protected virtual XPathAxis NextStepAxis 

@@ -257,9 +257,9 @@ namespace DotNet.Xdt
         }
 
 
-        static RegularExpressions.Regex _sDirRegex;
-        static RegularExpressions.Regex _sParentAttribRegex;
-        static RegularExpressions.Regex _sTokenFormatRegex;
+        static RegularExpressions.Regex? _sDirRegex;
+        static RegularExpressions.Regex? _sParentAttribRegex;
+        static RegularExpressions.Regex? _sTokenFormatRegex;
 
         // Directory registrory
         internal static RegularExpressions.Regex DirRegex 

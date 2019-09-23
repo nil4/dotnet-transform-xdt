@@ -208,7 +208,7 @@ namespace DotNet.Xdt
         XmlNameTable? GetParentNameTable() 
             => _parentContext == null ? Element?.OwnerDocument?.NameTable : _parentContext.GetNamespaceManager().NameTable;
 
-        static Regex _nameAndArgumentsRegex;
+        static Regex? _nameAndArgumentsRegex;
         static Regex NameAndArgumentsRegex => _nameAndArgumentsRegex ??= new Regex(@"\A\s*(?<name>\w+)(\s*\((?<arguments>.*)\))?\s*\Z", RegexOptions.Compiled | RegexOptions.Singleline);
 
         static string ParseNameAndArguments(string name, out string? arguments)
@@ -278,7 +278,7 @@ namespace DotNet.Xdt
             if (TargetParents.Count == 0)
             {
                 failedContext = this;
-                while (!string.IsNullOrEmpty(failedContext._parentContext?.ParentXPath) && failedContext._parentContext.TargetParents.Count == 0)
+                while (!string.IsNullOrEmpty(failedContext._parentContext?.ParentXPath) && failedContext._parentContext?.TargetParents.Count == 0)
                     failedContext = failedContext._parentContext;
 
                 existedInOriginal = ExistedInOriginal(failedContext.XPath);

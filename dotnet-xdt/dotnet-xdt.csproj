@@ -10,7 +10,7 @@
     <TargetFrameworks Condition=" '$(As)' == 'tool' ">$(_ToolTFM)</TargetFrameworks>
 
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <NullableContextOptions>$(Nullable)</NullableContextOptions>
     <Features>strict</Features>

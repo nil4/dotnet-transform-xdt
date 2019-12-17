@@ -40,9 +40,9 @@ artifacts:
 - path: dotnet-xdt/bin/$(configuration)/*.nupkg
 - path: dotnet-xdt/bin/$(configuration)/net461/dotnet-xdt.exe
   name: dotnet-xdt.exe
-- path: dotnet-xdt.tests/bin/$(configuration)/net461/test-results.xml
-  name: test-results/net461.xml
-- path: dotnet-xdt.tests/bin/$(configuration)/netcoreapp2.1/test-results.xml
-  name: test-results/netcoreapp21.xml
+- path: dotnet-xdt.tests/bin/$(configuration)/net48/test-results.xml
+  name: test-results/net48.xml
+- path: dotnet-xdt.tests/bin/$(configuration)/netcoreapp3.1/test-results.xml
+  name: test-results/netcoreapp31.xml
 
 deploy: off

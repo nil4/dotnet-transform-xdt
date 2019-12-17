@@ -4,6 +4,11 @@ pool:
 
 steps:
 - task: UseDotNet@2
+  displayName: 'Install SDK 2.1.607'
+  inputs:
+    version: 2.1.607
+
+- task: UseDotNet@2
   displayName: 'Install SDK 3.1.100'
   inputs:
     version: 3.1.100

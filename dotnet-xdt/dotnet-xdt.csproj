@@ -21,10 +21,10 @@
     <RootNamespace>DotNet.Xdt</RootNamespace>
     <AssemblyName>dotnet-xdt</AssemblyName>
 
-    <FileVersion>2.1.1</FileVersion>
+    <FileVersion>2.2.0</FileVersion>
     <Version>$(FileVersion)</Version>
     
-    <_ReleaseNotes>Enable [SourceLink](https://github.com/dotnet/sourcelink#readme) for access to original source code while debugging.</_ReleaseNotes>
+    <_ReleaseNotes>Enable [RollForward=Major](https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0#major-version-roll-forward) to allow running `dotnet-xdt` on .NET Core 3.x and later versions.</_ReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == '$(_LibTFM)' ">
@@ -35,6 +35,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="GlobalTool" Condition=" '$(TargetFrameworks)' == '$(_ToolTFM)' ">
+    <RollForward>Major</RollForward>
     <PackAsTool>true</PackAsTool>
     <AssemblyTitle>XDT (XML Document Transform) tool for .NET Core.</AssemblyTitle>
     <_PackageTags>netcoreapp21;global-tool</_PackageTags>

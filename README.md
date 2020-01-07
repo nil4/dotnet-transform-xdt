@@ -14,7 +14,7 @@ is that you can use the same command, for both installation and usage, across al
 Install `dotnet-xdt` as a global tool (only once):
 
 ```cmd
-dotnet tool install --global dotnet-xdt --version 2.1.1
+dotnet tool install --global dotnet-xdt --version 2.2.0
 ```
 
 And then you can apply XDT transforms, from the command-line, anywhere on your PC, e.g.:
@@ -58,7 +58,7 @@ Download the latest build of `dotnet-xdt.exe` from the [releases page](https://g
 For complete flexibility, reference the cross-platform `DotNet.Xdt` NuGet package in your application:
 
 ```cmd
-dotnet add package DotNet.Xdt --version 2.1.1
+dotnet add package DotNet.Xdt --version 2.2.0
 ```
 
 You can apply XDT transforms to any XML file, or other XML sources that can be read from

@@ -4,6 +4,6 @@ namespace DotNet.Xdt
 {
     interface IXmlOriginalDocumentService
     {
-        XmlNodeList SelectNodes(string path, XmlNamespaceManager nsmgr);
+        XmlNodeList? SelectNodes(string path, XmlNamespaceManager nsmgr);
     }
 }

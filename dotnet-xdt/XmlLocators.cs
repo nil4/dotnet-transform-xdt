@@ -15,11 +15,11 @@ namespace DotNet.Xdt
         {
             EnsureArguments(1);
 
-            string keyPredicate = null;
+            string? keyPredicate = null;
 
-            foreach (string key in Arguments)
+            foreach (string key in Arguments!)
             {
-                if (CurrentElement.Attributes.GetNamedItem(key) is XmlAttribute keyAttribute)
+                if (CurrentElement!.Attributes.GetNamedItem(key) is XmlAttribute keyAttribute)
                 {
                     string keySegment = string.Format(CultureInfo.InvariantCulture, "@{0}='{1}'", keyAttribute.Name, keyAttribute.Value);
                     keyPredicate = keyPredicate == null ? keySegment : string.Concat(keyPredicate, " and ", keySegment);
@@ -28,7 +28,7 @@ namespace DotNet.Xdt
                     throw new XmlTransformationException(string.Format(CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_MatchAttributeDoesNotExist, key));
             }
 
-            return keyPredicate;
+            return keyPredicate!;
         }
     }
 
@@ -37,7 +37,7 @@ namespace DotNet.Xdt
         protected override string ConstructPredicate()
         {
             EnsureArguments(1, 1);
-            return Arguments[0];
+            return Arguments![0];
         }
     }
 
@@ -49,7 +49,7 @@ namespace DotNet.Xdt
         {
             EnsureArguments(1, 1);
 
-            string xpath = Arguments[0];
+            string xpath = Arguments![0];
             if (!xpath.StartsWith("/", StringComparison.Ordinal))
             {
                 // Relative XPath

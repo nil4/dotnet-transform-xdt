@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net48</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <NullableContextOptions>$(Nullable)</NullableContextOptions>
     <Features>strict</Features>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -16,7 +18,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fixie" Version="2.0.4" />
+    <PackageReference Include="Fixie" Version="2.2.0" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
     <DotNetCliToolReference Include="Fixie.Console" Version="2.0.4" />
   </ItemGroup>

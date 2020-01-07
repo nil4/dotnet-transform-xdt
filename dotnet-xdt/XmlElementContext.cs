@@ -9,22 +9,22 @@ namespace DotNet.Xdt
 {
     class XmlElementContext : XmlNodeContext
     {
-        readonly XmlElementContext _parentContext;
-        string _xpath;
-        string _parentXPath;
+        readonly XmlElementContext? _parentContext;
+        string? _xpath;
+        string? _parentXPath;
 
         readonly IServiceProvider _serviceProvider;
 
-        XmlNode _transformNodes;
-        XmlNodeList _targetNodes;
-        XmlNodeList _targetParents;
+        XmlNode? _transformNodes;
+        XmlNodeList? _targetNodes;
+        XmlNodeList? _targetParents;
 
-        XmlAttribute _transformAttribute;
-        XmlAttribute _locatorAttribute;
+        XmlAttribute? _transformAttribute;
+        XmlAttribute? _locatorAttribute;
 
-        XmlNamespaceManager _namespaceManager;
+        XmlNamespaceManager? _namespaceManager;
 
-        public XmlElementContext(XmlElementContext parent, XmlElement element, XmlDocument xmlTargetDoc, IServiceProvider serviceProvider)
+        public XmlElementContext(XmlElementContext? parent, XmlElement element, XmlDocument xmlTargetDoc, IServiceProvider serviceProvider)
             : base(element)
         {
             _parentContext = parent;
@@ -32,7 +32,7 @@ namespace DotNet.Xdt
             _serviceProvider = serviceProvider;
         }
 
-        public T GetService<T>() where T : class
+        public T? GetService<T>() where T : class
         {
             if (_serviceProvider != null)
             {
@@ -44,13 +44,13 @@ namespace DotNet.Xdt
             return null;
         }
 
-        public XmlElement Element => Node as XmlElement;
+        public XmlElement? Element => Node as XmlElement;
 
-        public string XPath => _xpath ?? (_xpath = ConstructXPath());
+        public string XPath => _xpath ??= ConstructXPath();
 
-        public string ParentXPath => _parentXPath ?? (_parentXPath = ConstructParentXPath());
+        public string ParentXPath => _parentXPath ??= ConstructParentXPath();
 
-        public Transform ConstructTransform(out string argumentString)
+        public Transform? ConstructTransform(out string? argumentString)
         {
             try
             {
@@ -66,9 +66,9 @@ namespace DotNet.Xdt
 
         public int TransformLinePosition => (_transformAttribute as IXmlLineInfo)?.LinePosition ?? LinePosition;
 
-        public XmlAttribute TransformAttribute => _transformAttribute;
+        public XmlAttribute? TransformAttribute => _transformAttribute;
 
-        public XmlAttribute LocatorAttribute => _locatorAttribute;
+        public XmlAttribute? LocatorAttribute => _locatorAttribute;
 
         string ConstructXPath()
         {
@@ -76,7 +76,7 @@ namespace DotNet.Xdt
             {
                 string parentPath = _parentContext == null ? string.Empty : _parentContext.XPath;
 
-                Locator locator = CreateLocator(out string argumentString);
+                Locator locator = CreateLocator(out string? argumentString);
 
                 return locator.ConstructPath(parentPath, this, argumentString);
             }
@@ -92,7 +92,7 @@ namespace DotNet.Xdt
             {
                 string parentPath = _parentContext == null ? string.Empty : _parentContext.XPath;
 
-                Locator locator = CreateLocator(out string argumentString);
+                Locator locator = CreateLocator(out string? argumentString);
 
                 return locator.ConstructParentPath(parentPath, this, argumentString);
             }
@@ -102,7 +102,7 @@ namespace DotNet.Xdt
             }
         }
 
-        Locator CreateLocator(out string argumentString)
+        Locator CreateLocator(out string? argumentString)
         {
             var locator = CreateObjectFromAttribute<Locator>(out argumentString, out _locatorAttribute);
             if (locator == null)
@@ -114,9 +114,9 @@ namespace DotNet.Xdt
             return locator;
         }
 
-        internal XmlNode TransformNode => _transformNodes ?? (_transformNodes = CreateCloneInTargetDocument(Element));
+        internal XmlNode TransformNode => _transformNodes ??= CreateCloneInTargetDocument(Element);
 
-        internal XmlNodeList TargetNodes => _targetNodes ?? (_targetNodes = GetTargetNodes(XPath));
+        internal XmlNodeList TargetNodes => _targetNodes ??= GetTargetNodes(XPath);
 
         internal XmlNodeList TargetParents
         {
@@ -124,13 +124,13 @@ namespace DotNet.Xdt
             {
                 if (_targetParents == null && _parentContext != null)
                     _targetParents = GetTargetNodes(ParentXPath);
-                return _targetParents;
+                return _targetParents!;
             }
         }
 
         XmlDocument TargetDocument { get; }
 
-        XmlNode CreateCloneInTargetDocument(XmlNode sourceNode)
+        XmlNode CreateCloneInTargetDocument(XmlNode? sourceNode)
         {
             var infoDocument = TargetDocument as XmlFileInfoDocument;
             XmlNode clonedNode;
@@ -139,7 +139,7 @@ namespace DotNet.Xdt
                 clonedNode = infoDocument.CloneNodeFromOtherDocument(sourceNode);
             else
             {
-                var reader = new XmlTextReader(new StringReader(sourceNode.OuterXml));
+                var reader = new XmlTextReader(new StringReader(sourceNode?.OuterXml));
                 clonedNode = TargetDocument.ReadNode(reader);
             }
 
@@ -158,7 +158,7 @@ namespace DotNet.Xdt
                 {
                     if (attribute.NamespaceURI == XmlTransformation.TransformNamespace)
                         attributesToRemove.Add(attribute);
-                    else if (attribute.Prefix.Equals("xmlns") || attribute.Name.Equals("xmlns"))
+                    else if (attribute.Prefix!.Equals("xmlns") || attribute.Name.Equals("xmlns"))
                         attributesToRemove.Add(attribute);
                     else
                         attribute.Prefix = null;
@@ -175,15 +175,15 @@ namespace DotNet.Xdt
 
         XmlNodeList GetTargetNodes(string xpath) => TargetDocument.SelectNodes(xpath, GetNamespaceManager());
 
-        Exception WrapException(Exception ex) => XmlNodeException.Wrap(ex, Element);
+        Exception WrapException(Exception ex) => XmlNodeException.Wrap(ex, Element!);
 
-        static Exception WrapException(Exception ex, XmlNode node) => XmlNodeException.Wrap(ex, node);
+        static Exception WrapException(Exception ex, XmlNode? node) => XmlNodeException.Wrap(ex, node!);
 
         XmlNamespaceManager GetNamespaceManager()
         {
             if (_namespaceManager == null)
             {
-                XmlNodeList localNamespaces = Element.SelectNodes("namespace::*");
+                XmlNodeList localNamespaces = Element!.SelectNodes("namespace::*");
 
                 if (localNamespaces.Count > 0)
                 {
@@ -205,13 +205,13 @@ namespace DotNet.Xdt
             return _namespaceManager;
         }
 
-        XmlNameTable GetParentNameTable() 
-            => _parentContext == null ? Element.OwnerDocument.NameTable : _parentContext.GetNamespaceManager().NameTable;
+        XmlNameTable? GetParentNameTable() 
+            => _parentContext == null ? Element?.OwnerDocument?.NameTable : _parentContext.GetNamespaceManager().NameTable;
 
-        static Regex _nameAndArgumentsRegex;
-        static Regex NameAndArgumentsRegex => _nameAndArgumentsRegex ?? (_nameAndArgumentsRegex = new Regex(@"\A\s*(?<name>\w+)(\s*\((?<arguments>.*)\))?\s*\Z", RegexOptions.Compiled | RegexOptions.Singleline));
+        static Regex? _nameAndArgumentsRegex;
+        static Regex NameAndArgumentsRegex => _nameAndArgumentsRegex ??= new Regex(@"\A\s*(?<name>\w+)(\s*\((?<arguments>.*)\))?\s*\Z", RegexOptions.Compiled | RegexOptions.Singleline);
 
-        static string ParseNameAndArguments(string name, out string arguments)
+        static string ParseNameAndArguments(string name, out string? arguments)
         {
             arguments = null;
 
@@ -230,16 +230,17 @@ namespace DotNet.Xdt
             throw new XmlTransformationException(SR.XMLTRANSFORMATION_BadAttributeValue);
         }
 
-        TObjectType CreateObjectFromAttribute<TObjectType>(out string argumentString, out XmlAttribute objectAttribute) where TObjectType : class
+        TObjectType? CreateObjectFromAttribute<TObjectType>(out string? argumentString, out XmlAttribute? objectAttribute) 
+            where TObjectType : class
         {
-            objectAttribute = Element.Attributes.GetNamedItem(typeof(TObjectType).Name, XmlTransformation.TransformNamespace) as XmlAttribute;
+            objectAttribute = Element?.Attributes.GetNamedItem(typeof(TObjectType).Name, XmlTransformation.TransformNamespace) as XmlAttribute;
             try
             {
                 if (objectAttribute != null)
                 {
                     string typeName = ParseNameAndArguments(objectAttribute.Value, out argumentString);
                     if (!string.IsNullOrEmpty(typeName))
-                        return GetService<NamedTypeFactory>().Construct<TObjectType>(typeName);
+                        return GetService<NamedTypeFactory>()!.Construct<TObjectType>(typeName);
                 }
             }
             catch (Exception ex)
@@ -251,7 +252,7 @@ namespace DotNet.Xdt
             return null;
         }
 
-        internal bool HasTargetNode(out XmlElementContext failedContext, out bool existedInOriginal)
+        internal bool HasTargetNode(out XmlElementContext? failedContext, out bool existedInOriginal)
         {
             failedContext = null;
             existedInOriginal = false;
@@ -271,13 +272,13 @@ namespace DotNet.Xdt
 
         internal bool HasTargetParent(out XmlElementContext failedContext, out bool existedInOriginal)
         {
-            failedContext = null;
+            failedContext = null!;
             existedInOriginal = false;
 
             if (TargetParents.Count == 0)
             {
                 failedContext = this;
-                while (!string.IsNullOrEmpty(failedContext._parentContext?.ParentXPath) && failedContext._parentContext.TargetParents.Count == 0)
+                while (!string.IsNullOrEmpty(failedContext._parentContext?.ParentXPath) && failedContext._parentContext?.TargetParents.Count == 0)
                     failedContext = failedContext._parentContext;
 
                 existedInOriginal = ExistedInOriginal(failedContext.XPath);
@@ -290,7 +291,7 @@ namespace DotNet.Xdt
         bool ExistedInOriginal(string xpath)
         {
             var service = GetService<IXmlOriginalDocumentService>();
-            XmlNodeList nodeList = service?.SelectNodes(xpath, GetNamespaceManager());
+            XmlNodeList? nodeList = service?.SelectNodes(xpath, GetNamespaceManager());
             return nodeList != null && nodeList.Count > 0;
         }
     }

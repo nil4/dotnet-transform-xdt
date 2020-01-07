@@ -9,7 +9,7 @@ namespace DotNet.Xdt
 {
     static class CommonErrors
     {
-        internal static void ExpectNoArguments(XmlTransformationLogger log, string transformName, string argumentString)
+        internal static void ExpectNoArguments(XmlTransformationLogger log, string transformName, string? argumentString)
         {
             if (!string.IsNullOrEmpty(argumentString))
                 log.LogWarning(SR.XMLTRANSFORMATION_TransformDoesNotExpectArguments, transformName);
@@ -100,7 +100,7 @@ namespace DotNet.Xdt
             : base(TransformFlags.UseParentAsTargetNode, MissingTargetMessage.Error)
         { }
 
-        XmlElement _siblingElement;
+        XmlElement? _siblingElement;
 
         protected XmlElement SiblingElement
         {
@@ -194,7 +194,7 @@ namespace DotNet.Xdt
     /// </summary>
     class SetTokenizedAttributes : AttributeTransform
     {
-        SetTokenizedAttributeStorage _storageDictionary;
+        SetTokenizedAttributeStorage? _storageDictionary;
         bool _fInitStorageDictionary;
         public static readonly string Token = "Token";
         public static readonly string TokenNumber = "TokenNumber";
@@ -203,7 +203,7 @@ namespace DotNet.Xdt
         public static readonly string XpathLocator = "XpathLocator";
         public static readonly string XPathWithLocator = "XPathWithLocator";
 
-        XmlAttribute _tokenizeValueCurrentXmlAttribute;
+        XmlAttribute? _tokenizeValueCurrentXmlAttribute;
 
 
         protected SetTokenizedAttributeStorage TransformStorage
@@ -215,7 +215,7 @@ namespace DotNet.Xdt
                     _storageDictionary = GetService<SetTokenizedAttributeStorage>();
                     _fInitStorageDictionary = true;
                 }
-                return _storageDictionary;
+                return _storageDictionary!;
             }
         }
 
@@ -223,7 +223,7 @@ namespace DotNet.Xdt
         {
             var fTokenizeParameter = false;
             SetTokenizedAttributeStorage storage = TransformStorage;
-            List<Dictionary<string, string>> parameters = null;
+            List<Dictionary<string, string>>? parameters = null;
 
             if (storage != null)
             {
@@ -234,7 +234,7 @@ namespace DotNet.Xdt
 
             foreach (XmlAttribute transformAttribute in TransformAttributes)
             {
-                var targetAttribute = TargetNode.Attributes.GetNamedItem(transformAttribute.Name) as XmlAttribute;
+                XmlAttribute? targetAttribute = TargetNode.Attributes.GetNamedItem(transformAttribute.Name) as XmlAttribute;
 
                 string newValue = TokenizeValue(targetAttribute, transformAttribute, fTokenizeParameter, parameters);
 
@@ -257,30 +257,30 @@ namespace DotNet.Xdt
         }
 
 
-        static RegularExpressions.Regex _sDirRegex;
-        static RegularExpressions.Regex _sParentAttribRegex;
-        static RegularExpressions.Regex _sTokenFormatRegex;
+        static RegularExpressions.Regex? _sDirRegex;
+        static RegularExpressions.Regex? _sParentAttribRegex;
+        static RegularExpressions.Regex? _sTokenFormatRegex;
 
         // Directory registrory
-        internal static RegularExpressions.Regex DirRegex => _sDirRegex 
-            ?? (_sDirRegex = new RegularExpressions.Regex(@"\G\{%(\s*(?<attrname>\w+(?=\W))(\s*(?<equal>=)\s*'(?<attrval>[^']*)'|\s*(?<equal>=)\s*(?<attrval>[^\s%>]*)|(?<equal>)(?<attrval>\s*?)))*\s*?%\}"));
+        internal static RegularExpressions.Regex DirRegex 
+            => _sDirRegex ??= new RegularExpressions.Regex(@"\G\{%(\s*(?<attrname>\w+(?=\W))(\s*(?<equal>=)\s*'(?<attrval>[^']*)'|\s*(?<equal>=)\s*(?<attrval>[^\s%>]*)|(?<equal>)(?<attrval>\s*?)))*\s*?%\}");
 
-        internal static RegularExpressions.Regex ParentAttributeRegex => _sParentAttribRegex 
-            ?? (_sParentAttribRegex = new RegularExpressions.Regex(@"\G\$\((?<tagname>[\w:\.]+)\)"));
+        internal static RegularExpressions.Regex ParentAttributeRegex 
+            => _sParentAttribRegex ??= new RegularExpressions.Regex(@"\G\$\((?<tagname>[\w:\.]+)\)");
 
-        internal static RegularExpressions.Regex TokenFormatRegex => _sTokenFormatRegex 
-            ?? (_sTokenFormatRegex = new RegularExpressions.Regex(@"\G\#\((?<tagname>[\w:\.]+)\)"));
+        internal static RegularExpressions.Regex TokenFormatRegex 
+            => _sTokenFormatRegex ??= new RegularExpressions.Regex(@"\G\#\((?<tagname>[\w:\.]+)\)");
 
-        protected delegate string GetValueCallback(string key);
+        protected delegate string? GetValueCallback(string key);
 
-        protected string GetAttributeValue(string attributeName)
+        protected string? GetAttributeValue(string attributeName)
         {
-            string dataValue = null;
+            string? dataValue = null;
             var sourceAttribute = TargetNode.Attributes.GetNamedItem(attributeName) as XmlAttribute;
             if (sourceAttribute == null)
             {
                 // if it is other attributename, we fall back to the current now 
-                if (string.Compare(attributeName, _tokenizeValueCurrentXmlAttribute.Name, StringComparison.OrdinalIgnoreCase) != 0) 
+                if (string.Compare(attributeName, _tokenizeValueCurrentXmlAttribute!.Name, StringComparison.OrdinalIgnoreCase) != 0) 
                     sourceAttribute = TransformNode.Attributes.GetNamedItem(attributeName) as XmlAttribute;
             }
             if (sourceAttribute != null)
@@ -292,7 +292,7 @@ namespace DotNet.Xdt
         protected string EscapeDirRegexSpecialCharacter(string value, bool escape) 
             => escape ? value.Replace("'", "&apos;") : value.Replace("&apos;", "'");
 
-        protected static string SubstituteKownValue(string transformValue, RegularExpressions.Regex patternRegex, string patternPrefix, GetValueCallback getValueDelegate)
+        protected static string SubstituteKnownValue(string transformValue, RegularExpressions.Regex patternRegex, string patternPrefix, GetValueCallback getValueDelegate)
         {
             var position = 0;
             var matchsExpr = new List<RegularExpressions.Match>();
@@ -324,7 +324,7 @@ namespace DotNet.Xdt
                     RegularExpressions.Capture captureTagName = match.Groups["tagname"];
                     string attributeName = captureTagName.Value;
 
-                    string newValue = getValueDelegate(attributeName);
+                    string? newValue = getValueDelegate(attributeName);
 
                     // null indicate that the attribute is not exist
                     strbuilder.Append(newValue ?? match.Value);
@@ -338,15 +338,15 @@ namespace DotNet.Xdt
             return transformValue;
         }
 
-        string GetXPathToAttribute(XmlAttribute xmlAttribute) 
+        string GetXPathToAttribute(XmlAttribute? xmlAttribute) 
             => GetXPathToAttribute(xmlAttribute, null);
 
-        string GetXPathToAttribute(XmlAttribute xmlAttribute, IList<string> locators)
+        string GetXPathToAttribute(XmlAttribute? xmlAttribute, IList<string>? locators)
         {
             string path = string.Empty;
             if (xmlAttribute != null)
             {
-                string pathToNode = GetXPathToNode(xmlAttribute.OwnerElement);
+                string? pathToNode = GetXPathToNode(xmlAttribute.OwnerElement);
                 if (!string.IsNullOrEmpty(pathToNode))
                 {
                     var identifier = new StringBuilder(256);
@@ -354,7 +354,7 @@ namespace DotNet.Xdt
                     {
                         foreach (string match in locators)
                         {
-                            string val = GetAttributeValue(match);
+                            string? val = GetAttributeValue(match);
                             if (!string.IsNullOrEmpty(val))
                             {
                                 if (identifier.Length != 0)
@@ -385,18 +385,18 @@ namespace DotNet.Xdt
             return path;
         }
 
-        static string GetXPathToNode(XmlNode xmlNode)
+        static string? GetXPathToNode(XmlNode xmlNode)
         {
             if (xmlNode == null || xmlNode.NodeType == XmlNodeType.Document)
                 return null;
-            string parentPath = GetXPathToNode(xmlNode.ParentNode);
+            string? parentPath = GetXPathToNode(xmlNode.ParentNode);
             return string.Concat(parentPath, "/", xmlNode.Name);
         }
 
-        string TokenizeValue(XmlAttribute targetAttribute,
+        string TokenizeValue(XmlAttribute? targetAttribute,
             XmlAttribute transformAttribute,
             bool fTokenizeParameter,
-            List<Dictionary<string, string>> parameters)
+            List<Dictionary<string, string>>? parameters)
         {
             Debug.Assert(!fTokenizeParameter || parameters != null);
 
@@ -405,7 +405,7 @@ namespace DotNet.Xdt
             string xpath = GetXPathToAttribute(targetAttribute);
 
             //subsitute the know value first in the transformAttribute
-            transformValue = SubstituteKownValue(transformValue, ParentAttributeRegex, "$(", key => EscapeDirRegexSpecialCharacter(GetAttributeValue(key), true));
+            transformValue = SubstituteKnownValue(transformValue, ParentAttributeRegex, "$(", key => EscapeDirRegexSpecialCharacter(GetAttributeValue(key)!, true));
 
             // then use the directive to parse the value. --- if TokenizeParameterize is enable
             if (fTokenizeParameter && parameters != null)
@@ -454,15 +454,15 @@ namespace DotNet.Xdt
                             for (var i = 0; i < attrnames.Count; i++)
                             {
                                 string name = attrnames[i].Value;
-                                string val = null;
+                                string? val = null;
                                 if (attrvalues != null && i < attrvalues.Count)
                                     val = EscapeDirRegexSpecialCharacter(attrvalues[i].Value, false);
-                                paramDictionary[name] = val;
+                                paramDictionary[name] = val!;
                             }
 
                             //Identify the Token format
-                            if (!paramDictionary.TryGetValue(Token, out string strTokenFormat))
-                                strTokenFormat = _storageDictionary.TokenFormat;
+                            if (!paramDictionary.TryGetValue(Token, out string? strTokenFormat))
+                                strTokenFormat = _storageDictionary!.TokenFormat;
 
                             if (!string.IsNullOrEmpty(strTokenFormat))
                                 paramDictionary[Token] = strTokenFormat;
@@ -480,7 +480,7 @@ namespace DotNet.Xdt
                                 // parameterDictionary["TokenNumber"]
                                 string keyindex = keys[i];
                                 string val = paramDictionary[keyindex];
-                                string newVal = SubstituteKownValue(val, TokenFormatRegex, "#(",
+                                string newVal = SubstituteKnownValue(val, TokenFormatRegex, "#(",
                                     key => paramDictionary.ContainsKey(key) ? paramDictionary[key] : null);
 
                                 paramDictionary[keyindex] = newVal;

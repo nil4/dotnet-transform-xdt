@@ -10,7 +10,7 @@ namespace DotNet.Xdt
     {
         void FormatAttributes(XmlFormatter formatter);
 
-        string AttributeIndent { get; }
+        string? AttributeIndent { get; }
     }
 
     class XmlFormatter
@@ -19,10 +19,10 @@ namespace DotNet.Xdt
 
         readonly LinkedList<string> _indents = new LinkedList<string>();
         readonly LinkedList<string> _attributeIndents = new LinkedList<string>();
-        string _currentIndent = string.Empty;
-        string _currentAttributeIndent;
-        string _oneTab;
-        XmlNode _currentNode;
+        string? _currentIndent = string.Empty;
+        string? _currentAttributeIndent;
+        string? _oneTab;
+        XmlNode? _currentNode;
 
 
         public static void Format(XmlDocument document)
@@ -37,7 +37,7 @@ namespace DotNet.Xdt
         XmlFormatter(XmlFileInfoDocument document) 
             => _document = document;
 
-        XmlNode CurrentNode
+        XmlNode? CurrentNode
         {
             get => _currentNode;
             set
@@ -47,7 +47,7 @@ namespace DotNet.Xdt
             }
         }
 
-        XmlNode PreviousNode { get; set; }
+        XmlNode? PreviousNode { get; set; }
 
         string PreviousIndent
         {
@@ -58,11 +58,11 @@ namespace DotNet.Xdt
             }
         }
 
-        string CurrentIndent => _currentIndent ?? (_currentIndent = ComputeCurrentIndent());
+        string CurrentIndent => _currentIndent ??= ComputeCurrentIndent();
 
-        public string CurrentAttributeIndent => _currentAttributeIndent ?? (_currentAttributeIndent = ComputeCurrentAttributeIndent());
+        public string? CurrentAttributeIndent => _currentAttributeIndent ??= ComputeCurrentAttributeIndent();
 
-        string OneTab => _oneTab ?? (_oneTab = ComputeOneTab());
+        string OneTab => _oneTab ??= ComputeOneTab();
 
         const string DefaultTab = "\t";
 
@@ -139,7 +139,7 @@ namespace DotNet.Xdt
                     // The loop continues until we find something that isn't
                     // a new Element. If it's whitespace, then that will be
                     // the whitespace we need to move.
-                    XmlNode whitespace = null;
+                    XmlNode? whitespace = null;
                     while (iter != null)
                     {
                         switch (iter.NodeType)
@@ -209,15 +209,15 @@ namespace DotNet.Xdt
             {
                 // Prefer to keep 'node', but if 'PreviousNode' has a newline
                 // and 'node' doesn't, keep the whitespace with the newline
-                XmlNode removeNode = PreviousNode;
-                if (FindLastNewLine(node.OuterXml) < 0 && FindLastNewLine(PreviousNode.OuterXml) >= 0)
+                XmlNode? removeNode = PreviousNode;
+                if (FindLastNewLine(node.OuterXml) < 0 && FindLastNewLine(PreviousNode!.OuterXml) >= 0)
                     removeNode = node;
 
-                removeNode.ParentNode.RemoveChild(removeNode);
+                removeNode?.ParentNode?.RemoveChild(removeNode);
                 indexChange = -1;
             }
 
-            string indent = GetIndentFromWhiteSpace(node);
+            string? indent = GetIndentFromWhiteSpace(node);
             if (indent != null)
                 SetIndent(indent);
 
@@ -242,7 +242,7 @@ namespace DotNet.Xdt
             return indexChange;
         }
 
-        string GetIndentFromWhiteSpace(XmlNode node)
+        string? GetIndentFromWhiteSpace(XmlNode node)
         {
             string whitespace = node.OuterXml;
             int index = FindLastNewLine(whitespace);
@@ -300,7 +300,7 @@ namespace DotNet.Xdt
             // indent. These aren't always needed, so we don't compute
             // them until necessary. Also, we don't walk through this
             // stack like we do the indents stack.
-            _attributeIndents.AddLast(new LinkedListNode<string>(_currentAttributeIndent));
+            _attributeIndents.AddLast(new LinkedListNode<string>(_currentAttributeIndent!));
             _currentAttributeIndent = null;
         }
 
@@ -318,18 +318,18 @@ namespace DotNet.Xdt
                 throw new InvalidOperationException("Popped too many indents");
         }
 
-        bool NeedsIndent(XmlNode node, XmlNode previousNode)
+        bool NeedsIndent(XmlNode node, XmlNode? previousNode)
         {
             return !IsWhiteSpace(previousNode)
                 && !IsText(previousNode)
                 && (IsNewNode(node) || IsNewNode(previousNode));
         }
 
-        static bool IsWhiteSpace(XmlNode node) => node != null && node.NodeType == XmlNodeType.Whitespace;
+        static bool IsWhiteSpace(XmlNode? node) => node != null && node.NodeType == XmlNodeType.Whitespace;
 
-        public bool IsText(XmlNode node) => node != null && node.NodeType == XmlNodeType.Text;
+        public bool IsText(XmlNode? node) => node != null && node.NodeType == XmlNodeType.Text;
 
-        bool IsNewNode(XmlNode node) => node != null && _document.IsNewNode(node);
+        bool IsNewNode(XmlNode? node) => node != null && _document.IsNewNode(node);
 
         void InsertIndentBefore(XmlNode node) => node.ParentNode.InsertBefore(_document.CreateWhitespace(CurrentIndent), node);
 
@@ -337,9 +337,9 @@ namespace DotNet.Xdt
 
         string ComputeCurrentIndent() => LookAheadForIndent() ?? PreviousIndent + OneTab;
 
-        string LookAheadForIndent()
+        string? LookAheadForIndent()
         {
-            if (_currentNode.ParentNode == null)
+            if (_currentNode?.ParentNode == null)
                 return null;
 
             foreach (XmlNode siblingNode in _currentNode.ParentNode.ChildNodes)
@@ -398,20 +398,20 @@ namespace DotNet.Xdt
             return DefaultTab;
         }
 
-        string ComputeCurrentAttributeIndent()
+        string? ComputeCurrentAttributeIndent()
         {
-            string siblingIndent = LookForSiblingIndent(CurrentNode);
+            string? siblingIndent = LookForSiblingIndent(CurrentNode);
             if (siblingIndent != null)
                 return siblingIndent;
             return CurrentIndent + OneTab;
         }
 
-        static string LookForSiblingIndent(XmlNode currentNode)
+        static string? LookForSiblingIndent(XmlNode? currentNode)
         {
             var beforeCurrentNode = true;
-            string foundIndent = null;
+            string? foundIndent = null;
 
-            foreach (XmlNode node in currentNode.ParentNode.ChildNodes)
+            foreach (XmlNode node in currentNode?.ParentNode?.ChildNodes!)
             {
                 if (node == currentNode)
                     beforeCurrentNode = false;

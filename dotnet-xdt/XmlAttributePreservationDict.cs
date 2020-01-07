@@ -11,7 +11,7 @@ namespace DotNet.Xdt
         readonly List<string> _orderedAttributes = new List<string>();
         readonly Dictionary<string, string> _leadingSpaces = new Dictionary<string, string>();
 
-        string _attributeNewLineString;
+        string? _attributeNewLineString;
         bool? _oneAttributePerLine;
 
         bool OneAttributePerLine => _oneAttributePerLine
@@ -66,7 +66,7 @@ namespace DotNet.Xdt
 
         internal void WritePreservedAttributes(XmlAttributePreservingWriter writer, XmlAttributeCollection attributes)
         {
-            string oldNewLineString = null;
+            string? oldNewLineString = null;
             if (_attributeNewLineString != null)
                 oldNewLineString = writer.SetAttributeNewLineString(_attributeNewLineString);
 
@@ -119,7 +119,7 @@ namespace DotNet.Xdt
                 }
 
                 var firstAttribute = true;
-                string keepLeadingWhitespace = null;
+                string? keepLeadingWhitespace = null;
                 foreach (string key in _orderedAttributes)
                 {
                     bool exists = attributeExists[key];
@@ -173,7 +173,7 @@ namespace DotNet.Xdt
                             _leadingSpaces[key] = " ";
                         else if (OneAttributePerLine)
                             // Add the indent space between each attribute
-                            _leadingSpaces[key] = GetAttributeNewLineString(formatter);
+                            _leadingSpaces[key] = GetAttributeNewLineString(formatter)!;
                         else
                             // Don't add any hard-coded spaces. All new attributes
                             // should be at the end, so they'll be formatted while
@@ -220,13 +220,13 @@ namespace DotNet.Xdt
         static bool ContainsNewLine(string space) 
             => space.IndexOf("\n", StringComparison.Ordinal) >= 0;
 
-        public string GetAttributeNewLineString(XmlFormatter formatter) 
-            => _attributeNewLineString ?? (_attributeNewLineString = ComputeAttributeNewLineString(formatter));
+        public string? GetAttributeNewLineString(XmlFormatter? formatter) 
+            => _attributeNewLineString ??= ComputeAttributeNewLineString(formatter);
 
-        string ComputeAttributeNewLineString(XmlFormatter formatter) 
+        string? ComputeAttributeNewLineString(XmlFormatter? formatter) 
             => LookAheadForNewLineString() ?? formatter?.CurrentAttributeIndent;
 
-        string LookAheadForNewLineString()
+        string? LookAheadForNewLineString()
         {
             foreach (string space in _leadingSpaces.Values)
                 if (ContainsNewLine(space)) return space;

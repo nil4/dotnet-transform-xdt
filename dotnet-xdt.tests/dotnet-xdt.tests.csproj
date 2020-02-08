@@ -8,6 +8,9 @@
     <NullableContextOptions>$(Nullable)</NullableContextOptions>
     <Features>strict</Features>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RunAnalyzers>false</RunAnalyzers>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\**\*.*" />

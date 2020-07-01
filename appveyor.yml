@@ -2,16 +2,17 @@
 
 image: Visual Studio 2019 Preview
 
-version: 2.1.{build}
+version: 2.2.{build}
 
 configuration: Release
 
 clone_depth: 1
 
 environment:
+  DOTNET_NOLOGO: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_SDK_URL: 'https://dotnetcli.azureedge.net/dotnet/Sdk/3.1.300/dotnet-sdk-3.1.300-win-x64.zip'
+  DOTNET_SDK_URL: 'https://dotnetcli.azureedge.net/dotnet/Sdk/3.1.301/dotnet-sdk-3.1.301-win-x64.zip'
 
 cache:
   - '%LocalAppData%\NuGet\v3-cache' # NuGet v3
@@ -25,16 +26,16 @@ install:
     $env:DOTNET_ROOT = (Resolve-Path $env:DOTNET_ROOT)
 
     Invoke-WebRequest -Uri "$env:DOTNET_SDK_URL" -OutFile "$env:DOTNET_ROOT\dotnet-sdk.zip"
-    
+
     Expand-Archive "$env:DOTNET_ROOT\dotnet-sdk.zip" "$env:DOTNET_ROOT"
-    
+
     $env:PATH = "$env:DOTNET_ROOT;$env:Path"
 
 build_script:
-- cmd: call build.cmd
+- ps: ./build.ps1
 
 test_script:
-- cmd: call test.cmd
+- ps: ./test.ps1
 
 artifacts:
 - path: dotnet-xdt/bin/$(configuration)/*.nupkg

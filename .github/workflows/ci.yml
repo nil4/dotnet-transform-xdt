@@ -1,0 +1,43 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: build.ps1
+      run: pwsh ./build.ps1
+
+    - name: test.ps1
+      run: pwsh ./test.ps1
+
+    - name: publish dotnet-xdt.nupkg
+      uses: actions/upload-artifact@v2
+      with:
+        name: dotnet-xdt.nupkg
+        path: dotnet-xdt/bin/Release/dotnet-xdt.*.nupkg
+
+    - name: publish DotNet.Xdt.nupkg
+      uses: actions/upload-artifact@v2
+      with:
+        name: DotNet.Xdt.nupkg
+        path: dotnet-xdt/bin/Release/DotNet.Xdt.*.nupkg
+
+    - name: publish dotnet-xdt.exe
+      uses: actions/upload-artifact@v2
+      with:
+        name: dotnet-xdt.exe
+        path: dotnet-xdt/bin/Release/net*/dotnet-xdt.exe
+
+    - name: publish test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: dotnet-xdt.tests/bin/Release/net*/test-results.xml

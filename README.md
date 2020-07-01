@@ -1,15 +1,15 @@
-# dotnet-xdt [![Build status](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master) [![Build status](https://dev.azure.com/nil4-github/dotnet-transform-xdt/_apis/build/status/dotnet-transform-xdt)](https://dev.azure.com/nil4-github/dotnet-transform-xdt/_build/latest?definitionId=1)
+# dotnet-xdt [![AppVeyor build](https://ci.appveyor.com/api/projects/status/559na9y3iswe9hbh/branch/master?svg=true)](https://ci.appveyor.com/project/nil4/dotnet-transform-xdt/branch/master) ![GitHub Actions build](https://github.com/nil4/dotnet-transform-xdt/workflows/CI/badge.svg)
 
 Tools and library for applying [XML Document Transformations](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 to e.g. .NET configuration files, or any other XML-structured content.
 
-### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later  [![NuGet package](https://img.shields.io/nuget/dt/dotnet-xdt.svg)](https://www.nuget.org/packages/dotnet-xdt/) 
+### <a name="dotnet-xdt-tool"></a> Global tool for .NET Core 2.1 and later  [![NuGet package](https://img.shields.io/nuget/dt/dotnet-xdt.svg)](https://www.nuget.org/packages/dotnet-xdt/)
 
 .NET Core 2.1 introduces the concept of [global tools](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools),
-meaning that you can install `dotnet-xdt` using the .NET CLI and use it everywhere. One advantage of this approach 
+meaning that you can install `dotnet-xdt` using the .NET CLI and use it everywhere. One advantage of this approach
 is that you can use the same command, for both installation and usage, across all platforms.
 
-> :warning: To use global tools, .Net Core SDK 2.1.300 or later is required. 
+> :warning: To use global tools, .Net Core SDK 2.1.300 or later is required.
 
 Install `dotnet-xdt` as a global tool (only once):
 
@@ -24,36 +24,36 @@ dotnet xdt --source original.xml --transform delta.xml --output final.xml
 ```
 
 Global tools are not ideal when an application needs to build completely self-contained,
-without relying on tools installed in the surrounding environment. They are also only 
+without relying on tools installed in the surrounding environment. They are also only
 available on the latest .NET Core.
 
 Read on if this is a concern for your application.
 
 ### <a name="dotnet-transform-xdt-tool"></a> Project tool for .NET Core 2.0 and earlier
 
-.NET Core 2.0 and earlier do not support global tools. 
+.NET Core 2.0 and earlier do not support global tools.
 
-The "classic" version of this tool, however, *can* be installed as a 
+The "classic" version of this tool, however, *can* be installed as a
 [project-level tool](https://docs.microsoft.com/en-us/dotnet/core/tools/extensibility#per-project-based-extensibility)
 on both the latest .NET Core, as well as on previous versions.
 
-The tradeoff is that in this usage model, the tool can only be invoked 
-via `dotnet transform-xdt`, and only from the folder of the project that references it. 
+The tradeoff is that in this usage model, the tool can only be invoked
+via `dotnet transform-xdt`, and only from the folder of the project that references it.
 
-See the [project-level `dotnet-transform-xdt` tool](#legacy) section 
-below for details. [A separate repository](https://github.com/nil4/xdt-samples/) provides a 
-few self-contained sample projects that use `dotnet-transform-xdt` 
-for Web.config transformations at publish time. 
+See the [project-level `dotnet-transform-xdt` tool](#legacy) section
+below for details. [A separate repository](https://github.com/nil4/xdt-samples/) provides a
+few self-contained sample projects that use `dotnet-transform-xdt`
+for Web.config transformations at publish time.
 
 ### <a name="dotnet-xdt-exe"></a>Standalone executable for Windows
 
-You can also download a standalone `dotnet-xdt.exe` that runs on any Windows PC with .NET 
+You can also download a standalone `dotnet-xdt.exe` that runs on any Windows PC with .NET
 Framework 4.6.1 installed. It has no external dependencies, nor does it require .NET Core.
 It *might* run on Mono, but this scenario is not tested.
 
 Download the latest build of `dotnet-xdt.exe` from the [releases page](https://github.com/nil4/dotnet-transform-xdt/releases).
 
-### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library [![NuGet package](https://img.shields.io/nuget/dt/DotNet.Xdt.svg)](https://www.nuget.org/packages/DotNet.Xdt/) 
+### <a name="dotnet-xdt-lib"></a>.NET Standard 2.0 library [![NuGet package](https://img.shields.io/nuget/dt/DotNet.Xdt.svg)](https://www.nuget.org/packages/DotNet.Xdt/)
 
 For complete flexibility, reference the cross-platform `DotNet.Xdt` NuGet package in your application:
 
@@ -62,7 +62,7 @@ dotnet add package DotNet.Xdt --version 2.2.0
 ```
 
 You can apply XDT transforms to any XML file, or other XML sources that can be read from
-and written to a .NET `Stream`. 
+and written to a .NET `Stream`.
 
 Define a class `MyXdtLogger` that implements `IXmlTransformationLogger`.
 Then, apply transformations using code similar to:
@@ -85,12 +85,12 @@ using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings {
 }
 ```
 
-## <a name="legacy"></a> Project-level `dotnet-transform-xdt` tool [![NuGet package](https://img.shields.io/nuget/dt/Microsoft.DotNet.Xdt.Tools.svg)](https://www.nuget.org/packages/Microsoft.DotNet.Xdt.Tools/) 
+## <a name="legacy"></a> Project-level `dotnet-transform-xdt` tool [![NuGet package](https://img.shields.io/nuget/dt/Microsoft.DotNet.Xdt.Tools.svg)](https://www.nuget.org/packages/Microsoft.DotNet.Xdt.Tools/)
 
 *`dotnet-xdt` is a [global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) that can only be installed on .NET Core 2.1 or later.*
 
 **`dotnet-transform-xdt`** is an alternative version that can be installed
-as a project-level tool, on all .NET Core versions. 
+as a project-level tool, on all .NET Core versions.
 
 ### <a name="msbuild"></a> Use with MSBuild/csproj tooling
 
@@ -120,8 +120,8 @@ We will use this sample XDT file to add an environment variable that disables do
 your project is published using the `Release` configuration. See the [MSDN XDT reference](https://msdn.microsoft.com/en-us/library/dd465326.aspx)
 for the complete transformation syntax.
 
-Edit the `XdtSample.csproj` file and inside an `<ItemGroup>` element, add a reference to this XDT tool. 
-Note that you cannot use the NuGet Package Manager UI in Visual Studio 2017 to CLI tool references; 
+Edit the `XdtSample.csproj` file and inside an `<ItemGroup>` element, add a reference to this XDT tool.
+Note that you cannot use the NuGet Package Manager UI in Visual Studio 2017 to CLI tool references;
 they must currently be added by editing the project file.
 
 ```xml

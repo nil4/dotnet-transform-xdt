@@ -59,6 +59,8 @@ namespace DotNet.Xdt
                     transformation.Apply(sourceXml);
                 }
 
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
+
                 using (FileStream outputStream = File.Create(outputFilePath))
                 using (var outputWriter = XmlWriter.Create(outputStream, new XmlWriterSettings { Indent = true, Encoding = Encoding.UTF8 }))
                 {

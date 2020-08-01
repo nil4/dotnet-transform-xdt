@@ -101,7 +101,6 @@ namespace DotNet.Xdt
             writer.WriteLine();
             writer.WriteLine("Options:");
             writer.WriteLine("  --help|-h|-?     Print usage information");
-            writer.WriteLine("  --quiet|-q       Print only error messages");
             writer.WriteLine("  --verbose|-v     Print verbose messages while transforming");
             writer.WriteLine();
             writer.WriteLine($"Example: {ToolName} --source original.xml --transform delta.xml --output final.xml --verbose");

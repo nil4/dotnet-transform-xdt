@@ -29,7 +29,7 @@ namespace DotNet.Xdt
             _document = node.OwnerDocument as XmlFileInfoDocument;
         }
 
-        public bool HasErrorInfo => _lineInfo != null;
+        public bool HasErrorInfo => _lineInfo is not null;
 
         public string? FileName => _document?.FileName;
 

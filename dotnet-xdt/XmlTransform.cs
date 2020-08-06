@@ -60,7 +60,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_currentTargetNode != null) return _currentTargetNode;
+                if (_currentTargetNode is not null) return _currentTargetNode;
 
                 foreach (XmlNode targetNode in TargetNodes)
                     return targetNode;
@@ -76,10 +76,10 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_logger == null)
+                if (_logger is null)
                 {
                     _logger = _context!.GetService<XmlTransformationLogger>();
-                    if (_logger != null)
+                    if (_logger is not null)
                         _logger.CurrentReferenceNode = _context.TransformAttribute;
                 }
                 return _logger!;
@@ -94,7 +94,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_arguments == null && ArgumentString != null)
+                if (_arguments is null && ArgumentString is not null)
                     _arguments = XmlArgumentUtility.SplitArguments(ArgumentString);
                 return _arguments!;
             }
@@ -117,10 +117,10 @@ namespace DotNet.Xdt
 
         internal void Execute(XmlElementContext context, string? argumentString)
         {
-            Debug.Assert(_context == null && ArgumentString == null, "Don't call Execute recursively");
-            Debug.Assert(_logger == null, "Logger wasn't released from previous execution");
+            Debug.Assert(_context is null && ArgumentString is null, "Don't call Execute recursively");
+            Debug.Assert(_logger is null, "Logger wasn't released from previous execution");
 
-            if (_context == null && ArgumentString == null)
+            if (_context is null && ArgumentString is null)
             {
                 var error = false;
                 var startedSection = false;
@@ -147,7 +147,7 @@ namespace DotNet.Xdt
                 catch (Exception ex)
                 {
                     error = true;
-                    Log.LogErrorFromException(context.TransformAttribute != null 
+                    Log.LogErrorFromException(context.TransformAttribute is not null 
                         ? XmlNodeException.Wrap(ex, context.TransformAttribute) 
                         : ex);
                 }

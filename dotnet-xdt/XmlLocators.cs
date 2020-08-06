@@ -22,7 +22,7 @@ namespace DotNet.Xdt
                 if (CurrentElement!.Attributes.GetNamedItem(key) is XmlAttribute keyAttribute)
                 {
                     string keySegment = string.Format(CultureInfo.InvariantCulture, "@{0}='{1}'", keyAttribute.Name, keyAttribute.Value);
-                    keyPredicate = keyPredicate == null ? keySegment : string.Concat(keyPredicate, " and ", keySegment);
+                    keyPredicate = keyPredicate is null ? keySegment : string.Concat(keyPredicate, " and ", keySegment);
                 }
                 else
                     throw new XmlTransformationException(string.Format(CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_MatchAttributeDoesNotExist, key));

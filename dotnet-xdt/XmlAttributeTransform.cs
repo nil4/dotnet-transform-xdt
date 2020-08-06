@@ -19,7 +19,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_transformAttributes == null || _transformAttributeSource != TransformNode)
+                if (_transformAttributes is null || _transformAttributeSource != TransformNode)
                 {
                     _transformAttributeSource = TransformNode;
                     _transformAttributes = GetAttributesFrom(TransformNode);
@@ -32,7 +32,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_targetAttributes == null || _targetAttributeSource != TargetNode)
+                if (_targetAttributes is null || _targetAttributeSource != TargetNode)
                 {
                     _targetAttributeSource = TargetNode;
                     _targetAttributes = GetAttributesFrom(TargetNode);
@@ -43,7 +43,7 @@ namespace DotNet.Xdt
 
         XmlNodeList GetAttributesFrom(XmlNode node)
         {
-            if (Arguments == null || Arguments.Count == 0)
+            if (Arguments is null || Arguments.Count == 0)
                 return GetAttributesFrom(node, "*", false);
 
             if (Arguments.Count == 1)

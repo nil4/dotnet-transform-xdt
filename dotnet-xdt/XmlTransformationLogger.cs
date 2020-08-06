@@ -17,7 +17,7 @@ namespace DotNet.Xdt
         {
             HasLoggedErrors = true;
 
-            if (_externalLogger != null)
+            if (_externalLogger is not null)
             {
                 if (ex is XmlNodeException nodeException && nodeException.HasErrorInfo)
                 {
@@ -44,7 +44,7 @@ namespace DotNet.Xdt
                 // I don't feel like implementing a stack for this for no
                 // reason. Only one thing should try to set this property
                 // at a time, and that thing should clear it when done.
-                Debug.Assert(_currentReferenceNode == null || value == null, "CurrentReferenceNode is being overwritten");
+                Debug.Assert(_currentReferenceNode is null || value is null, "CurrentReferenceNode is being overwritten");
                 _currentReferenceNode = value;
             }
         }
@@ -64,7 +64,7 @@ namespace DotNet.Xdt
                 LogMessage(message, messageArgs);
             else
             {
-                if (CurrentReferenceNode != null)
+                if (CurrentReferenceNode is not null)
                     LogWarning(CurrentReferenceNode, message, messageArgs);
                 else
                     _externalLogger?.LogWarning(message, messageArgs);
@@ -78,7 +78,7 @@ namespace DotNet.Xdt
                 LogMessage(message, messageArgs);
             else
             {
-                if (_externalLogger != null)
+                if (_externalLogger is not null)
                 {
                     string? fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
 
@@ -106,9 +106,9 @@ namespace DotNet.Xdt
         {
             HasLoggedErrors = true;
 
-            if (CurrentReferenceNode != null)
+            if (CurrentReferenceNode is not null)
                 LogError(CurrentReferenceNode, message, messageArgs);
-            else if (_externalLogger != null)
+            else if (_externalLogger is not null)
                 _externalLogger.LogError(message, messageArgs);
             else
                 throw new XmlTransformationException(string.Format(CultureInfo.CurrentCulture, message, messageArgs));
@@ -118,7 +118,7 @@ namespace DotNet.Xdt
         {
             HasLoggedErrors = true;
 
-            if (_externalLogger != null)
+            if (_externalLogger is not null)
             {
                 string? fileName = ConvertUriToFileName(referenceNode.OwnerDocument);
 

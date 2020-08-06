@@ -67,7 +67,7 @@ namespace DotNet.Xdt
         internal void WritePreservedAttributes(XmlAttributePreservingWriter writer, XmlAttributeCollection attributes)
         {
             string? oldNewLineString = null;
-            if (_attributeNewLineString != null)
+            if (_attributeNewLineString is not null)
                 oldNewLineString = writer.SetAttributeNewLineString(_attributeNewLineString);
 
             try
@@ -75,7 +75,7 @@ namespace DotNet.Xdt
                 foreach (string attributeName in _orderedAttributes)
                 {
                     XmlAttribute attr = attributes[attributeName];
-                    if (attr == null) continue;
+                    if (attr is null) continue;
                     if (_leadingSpaces.ContainsKey(attributeName))
                         writer.WriteAttributeWhitespace(_leadingSpaces[attributeName]);
 
@@ -87,7 +87,7 @@ namespace DotNet.Xdt
             }
             finally
             {
-                if (oldNewLineString != null)
+                if (oldNewLineString is not null)
                     writer.SetAttributeNewLineString(oldNewLineString);
             }
         }
@@ -145,8 +145,7 @@ namespace DotNet.Xdt
                             string leadingSpace = _leadingSpaces[key];
                             if (firstAttribute)
                             {
-                                if (keepLeadingWhitespace == null)
-                                    keepLeadingWhitespace = leadingSpace;
+                                keepLeadingWhitespace ??= leadingSpace;
                             }
                             else if (ContainsNewLine(leadingSpace))
                                 keepLeadingWhitespace = leadingSpace;
@@ -155,7 +154,7 @@ namespace DotNet.Xdt
                         }
                     }
 
-                    else if (keepLeadingWhitespace != null)
+                    else if (keepLeadingWhitespace is not null)
                     {
                         // Exception to rule #2 above: Don't replace an existing
                         // newline with one that was removed

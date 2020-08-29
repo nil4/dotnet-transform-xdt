@@ -66,10 +66,10 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_logger == null)
+                if (_logger is null)
                 {
                     _logger = _context?.GetService<XmlTransformationLogger>();
-                    if (_logger != null)
+                    if (_logger is not null)
                         _logger.CurrentReferenceNode = _context!.LocatorAttribute;
                 }
                 return _logger;
@@ -82,7 +82,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_arguments == null && ArgumentString != null)
+                if (_arguments is null && ArgumentString is not null)
                     _arguments = XmlArgumentUtility.SplitArguments(ArgumentString);
                 return _arguments;
             }
@@ -92,7 +92,7 @@ namespace DotNet.Xdt
 
         protected void EnsureArguments(int min)
         {
-            if (Arguments == null || Arguments.Count < min)
+            if (Arguments is null || Arguments.Count < min)
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_RequiresMinimumArguments, GetType().Name, min));
         }
 
@@ -101,7 +101,7 @@ namespace DotNet.Xdt
             Debug.Assert(min <= max);
             if (min == max)
             {
-                if (Arguments == null || Arguments.Count != min)
+                if (Arguments is null || Arguments.Count != min)
                     throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_RequiresExactArguments, GetType().Name, min));
             }
 
@@ -113,12 +113,12 @@ namespace DotNet.Xdt
 
         internal string ConstructPath(string parentPath, XmlElementContext context, string? argumentString)
         {
-            Debug.Assert(_parentPath == null && _context == null && ArgumentString == null,
+            Debug.Assert(_parentPath is null && _context is null && ArgumentString is null,
                 "Do not call ConstructPath recursively");
 
             string resultPath = string.Empty;
 
-            if (_parentPath == null && _context == null && ArgumentString == null)
+            if (_parentPath is null && _context is null && ArgumentString is null)
             {
                 try
                 {
@@ -144,12 +144,12 @@ namespace DotNet.Xdt
 
         internal string ConstructParentPath(string parentPath, XmlElementContext context, string? argumentString)
         {
-            Debug.Assert(_parentPath == null && _context == null && ArgumentString == null,
+            Debug.Assert(_parentPath is null && _context is null && ArgumentString is null,
                 "Do not call ConstructPath recursively");
 
             string resultPath = string.Empty;
 
-            if (_parentPath == null && _context == null && ArgumentString == null)
+            if (_parentPath is null && _context is null && ArgumentString is null)
             {
                 try
                 {
@@ -175,7 +175,7 @@ namespace DotNet.Xdt
 
         void ReleaseLogger()
         {
-            if (_logger != null)
+            if (_logger is not null)
             {
                 _logger.CurrentReferenceNode = null;
                 _logger = null;

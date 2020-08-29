@@ -32,7 +32,7 @@ namespace DotNet.Xdt
 
             foreach (string argument in arguments)
             {
-                combinedArgument = combinedArgument == null 
+                combinedArgument = combinedArgument is null 
                     ? argument 
                     : string.Concat(combinedArgument, separator, argument);
 
@@ -44,7 +44,7 @@ namespace DotNet.Xdt
             }
 
             // mismatched parens, we'll let the caller handle it
-            if (combinedArgument != null)
+            if (combinedArgument is not null)
                 combinedArguments.Add(combinedArgument);
 
             // If the count didn't change, then nothing was recombined

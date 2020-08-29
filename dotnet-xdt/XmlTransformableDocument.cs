@@ -6,11 +6,11 @@ namespace DotNet.Xdt
     {
         XmlDocument? _xmlOriginal;
 
-        public bool IsChanged => _xmlOriginal != null && !IsXmlEqual(_xmlOriginal, this);
+        public bool IsChanged => _xmlOriginal is not null && !IsXmlEqual(_xmlOriginal, this);
 
         internal void OnBeforeChange()
         {
-            if (_xmlOriginal == null)
+            if (_xmlOriginal is null)
                 CloneOriginalDocument();
         }
 

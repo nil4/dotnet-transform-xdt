@@ -85,7 +85,7 @@ namespace DotNet.Xdt
         protected override void Apply()
         {
             CommonErrors.ExpectNoArguments(Log, TransformNameShort, ArgumentString);
-            if (TargetChildNodes == null || TargetChildNodes.Count == 0)
+            if (TargetChildNodes is null || TargetChildNodes.Count == 0)
             {
                 TargetNode.AppendChild(TransformNode);
                 Log.LogMessage(MessageType.Verbose, SR.XMLTRANSFORMATION_TransformMessageInsert, TransformNode.Name);
@@ -106,9 +106,9 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_siblingElement == null)
+                if (_siblingElement is null)
                 {
-                    if (Arguments == null || Arguments.Count == 0)
+                    if (Arguments is null || Arguments.Count == 0)
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertMissingArgument, GetType().Name));
 
                     if (Arguments.Count > 1)
@@ -120,7 +120,7 @@ namespace DotNet.Xdt
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertBadXPath, xpath));
 
                     _siblingElement = siblings[0] as XmlElement;
-                    if (_siblingElement == null)
+                    if (_siblingElement is null)
                         throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_InsertBadXPathResult, xpath));
                 }
 
@@ -210,7 +210,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_storageDictionary == null && !_fInitStorageDictionary)
+                if (_storageDictionary is null && !_fInitStorageDictionary)
                 {
                     _storageDictionary = GetService<SetTokenizedAttributeStorage>();
                     _fInitStorageDictionary = true;
@@ -225,7 +225,7 @@ namespace DotNet.Xdt
             SetTokenizedAttributeStorage storage = TransformStorage;
             List<Dictionary<string, string>>? parameters = null;
 
-            if (storage != null)
+            if (storage is not null)
             {
                 fTokenizeParameter = storage.EnableTokenizeParameters;
                 if (fTokenizeParameter)
@@ -238,7 +238,7 @@ namespace DotNet.Xdt
 
                 string newValue = TokenizeValue(targetAttribute, transformAttribute, fTokenizeParameter, parameters);
 
-                if (targetAttribute != null)
+                if (targetAttribute is not null)
                     targetAttribute.Value = newValue;
                 else
                 {
@@ -277,13 +277,13 @@ namespace DotNet.Xdt
         {
             string? dataValue = null;
             var sourceAttribute = TargetNode.Attributes.GetNamedItem(attributeName) as XmlAttribute;
-            if (sourceAttribute == null)
+            if (sourceAttribute is null)
             {
                 // if it is other attributename, we fall back to the current now 
                 if (string.Compare(attributeName, _tokenizeValueCurrentXmlAttribute!.Name, StringComparison.OrdinalIgnoreCase) != 0) 
                     sourceAttribute = TransformNode.Attributes.GetNamedItem(attributeName) as XmlAttribute;
             }
-            if (sourceAttribute != null)
+            if (sourceAttribute is not null)
                 dataValue = sourceAttribute.Value;
             return dataValue;
         }
@@ -344,13 +344,13 @@ namespace DotNet.Xdt
         string GetXPathToAttribute(XmlAttribute? xmlAttribute, IList<string>? locators)
         {
             string path = string.Empty;
-            if (xmlAttribute != null)
+            if (xmlAttribute is not null)
             {
                 string? pathToNode = GetXPathToNode(xmlAttribute.OwnerElement);
                 if (!string.IsNullOrEmpty(pathToNode))
                 {
                     var identifier = new StringBuilder(256);
-                    if (!(locators == null || locators.Count == 0))
+                    if (!(locators is null || locators.Count == 0))
                     {
                         foreach (string match in locators)
                         {
@@ -387,7 +387,7 @@ namespace DotNet.Xdt
 
         static string? GetXPathToNode(XmlNode xmlNode)
         {
-            if (xmlNode == null || xmlNode.NodeType == XmlNodeType.Document)
+            if (xmlNode is null || xmlNode.NodeType == XmlNodeType.Document)
                 return null;
             string? parentPath = GetXPathToNode(xmlNode.ParentNode);
             return string.Concat(parentPath, "/", xmlNode.Name);
@@ -398,7 +398,7 @@ namespace DotNet.Xdt
             bool fTokenizeParameter,
             List<Dictionary<string, string>>? parameters)
         {
-            Debug.Assert(!fTokenizeParameter || parameters != null);
+            Debug.Assert(!fTokenizeParameter || parameters is not null);
 
             _tokenizeValueCurrentXmlAttribute = transformAttribute;
             string transformValue = transformAttribute.Value;
@@ -408,7 +408,7 @@ namespace DotNet.Xdt
             transformValue = SubstituteKnownValue(transformValue, ParentAttributeRegex, "$(", key => EscapeDirRegexSpecialCharacter(GetAttributeValue(key)!, true));
 
             // then use the directive to parse the value. --- if TokenizeParameterize is enable
-            if (fTokenizeParameter && parameters != null)
+            if (fTokenizeParameter && parameters is not null)
             {
                 var strbuilder = new StringBuilder(transformValue.Length);
                 var position = 0;
@@ -441,7 +441,7 @@ namespace DotNet.Xdt
                     {
                         strbuilder.Append(transformValue.Substring(position, match.Index - position));
                         RegularExpressions.CaptureCollection attrnames = match.Groups["attrname"].Captures;
-                        if (attrnames != null && attrnames.Count > 0)
+                        if (attrnames is not null && attrnames.Count > 0)
                         {
                             RegularExpressions.CaptureCollection attrvalues = match.Groups["attrval"].Captures;
                             var paramDictionary = new Dictionary<string, string>(4, StringComparer.OrdinalIgnoreCase)
@@ -455,7 +455,7 @@ namespace DotNet.Xdt
                             {
                                 string name = attrnames[i].Value;
                                 string? val = null;
-                                if (attrvalues != null && i < attrvalues.Count)
+                                if (attrvalues is not null && i < attrvalues.Count)
                                     val = EscapeDirRegexSpecialCharacter(attrvalues[i].Value, false);
                                 paramDictionary[name] = val!;
                             }

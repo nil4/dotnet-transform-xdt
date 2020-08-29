@@ -34,7 +34,7 @@ namespace DotNet.Xdt
 
         public T? GetService<T>() where T : class
         {
-            if (_serviceProvider != null)
+            if (_serviceProvider is not null)
             {
                 // note it is legal to return service that's null -- due to SetTokenizeAttributeStorage
                 return _serviceProvider.GetService(typeof(T)) as T;
@@ -74,7 +74,7 @@ namespace DotNet.Xdt
         {
             try
             {
-                string parentPath = _parentContext == null ? string.Empty : _parentContext.XPath;
+                string parentPath = _parentContext is null ? string.Empty : _parentContext.XPath;
 
                 Locator locator = CreateLocator(out string? argumentString);
 
@@ -90,7 +90,7 @@ namespace DotNet.Xdt
         {
             try
             {
-                string parentPath = _parentContext == null ? string.Empty : _parentContext.XPath;
+                string parentPath = _parentContext is null ? string.Empty : _parentContext.XPath;
 
                 Locator locator = CreateLocator(out string? argumentString);
 
@@ -105,7 +105,7 @@ namespace DotNet.Xdt
         Locator CreateLocator(out string? argumentString)
         {
             var locator = CreateObjectFromAttribute<Locator>(out argumentString, out _locatorAttribute);
-            if (locator == null)
+            if (locator is null)
             {
                 argumentString = null;
                 //avoid using singleton of "DefaultLocator.Instance", so unit tests can run parallel
@@ -122,7 +122,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_targetParents == null && _parentContext != null)
+                if (_targetParents is null && _parentContext is not null)
                     _targetParents = GetTargetNodes(ParentXPath);
                 return _targetParents!;
             }
@@ -135,7 +135,7 @@ namespace DotNet.Xdt
             var infoDocument = TargetDocument as XmlFileInfoDocument;
             XmlNode clonedNode;
 
-            if (infoDocument != null)
+            if (infoDocument is not null)
                 clonedNode = infoDocument.CloneNodeFromOtherDocument(sourceNode);
             else
             {
@@ -150,7 +150,7 @@ namespace DotNet.Xdt
 
         static void ScrubTransformAttributesAndNamespaces(XmlNode node)
         {
-            if (node.Attributes != null)
+            if (node.Attributes is not null)
             {
                 var attributesToRemove = new List<XmlAttribute>();
 
@@ -181,7 +181,7 @@ namespace DotNet.Xdt
 
         XmlNamespaceManager GetNamespaceManager()
         {
-            if (_namespaceManager == null)
+            if (_namespaceManager is null)
             {
                 XmlNodeList localNamespaces = Element!.SelectNodes("namespace::*");
 
@@ -206,7 +206,7 @@ namespace DotNet.Xdt
         }
 
         XmlNameTable? GetParentNameTable() 
-            => _parentContext == null ? Element?.OwnerDocument?.NameTable : _parentContext.GetNamespaceManager().NameTable;
+            => _parentContext is null ? Element?.OwnerDocument?.NameTable : _parentContext.GetNamespaceManager().NameTable;
 
         static Regex? _nameAndArgumentsRegex;
         static Regex NameAndArgumentsRegex => _nameAndArgumentsRegex ??= new Regex(@"\A\s*(?<name>\w+)(\s*\((?<arguments>.*)\))?\s*\Z", RegexOptions.Compiled | RegexOptions.Singleline);
@@ -236,7 +236,7 @@ namespace DotNet.Xdt
             objectAttribute = Element?.Attributes.GetNamedItem(typeof(TObjectType).Name, XmlTransformation.TransformNamespace) as XmlAttribute;
             try
             {
-                if (objectAttribute != null)
+                if (objectAttribute is not null)
                 {
                     string typeName = ParseNameAndArguments(objectAttribute.Value, out argumentString);
                     if (!string.IsNullOrEmpty(typeName))
@@ -260,7 +260,7 @@ namespace DotNet.Xdt
             if (TargetNodes.Count == 0)
             {
                 failedContext = this;
-                while (failedContext._parentContext != null && failedContext._parentContext.TargetNodes.Count == 0)
+                while (failedContext._parentContext is not null && failedContext._parentContext.TargetNodes.Count == 0)
                     failedContext = failedContext._parentContext;
 
                 existedInOriginal = ExistedInOriginal(failedContext.XPath);
@@ -292,7 +292,7 @@ namespace DotNet.Xdt
         {
             var service = GetService<IXmlOriginalDocumentService>();
             XmlNodeList? nodeList = service?.SelectNodes(xpath, GetNamespaceManager());
-            return nodeList != null && nodeList.Count > 0;
+            return nodeList is not null && nodeList.Count > 0;
         }
     }
 }

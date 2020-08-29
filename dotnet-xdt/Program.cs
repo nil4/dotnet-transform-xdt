@@ -154,7 +154,7 @@ namespace DotNet.Xdt
             bool TryRead(ref int index, ref string? value)
             {
                 ++index;
-                if (index >= args.Count || value != null) return false;
+                if (index >= args.Count || value is not null) return false;
                 value = args[index];
                 return true;
             }

@@ -43,14 +43,14 @@ namespace DotNet.Xdt
 
             Type? type = GetType(typeName);
 
-            if (type == null)
+            if (type is null)
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_UnknownTypeName, typeName, typeof(TObjectType).Name));
 
             if (!type.IsSubclassOf(typeof(TObjectType)))
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_IncorrectBaseType, type.FullName, typeof(TObjectType).Name));
 
             ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
+            if (constructor is null)
                 throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_NoValidConstructor, type.FullName));
 
             return constructor.Invoke(Array.Empty<object>()) as TObjectType;
@@ -63,8 +63,8 @@ namespace DotNet.Xdt
             {
                 if (!registration.IsValid) continue;
                 Type regType = registration.Assembly.GetType(string.Concat(registration.NameSpace, ".", typeName));
-                if (regType == null) continue;
-                if (foundType == null)
+                if (regType is null) continue;
+                if (foundType is null)
                     foundType = regType;
                 else
                     throw new XmlTransformationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_AmbiguousTypeMatch, typeName));
@@ -80,7 +80,7 @@ namespace DotNet.Xdt
                 NameSpace = nameSpace;
             }
 
-            public bool IsValid => Assembly != null;
+            public bool IsValid => Assembly is not null;
             public string NameSpace { get; }
             public Assembly Assembly { get; }
         }

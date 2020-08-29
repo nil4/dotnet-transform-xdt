@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{403FCE60-1
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
 		build.ps1 = build.ps1
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		global.json = global.json
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md

@@ -27,12 +27,12 @@ namespace DotNet.Xdt
         public override void Load(XmlReader reader)
         {
             _reader = reader as XmlTextReader ?? throw new ArgumentNullException(nameof(reader));
-            if (_reader != null)
+            if (_reader is not null)
                 FileName = _reader.BaseURI;
 
             base.Load(reader);
 
-            if (_reader != null)
+            if (_reader is not null)
                 _textEncoding = _reader.Encoding;
 
             FirstLoad = false;
@@ -53,7 +53,7 @@ namespace DotNet.Xdt
             }
             finally
             {
-                if (PreservationProvider != null)
+                if (PreservationProvider is not null)
                 {
                     PreservationProvider.Close();
                     PreservationProvider = null;
@@ -76,7 +76,7 @@ namespace DotNet.Xdt
 
             base.Load(_reader);
 
-            if (_textEncoding == null)
+            if (_textEncoding is null)
                 _textEncoding = _reader.Encoding;
         }
 
@@ -142,7 +142,7 @@ namespace DotNet.Xdt
             return clone;
         }
 
-        internal bool HasErrorInfo => _reader != null;
+        internal bool HasErrorInfo => _reader is not null;
 
         internal string? FileName { get; private set; }
 
@@ -158,7 +158,7 @@ namespace DotNet.Xdt
         {
             get
             {
-                if (_textEncoding != null)
+                if (_textEncoding is not null)
                     return _textEncoding;
                 
                 // Copied from base implementation of XmlDocument
@@ -196,7 +196,7 @@ namespace DotNet.Xdt
             }
             finally
             {
-                if (xmlWriter != null)
+                if (xmlWriter is not null)
                 {
                     xmlWriter.Flush();
                     xmlWriter.Close();
@@ -206,7 +206,7 @@ namespace DotNet.Xdt
 
         public override void Save(Stream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream is null) throw new ArgumentNullException(nameof(stream));
 
             XmlWriter? xmlWriter = null;
             try
@@ -246,7 +246,7 @@ namespace DotNet.Xdt
 
         static XmlElement? FindContainingElement(XmlNode node)
         {
-            while (node != null && !(node is XmlElement))
+            while (node is not null && node is not XmlElement)
                 node = node.ParentNode;
             return node as XmlElement;
         }
@@ -262,10 +262,9 @@ namespace DotNet.Xdt
                 LinePosition = document.CurrentLinePosition;
                 IsOriginal = document.FirstLoad;
 
-                if (document.PreservationProvider != null)
+                if (document.PreservationProvider is not null)
                     _preservationDict = document.PreservationProvider.GetDictAtPosition(LineNumber, LinePosition - 1);
-                if (_preservationDict == null)
-                    _preservationDict = new XmlAttributePreservationDict();
+                _preservationDict ??= new XmlAttributePreservationDict();
             }
 
             public override void WriteTo(XmlWriter w)
@@ -278,7 +277,7 @@ namespace DotNet.Xdt
 
                 if (HasAttributes)
                 {
-                    if (!(w is XmlAttributePreservingWriter preservingWriter) || _preservationDict == null)
+                    if (!(w is XmlAttributePreservingWriter preservingWriter) || _preservationDict is null)
                         WriteAttributesTo(w);
                     else
                         WritePreservedAttributesTo(preservingWriter);
@@ -336,13 +335,13 @@ namespace DotNet.Xdt
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_reader != null)
+            if (_reader is not null)
             {
                 _reader.Close();
                 _reader = null;
             }
 
-            if (PreservationProvider != null)
+            if (PreservationProvider is not null)
             {
                 PreservationProvider.Close();
                 PreservationProvider = null;

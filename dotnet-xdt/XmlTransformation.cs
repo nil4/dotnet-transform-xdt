@@ -49,7 +49,7 @@ namespace DotNet.Xdt
 
         public XmlTransformation(Stream transformStream, IXmlTransformationLogger logger)
         {
-            if (transformStream == null) throw new ArgumentNullException(nameof(transformStream));
+            if (transformStream is null) throw new ArgumentNullException(nameof(transformStream));
 
             _logger = new XmlTransformationLogger(logger);
             _transformFile = string.Empty;
@@ -76,7 +76,7 @@ namespace DotNet.Xdt
 
         void InitializeDocumentServices(XmlDocument document)
         {
-            Debug.Assert(_documentServiceContainer == null);
+            Debug.Assert(_documentServiceContainer is null);
             _documentServiceContainer = new ServiceContainer();
 
             if (document is IXmlOriginalDocumentService)
@@ -85,7 +85,7 @@ namespace DotNet.Xdt
 
         void ReleaseDocumentServices()
         {
-            if (_documentServiceContainer != null)
+            if (_documentServiceContainer is not null)
             {
                 _documentServiceContainer.RemoveService(typeof(IXmlOriginalDocumentService));
                 _documentServiceContainer = null;
@@ -136,7 +136,7 @@ namespace DotNet.Xdt
                     }
                     catch (Exception ex)
                     {
-                        if (context != null)
+                        if (context is not null)
                             ex = WrapException(ex, context);
 
                         _logger.LogErrorFromException(ex);
@@ -154,11 +154,11 @@ namespace DotNet.Xdt
 
         public bool Apply(XmlDocument xmlTarget)
         {
-            if (xmlTarget == null) throw new ArgumentNullException(nameof(xmlTarget));
+            if (xmlTarget is null) throw new ArgumentNullException(nameof(xmlTarget));
 
-            Debug.Assert(_xmlTarget == null, "This method should not be called recursively");
+            Debug.Assert(_xmlTarget is null, "This method should not be called recursively");
 
-            if (_xmlTarget == null)
+            if (_xmlTarget is null)
             {
                 // Reset the error state
                 _logger.HasLoggedErrors = false;
@@ -200,7 +200,7 @@ namespace DotNet.Xdt
             foreach (XmlNode node in parentContext.Node.ChildNodes)
             {
                 var element = node as XmlElement;
-                if (element == null) continue;
+                if (element is null) continue;
 
                 XmlElementContext context = CreateElementContext(parentContext as XmlElementContext, element);
                 try
@@ -229,7 +229,7 @@ namespace DotNet.Xdt
         void HandleElement(XmlElementContext context)
         {
             Transform? transform = context.ConstructTransform(out string? argumentString);
-            if (transform != null)
+            if (transform is not null)
             {
 
                 bool fOriginalSupressWarning = _logger.SupressWarnings;
@@ -294,16 +294,16 @@ namespace DotNet.Xdt
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportUnknownAttribute, attribute.Name), attribute);
             }
 
-            if (assemblyName != null && path != null)
+            if (assemblyName is not null && path is not null)
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportAttributeConflict), context.Element);
 
-            if (assemblyName == null && path == null)
+            if (assemblyName is null && path is null)
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportMissingAssembly), context.Element);
 
-            if (nameSpace == null)
+            if (nameSpace is null)
                 throw new XmlNodeException(string.Format(System.Globalization.CultureInfo.CurrentCulture, SR.XMLTRANSFORMATION_ImportMissingNamespace), context.Element);
 
-            if (assemblyName != null)
+            if (assemblyName is not null)
                 _namedTypeFactory!.AddAssemblyRegistration(assemblyName, nameSpace);
             else
                 _namedTypeFactory!.AddPathRegistration(path!, nameSpace);
@@ -312,7 +312,7 @@ namespace DotNet.Xdt
         public object? GetService(Type serviceType)
         {
             object? service = null;
-            if (_documentServiceContainer != null)
+            if (_documentServiceContainer is not null)
                 service = _documentServiceContainer.GetService(serviceType);
 
             return service ?? _transformationServiceContainer.GetService(serviceType);
@@ -320,19 +320,19 @@ namespace DotNet.Xdt
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_transformationServiceContainer != null)
+            if (_transformationServiceContainer is not null)
             {
                 _transformationServiceContainer.Dispose();
                 _transformationServiceContainer = null!;
             }
 
-            if (_documentServiceContainer != null)
+            if (_documentServiceContainer is not null)
             {
                 _documentServiceContainer.Dispose();
                 _documentServiceContainer = null;
             }
 
-            if (_xmlTransformable != null)
+            if (_xmlTransformable is not null)
             {
                 _xmlTransformable.Dispose();
                 _xmlTransformable = null;

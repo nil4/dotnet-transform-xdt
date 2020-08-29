@@ -13,11 +13,11 @@ namespace DotNet.Xdt
         readonly AttributeTextWriter _textWriter;
 
         public XmlAttributePreservingWriter(string fileName, Encoding? encoding)
-            : this(encoding == null ? new StreamWriter(fileName) : new StreamWriter(fileName, false, encoding))
+            : this(encoding is null ? new StreamWriter(fileName) : new StreamWriter(fileName, false, encoding))
         { }
 
         public XmlAttributePreservingWriter(Stream w, Encoding? encoding)
-            : this(encoding == null ? new StreamWriter(w) : new StreamWriter(w, encoding))
+            : this(encoding is null ? new StreamWriter(w) : new StreamWriter(w, encoding))
         { }
 
         public XmlAttributePreservingWriter(TextWriter textWriter)
@@ -58,10 +58,9 @@ namespace DotNet.Xdt
         {
             string old = _textWriter.AttributeNewLineString;
 
-            if (newLineString == null && _xmlWriter.Settings != null)
+            if (newLineString is null && _xmlWriter.Settings is not null)
                 newLineString = _xmlWriter.Settings.NewLineChars;
-            if (newLineString == null)
-                newLineString = "\r\n";
+            newLineString ??= "\r\n";
             _textWriter.AttributeNewLineString = newLineString;
 
             return old;
@@ -193,15 +192,15 @@ namespace DotNet.Xdt
 
             void CreateBuffer()
             {
-                Debug.Assert(_writeBuffer == null);
-                if (_writeBuffer == null)
+                Debug.Assert(_writeBuffer is null);
+                if (_writeBuffer is null)
                     _writeBuffer = new StringBuilder();
             }
 
             void FlushBuffer()
             {
-                Debug.Assert(_writeBuffer != null);
-                if (_writeBuffer == null) return;
+                Debug.Assert(_writeBuffer is not null);
+                if (_writeBuffer is null) return;
                 State oldState = _state;
                 try
                 {
@@ -232,7 +231,7 @@ namespace DotNet.Xdt
             void WriteQueuedAttribute()
             {
                 // Write leading whitespace
-                if (AttributeLeadingWhitespace != null)
+                if (AttributeLeadingWhitespace is not null)
                 {
                     _writeBuffer?.Insert(0, AttributeLeadingWhitespace);
                     AttributeLeadingWhitespace = null;

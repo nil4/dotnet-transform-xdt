@@ -133,14 +133,14 @@ namespace DotNet.Xdt
                 // If the last child isn't whitespace, new elements might
                 // have been added
                 XmlNode iter = node.LastChild;
-                if (iter != null && iter.NodeType != XmlNodeType.Whitespace)
+                if (iter is not null && iter.NodeType != XmlNodeType.Whitespace)
                 {
 
                     // The loop continues until we find something that isn't
                     // a new Element. If it's whitespace, then that will be
                     // the whitespace we need to move.
                     XmlNode? whitespace = null;
-                    while (iter != null)
+                    while (iter is not null)
                     {
                         switch (iter.NodeType)
                         {
@@ -163,7 +163,7 @@ namespace DotNet.Xdt
                         break;
                     }
 
-                    if (whitespace != null)
+                    if (whitespace is not null)
                     {
                         // We found whitespace to move. Remove it from where
                         // it is and add it back to the end
@@ -218,7 +218,7 @@ namespace DotNet.Xdt
             }
 
             string? indent = GetIndentFromWhiteSpace(node);
-            if (indent != null)
+            if (indent is not null)
                 SetIndent(indent);
 
             return indexChange;
@@ -278,7 +278,7 @@ namespace DotNet.Xdt
 
         void SetIndent(string indent)
         {
-            if (_currentIndent == null || !_currentIndent.Equals(indent))
+            if (_currentIndent is null || !_currentIndent.Equals(indent))
             {
                 _currentIndent = indent;
 
@@ -325,11 +325,11 @@ namespace DotNet.Xdt
                 && (IsNewNode(node) || IsNewNode(previousNode));
         }
 
-        static bool IsWhiteSpace(XmlNode? node) => node != null && node.NodeType == XmlNodeType.Whitespace;
+        static bool IsWhiteSpace(XmlNode? node) => node is not null && node.NodeType == XmlNodeType.Whitespace;
 
-        public bool IsText(XmlNode? node) => node != null && node.NodeType == XmlNodeType.Text;
+        public bool IsText(XmlNode? node) => node is not null && node.NodeType == XmlNodeType.Text;
 
-        bool IsNewNode(XmlNode? node) => node != null && _document.IsNewNode(node);
+        bool IsNewNode(XmlNode? node) => node is not null && _document.IsNewNode(node);
 
         void InsertIndentBefore(XmlNode node) => node.ParentNode.InsertBefore(_document.CreateWhitespace(CurrentIndent), node);
 
@@ -339,12 +339,12 @@ namespace DotNet.Xdt
 
         string? LookAheadForIndent()
         {
-            if (_currentNode?.ParentNode == null)
+            if (_currentNode?.ParentNode is null)
                 return null;
 
             foreach (XmlNode siblingNode in _currentNode.ParentNode.ChildNodes)
             {
-                if (IsWhiteSpace(siblingNode) && siblingNode.NextSibling != null)
+                if (IsWhiteSpace(siblingNode) && siblingNode.NextSibling is not null)
                 {
                     string whitespace = siblingNode.OuterXml;
                     int index = FindLastNewLine(whitespace);
@@ -365,7 +365,7 @@ namespace DotNet.Xdt
             LinkedListNode<string> currentIndentNode = _indents.Last;
             LinkedListNode<string> previousIndentNode = currentIndentNode.Previous;
 
-            while (previousIndentNode != null)
+            while (previousIndentNode is not null)
             {
                 // If we can determine the difference between the current indent
                 // and the previous one, then that's the value of one tab
@@ -401,7 +401,7 @@ namespace DotNet.Xdt
         string? ComputeCurrentAttributeIndent()
         {
             string? siblingIndent = LookForSiblingIndent(CurrentNode);
-            if (siblingIndent != null)
+            if (siblingIndent is not null)
                 return siblingIndent;
             return CurrentIndent + OneTab;
         }
@@ -421,7 +421,7 @@ namespace DotNet.Xdt
                         foundIndent = xfa.AttributeIndent;
                 }
 
-                if (!beforeCurrentNode && foundIndent != null)
+                if (!beforeCurrentNode && foundIndent is not null)
                     return foundIndent;
             }
 

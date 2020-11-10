@@ -12,6 +12,11 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
 
+    - name: Use .NET 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.100'
+
     - name: build.ps1
       run: pwsh ./build.ps1
 

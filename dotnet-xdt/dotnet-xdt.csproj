@@ -27,10 +27,13 @@
     <RootNamespace>DotNet.Xdt</RootNamespace>
     <AssemblyName>dotnet-xdt</AssemblyName>
 
-    <FileVersion>2.2.0</FileVersion>
+    <FileVersion>2.2.1</FileVersion>
     <Version>$(FileVersion)</Version>
     
-    <_ReleaseNotes>Enable [RollForward=Major](https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0#major-version-roll-forward) to allow running `dotnet-xdt` on .NET Core 3.x and later versions.</_ReleaseNotes>
+    <_ReleaseNotes>
+      Enable [RollForward=Major](https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0#major-version-roll-forward) to allow running `dotnet-xdt` on .NET Core 3.x and later versions.
+      Minor deterministic build and SourceLink support improvements.
+    </_ReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Label="Library" Condition=" '$(TargetFrameworks)' == '$(_LibTFM)' ">

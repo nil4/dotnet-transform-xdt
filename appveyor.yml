@@ -12,7 +12,7 @@ environment:
   DOTNET_NOLOGO: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_SDK_URL: 'https://dotnetcli.azureedge.net/dotnet/Sdk/5.0.100/dotnet-sdk-5.0.100-win-x64.zip'
+  DOTNET_SDK_URL: 'https://dotnetcli.azureedge.net/dotnet/Sdk/5.0.101/dotnet-sdk-5.0.101-win-x64.zip'
 
 cache:
   - '%LocalAppData%\NuGet\v3-cache' # NuGet v3

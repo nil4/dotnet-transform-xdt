@@ -21,9 +21,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fixie" Version="2.2.1" />
-    <PackageReference Include="Shouldly" Version="4.0.0" />
-    <DotNetCliToolReference Include="Fixie.Console" Version="2.2.1" />
+    <PackageReference Include="Fixie" Version="2.2.2" />
+    <PackageReference Include="Shouldly" Version="4.0.1" />
+    <DotNetCliToolReference Include="Fixie.Console" Version="2.2.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dotnet-xdt\dotnet-xdt.csproj" />

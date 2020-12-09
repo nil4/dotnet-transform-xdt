@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Deterministic>true</Deterministic>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
     <_ExeTFM>net461</_ExeTFM>
     <_LibTFM>netstandard2.0</_LibTFM>
